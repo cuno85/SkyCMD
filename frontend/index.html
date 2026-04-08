@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyCMD</title>
+  <link rel="stylesheet" href="css/theme.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/controls.css">
+  <link rel="stylesheet" href="css/skymap.css">
+  <link rel="stylesheet" href="css/panels.css">
+  <link rel="stylesheet" href="css/legend.css">
+</head>
+<body class="theme-dark">
+
+  <!-- Titelzeile -->
+  <header id="app-header">
+    <h1>🔭 SkyCMD</h1>
+    <span class="version-badge" id="version-badge">v0.1.0</span>
+    <span id="connection-status" class="conn-offline" title="Backend nicht verbunden">⬤ Offline</span>
+  </header>
+
+  <!-- Haupt-Layout: Controls | Karte | Legende -->
+  <main id="app-main">
+
+    <!-- Linke Sidebar: Steuerung -->
+    <aside id="controls-panel">
+      <!-- wird durch controls.js befüllt -->
+    </aside>
+
+    <!-- Mitte: Sternkarte -->
+    <section id="map-section">
+      <!-- Mond-Panel oben links -->
+      <div id="moon-panel"></div>
+      <!-- Sonne-Panel oben rechts -->
+      <div id="sun-panel"></div>
+      <!-- WebGL Canvas -->
+      <div id="map-container">
+        <canvas id="sky-canvas"></canvas>
+        <!-- SVG-Overlay für Labels/Hover -->
+        <svg id="sky-overlay"></svg>
+        <!-- Fadenkreuz für GoTo / Live-Position -->
+        <div id="goto-crosshair" class="hidden"></div>
+      </div>
+    </section>
+
+    <!-- Rechte Sidebar: Legende -->
+    <aside id="legend-panel">
+      <!-- wird durch legend.js befüllt -->
+    </aside>
+
+  </main>
+
+  <!-- Planeten-Tabelle -->
+  <section id="planet-table-section"></section>
+
+  <!-- Footer -->
+  <footer id="app-footer">
+    <span>SkyCMD &copy; 2026 cuno85</span>
+    <span id="footer-coords"></span>
+  </footer>
+
+  <!-- Sternbild-Popup (Modal) -->
+  <div id="constellation-popup" aria-hidden="true"></div>
+
+  <!-- Main Entry Point -->
+  <script type="module" src="src/main.js"></script>
+
+</body>
+</html>

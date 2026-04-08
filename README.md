@@ -1,2 +1,206 @@
-# SkyCMD
-Professional Planetarium &amp; Observatory Control Software — WebGL Sky Chart + Telescope/Camera Control
+# 🔭 SkyCMD
+
+**Professional Planetarium & Observatory Control Software**
+
+WebGL-basierte Sternkarte im Browser + vollständige Teleskop- und Kamerasteuerung über ein einheitliches Backend.
+
+---
+
+## 🎯 Vision
+
+SkyCMD verbindet eine hochwertige, browserbasierte Planetariumssoftware mit professioneller Observatoriums-Hardware. Die Architektur trennt sauber zwischen:
+
+- **Frontend** — WebGL Sternenkarte, GUI, Live-View (läuft im Browser, plattformunabhängig)
+- **Backend** — Teleskop- & Kamerasteuerung via ASCOM (Windows) / INDI (Linux)
+
+---
+
+## 🏗 Architektur
+
+```
+┌──────────────────────────────────────────────┐
+│              SkyCMD Frontend                 │
+│         WebGL · GUI · Live-View              │
+└───────────────────┬──────────────────────────┘
+                    │ WebSocket + REST API
+┌───────────────────▼──────────────────────────┐
+│              SkyCMD Backend (FastAPI)         │
+│  HAL · Sequencer · Image-Pipeline · API      │
+└──────┬──────────────────────┬────────────────┘
+       │                      │
+┌──────▼──────┐      ┌────────▼────────┐
+│  ASCOM      │      │   INDI          │
+│  (Windows)  │      │   (Linux)       │
+└──────┬──────┘      └────────┬────────┘
+       │                      │
+┌──────▼──────────────────────▼────────┐
+│           HARDWARE                   │
+│  Mounts: NexStar · EQ6-R · AZ5000   │
+│  Cams:   Moravian · ASI · DMK · FLI  │
+└──────────────────────────────────────┘
+```
+
+---
+
+## 📁 Projektstruktur
+
+```
+SkyCMD/
+├── frontend/                  # Browser-App (HTML + CSS + JS)
+│   ├── index.html             # Einstiegspunkt
+│   ├── css/
+│   │   ├── layout.css         # Haupt-Layout (Flexbox/Grid)
+│   │   ├── skymap.css         # Sternkarten-Canvas
+│   │   ├── panels.css         # Info-Panels (Mond, Sonne, Planeten)
+│   │   ├── controls.css       # Linke Steuerleiste
+│   │   ├── legend.css         # Legende rechts
+│   │   └── theme.css          # Farbschemata (CSS-Variablen)
+│   └── src/
+│       ├── skymap/
+│       │   ├── renderer.js    # WebGL / Three.js Haupt-Renderer
+│       │   ├── projection.js  # Koordinaten-Projektionen
+│       │   ├── layers/
+│       │   │   ├── stars.js
+│       │   │   ├── dso.js
+│       │   │   ├── planets.js
+│       │   │   ├── milkyway.js
+│       │   │   ├── constellations.js
+│       │   │   └── overlays.js  # Ekliptik, Äquator, Meridian
+│       │   └── interaction.js # Zoom, Pan, Hover, Click
+│       ├── astronomy/
+│       │   ├── ephemeris.js   # Planetenberechnungen
+│       │   ├── coordinates.js # Koordinatensysteme
+│       │   ├── time.js        # JD, GMST, ΔT
+│       │   └── catalogs.js    # Sternkatalog-Manager
+│       ├── ui/
+│       │   ├── controls.js    # Linke Sidebar
+│       │   ├── panels.js      # Mond/Sonne/Planeten-Panels
+│       │   ├── legend.js      # Legende
+│       │   ├── search.js      # Objekt-Suche
+│       │   └── settings.js    # localStorage Settings
+│       ├── observatory/
+│       │   ├── websocket.js   # Backend-Verbindung
+│       │   ├── goto.js        # GoTo-Steuerung
+│       │   ├── fov.js         # Okular-FOV-Overlay
+│       │   └── liveview.js    # Kamerabild-Overlay
+│       └── main.js            # App-Init & Modul-Orchestrierung
+├── backend/                   # Python FastAPI Server
+│   ├── main.py                # FastAPI App + WebSocket
+│   ├── hal/                   # Hardware Abstraction Layer
+│   │   ├── __init__.py
+│   │   ├── base.py            # Abstrakte Interfaces
+│   │   ├── ascom/             # ASCOM-Treiber (Windows)
+│   │   │   ├── mount.py
+│   │   │   └── camera.py
+│   │   └── indi/              # INDI-Treiber (Linux)
+│   │       ├── mount.py
+│   │       └── camera.py
+│   ├── devices/               # Gerätespezifische Wrapper
+│   │   ├── mounts/
+│   │   │   ├── celestron_nexstar.py
+│   │   │   ├── skywatcher_eq6r.py
+│   │   │   └── micron_az5000.py
+│   │   └── cameras/
+│   │       ├── moravian_c1.py
+│   │       ├── zwo_asi.py
+│   │       ├── tis_dmk.py
+│   │       └── fli_kepler.py
+│   ├── sequencer/             # Beobachtungs-Sequenzen
+│   │   └── sequence.py
+│   ├── imaging/               # Bild-Pipeline
+│   │   ├── capture.py
+│   │   └── platesolve.py
+│   └── requirements.txt
+├── data/
+│   └── catalogs/              # Sternkataloge (aus v1.7.0 übernehmen)
+│       ├── stars_hip7.json
+│       ├── star_names.json
+│       ├── dso_base.json
+│       ├── constellations.json
+│       └── constellation_boundaries_iau.json
+├── docs/
+│   ├── architecture.md        # Architektur-Details
+│   ├── hardware-setup.md      # Hardware-Einrichtung
+│   ├── frontend-dev.md        # Frontend-Entwicklerdoku
+│   ├── backend-dev.md         # Backend-Entwicklerdoku
+│   └── milestones.md          # Entwicklungs-Meilensteine
+└── README.md
+```
+
+---
+
+## 🚀 Entwicklungs-Meilensteine
+
+### Phase 1 — Frontend: WebGL Sternenkarte
+- [ ] Three.js Grundgerüst + azimutale Projektion
+- [ ] Hipparcos-Katalog (19K Sterne, B-V Farben)
+- [ ] Zoom & Pan (Maus/Touch)
+- [ ] Datum/Zeit/Standort
+
+### Phase 2 — Frontend: Layer & Overlays
+- [ ] Sternbilder (Linien + Grenzen + Popup)
+- [ ] Deep-Sky-Objekte (Messier/NGC, 9 Typen)
+- [ ] Sonnensystem (Planeten, Mond, Sonne)
+- [ ] Milchstraße (Textur)
+- [ ] Ekliptik · Himmelsäquator · Meridian · Galaktischer Äquator
+
+### Phase 3 — Frontend: Observatory UI
+- [ ] Objekt-Suche & Detailansicht
+- [ ] GoTo-Button (Frontend-ready, Backend pending)
+- [ ] Okular-FOV-Overlay (konfigurierbar)
+- [ ] Planetentabelle
+- [ ] Beobachtungslog
+- [ ] Export (PNG 4K)
+
+### Phase 4 — Backend: HAL & API
+- [ ] FastAPI Grundgerüst + WebSocket
+- [ ] ASCOM-Wrapper (Windows, Mount + Kamera)
+- [ ] INDI-Wrapper (Linux, Mount + Kamera)
+- [ ] Gerätespezifische Treiber
+- [ ] REST-API Dokumentation (OpenAPI)
+
+### Phase 5 — Integration
+- [ ] Live-Positionsanzeige (Mount → Fadenkreuz auf Karte)
+- [ ] GoTo-Kommandos (Karte → Mount)
+- [ ] Kamera Live-View im Browser
+- [ ] Platesolving-Overlay
+- [ ] Beobachtungs-Sequencer
+
+---
+
+## 🔧 Unterstützte Hardware
+
+### Mounts
+| Gerät | Protokoll | Status |
+|---|---|---|
+| Celestron NexStar (AZ) | ASCOM + INDI | geplant |
+| Skywatcher EQ6-R | ASCOM + INDI (SynScan) | geplant |
+| 10micron AZ5000 | ASCOM + LX200/LAN | geplant |
+
+### Kameras
+| Gerät | Protokoll | Status |
+|---|---|---|
+| Moravian C1+ 7000A | ASCOM + Moravian SDK | geplant |
+| ZWO ASI 183MM | ASCOM + ZWO SDK | geplant |
+| TIS DMK | DirectShow / IC Capture | geplant |
+| FLI Kepler KL4040CMT | ASCOM + FLI SDK | geplant |
+
+---
+
+## 🛠 Tech-Stack
+
+| Bereich | Technologie |
+|---|---|
+| Frontend Rendering | Three.js (WebGL) |
+| Frontend UI | Vanilla JS + CSS |
+| Backend | Python 3.11+ + FastAPI |
+| Teleskop (Windows) | ASCOM Platform 6 |
+| Teleskop (Linux) | INDI / PyIndi |
+| Kommunikation | WebSocket + REST |
+| Datenbank | SQLite (Beobachtungslog) |
+
+---
+
+## 📄 Lizenz
+
+MIT License — © 2026 cuno85

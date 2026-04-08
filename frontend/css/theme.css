@@ -1,0 +1,68 @@
+/* SkyCMD — Farbschemata via CSS-Variablen */
+
+:root,
+.theme-dark {
+  --bg-app:        #111111;
+  --bg-panel:      #1e1e1e;
+  --bg-panel-alt:  #252525;
+  --bg-input:      #2a2a2a;
+  --border:        #333333;
+  --border-light:  #444444;
+  --text-primary:  #dddddd;
+  --text-secondary:#999999;
+  --text-muted:    #666666;
+  --accent:        #4a8fc4;
+  --accent-hover:  #5ba0d5;
+  --highlight:     #84c2ff;
+  --sky-bg:        #000005;
+  --conn-online:   #4caf50;
+  --conn-offline:  #f44336;
+}
+
+.theme-antique {
+  --bg-app:        #1a1508;
+  --bg-panel:      #231c0e;
+  --bg-panel-alt:  #2a2210;
+  --bg-input:      #302614;
+  --border:        #4a3a1a;
+  --border-light:  #5a4a2a;
+  --text-primary:  #e8d8b0;
+  --text-secondary:#a89060;
+  --text-muted:    #706040;
+  --accent:        #c09040;
+  --accent-hover:  #d0a050;
+  --highlight:     #e8c070;
+  --sky-bg:        #080500;
+}
+
+.theme-print {
+  --bg-app:        #f5f5f5;
+  --bg-panel:      #ffffff;
+  --bg-panel-alt:  #eeeeee;
+  --bg-input:      #ffffff;
+  --border:        #cccccc;
+  --border-light:  #dddddd;
+  --text-primary:  #111111;
+  --text-secondary:#555555;
+  --text-muted:    #888888;
+  --accent:        #1a1a1a;
+  --accent-hover:  #333333;
+  --highlight:     #000000;
+  --sky-bg:        #ffffff;
+}
+
+.theme-monochrome {
+  --bg-app:        #ffffff;
+  --bg-panel:      #f0f0f0;
+  --bg-panel-alt:  #e8e8e8;
+  --bg-input:      #ffffff;
+  --border:        #cccccc;
+  --border-light:  #dddddd;
+  --text-primary:  #000000;
+  --text-secondary:#444444;
+  --text-muted:    #888888;
+  --accent:        #2060a0;
+  --accent-hover:  #3070b0;
+  --highlight:     #0040c0;
+  --sky-bg:        #f8f8ff;
+}

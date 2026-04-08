@@ -1,0 +1,53 @@
+/* SkyCMD — Info-Panels (Mond, Sonne) */
+
+#moon-panel,
+#sun-panel {
+  position: absolute;
+  top: 8px;
+  z-index: 3;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.80em;
+  line-height: 1.9;
+  pointer-events: none;
+  user-select: none;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+#moon-panel { left: 8px; }
+#sun-panel  { right: 8px; text-align: right; }
+
+.panel-title {
+  font-weight: 700;
+  font-size: 0.72em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 4px;
+}
+
+.panel-rule {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 4px 0 6px;
+}
+
+.panel-table td {
+  padding: 0 4px;
+  vertical-align: baseline;
+}
+
+.panel-table td:first-child {
+  color: var(--text-muted);
+  font-size: 0.92em;
+  padding-right: 8px;
+}
+
+.panel-table td:last-child {
+  font-weight: 600;
+  color: var(--text-primary);
+}
