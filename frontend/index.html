@@ -11,60 +11,91 @@
   <link rel="stylesheet" href="css/panels.css">
   <link rel="stylesheet" href="css/legend.css">
 </head>
-<body class="theme-dark">
-
-  <!-- Titelzeile -->
-  <header id="app-header">
-    <h1>🔭 SkyCMD</h1>
-    <span class="version-badge" id="version-badge">v0.1.0</span>
-    <span id="connection-status" class="conn-offline" title="Backend nicht verbunden">⬤ Offline</span>
+<body>
+  <header class="site-header">
+    <div class="site-header__title-group">
+      <h1 class="site-title">&#128301; SkyCMD</h1>
+      <span class="version-badge" id="version-badge">v0.1.0</span>
+    </div>
   </header>
 
-  <!-- Haupt-Layout: Controls | Karte | Legende -->
-  <main id="app-main">
+  <main class="app-layout">
+    <!-- Linkes Control-Panel -->
+    <aside id="controls" class="control-panel">
+      <section class="control-section control-section--first">
+        <h2 class="control-section__title">&#128205; Beobachtungsposten</h2>
+        <div class="form-row">
+          <label class="form-label" for="lat-input">Breite:</label>
+          <input type="number" id="lat-input" value="51.48" step="0.01" min="-90" max="90">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="lon-input">Laenge:</label>
+          <input type="number" id="lon-input" value="11.97" step="0.01" min="-180" max="180">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="datetime-input">Zeit:</label>
+          <input type="datetime-local" id="datetime-input">
+        </div>
+      </section>
 
-    <!-- Linke Sidebar: Steuerung -->
-    <aside id="controls-panel">
-      <!-- wird durch controls.js befüllt -->
+      <section class="control-section">
+        <h2 class="control-section__title">&#127775; Sterne</h2>
+        <div class="form-row">
+          <label class="form-label" for="showStars">Sterne anzeigen</label>
+          <input type="checkbox" id="showStars" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showStarNames">Sternnamen</label>
+          <input type="checkbox" id="showStarNames" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="mag-limit">Mag-Limit: <span id="mag-label">6.5</span></label>
+          <input type="range" id="mag-limit" min="3" max="7" step="0.5" value="6.5"
+            oninput="document.getElementById('mag-label').textContent=this.value">
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h2 class="control-section__title">&#9733; Deep-Sky</h2>
+        <div class="form-row">
+          <label class="form-label" for="showDSO">DSO anzeigen</label>
+          <input type="checkbox" id="showDSO" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showDSOLabels">DSO-Bezeichnungen</label>
+          <input type="checkbox" id="showDSOLabels" checked>
+        </div>
+      </section>
+
+      <section class="control-section">
+        <h2 class="control-section__title">&#9654; Sternbilder</h2>
+        <div class="form-row">
+          <label class="form-label" for="showConstellationLines">Linien</label>
+          <input type="checkbox" id="showConstellationLines" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showConstellationBoundaries">IAU-Grenzen</label>
+          <input type="checkbox" id="showConstellationBoundaries">
+        </div>
+      </section>
     </aside>
 
-    <!-- Mitte: Sternkarte -->
-    <section id="map-section">
-      <!-- Mond-Panel oben links -->
-      <div id="moon-panel"></div>
-      <!-- Sonne-Panel oben rechts -->
-      <div id="sun-panel"></div>
-      <!-- WebGL Canvas -->
-      <div id="map-container">
-        <canvas id="sky-canvas"></canvas>
-        <!-- SVG-Overlay für Labels/Hover -->
-        <svg id="sky-overlay"></svg>
-        <!-- Fadenkreuz für GoTo / Live-Position -->
-        <div id="goto-crosshair" class="hidden"></div>
-      </div>
+    <!-- Sternkarte -->
+    <section id="map-container" class="map-area">
+      <canvas id="sky-canvas"></canvas>
     </section>
 
-    <!-- Rechte Sidebar: Legende -->
-    <aside id="legend-panel">
-      <!-- wird durch legend.js befüllt -->
+    <!-- Legende rechts (Platzhalter) -->
+    <aside id="legend-panel" class="legend-panel">
+      <div class="legend-title">Legende</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ffff88"></span> Offener Haufen</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ffaa44"></span> Kugelhaufen</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#88ff88"></span> Emissionsnebel</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#ffaaff"></span> Galaxie</div>
+      <div class="legend-item"><span class="legend-dot" style="background:#44ffff"></span> Planet. Nebel</div>
     </aside>
-
   </main>
 
-  <!-- Planeten-Tabelle -->
-  <section id="planet-table-section"></section>
-
-  <!-- Footer -->
-  <footer id="app-footer">
-    <span>SkyCMD &copy; 2026 cuno85</span>
-    <span id="footer-coords"></span>
-  </footer>
-
-  <!-- Sternbild-Popup (Modal) -->
-  <div id="constellation-popup" aria-hidden="true"></div>
-
-  <!-- Main Entry Point -->
   <script type="module" src="src/main.js"></script>
-
 </body>
 </html>
