@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Create realistic Tycho-2 star catalog JSON file.
-Generates ~100k UV-selected stars down to V~10 mag (performance optimized).
-This balances coverage and rendering performance.
+Generates ~500k UV-selected stars down to V~10 mag.
+Intended for WebGL stress testing.
 """
 
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 # Set seed for reproducibility
 random.seed(42)
 
-def generate_tycho2_stars(count=100000):
+def generate_tycho2_stars(count=500000):
     """Generate realistic Tycho-2 star data."""
     stars = []
     
@@ -44,8 +44,8 @@ def generate_tycho2_stars(count=100000):
     return stars
 
 # Generate stars
-print("Generating Tycho-2 catalog with 100k stars...")
-stars = generate_tycho2_stars(100000)
+print("Generating Tycho-2 catalog with 500k stars...")
+stars = generate_tycho2_stars(500000)
 
 # Sort by magnitude (brightest first)
 stars.sort(key=lambda s: s['mag'])

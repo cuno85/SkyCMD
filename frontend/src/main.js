@@ -1,7 +1,7 @@
 /**
  * SkyCMD v0.1.0 - Main Entry Point
  */
-import { SkyMapRenderer } from './skymap/renderer.js';
+import { WebGLRenderer } from './skymap/webgl-renderer.js';
 
 export const APP_VERSION = '0.1.0';
 
@@ -76,7 +76,7 @@ async function init() {
   const canvas = document.getElementById('sky-canvas');
   if (!canvas) { console.error('Canvas #sky-canvas nicht gefunden'); return; }
 
-  renderer = new SkyMapRenderer(canvas);
+  renderer = new WebGLRenderer(canvas);
   const initialNow = new Date();
   const datetimeInput = document.getElementById('datetime-input');
   if (datetimeInput) {
@@ -1512,7 +1512,7 @@ function applyDisplaySettings() {
   });
 
   if (Number.isFinite(settings.magLimit)) {
-    renderer.options.magLimit = Math.max(3, Math.min(7, Number(settings.magLimit)));
+    renderer.options.magLimit = Math.max(0, Math.min(25, Number(settings.magLimit)));
   }
   const magInput = document.getElementById('mag-limit');
   if (magInput) magInput.value = String(renderer.options.magLimit);
