@@ -1,7 +1,7 @@
 /**
  * SkyCMD v0.1.0 - Main Entry Point
  */
-import { WebGLRenderer } from './skymap/webgl-renderer.js';
+import { SkyMapRenderer } from './skymap/renderer.js';
 
 export const APP_VERSION = '0.1.0';
 
@@ -76,7 +76,7 @@ async function init() {
   const canvas = document.getElementById('sky-canvas');
   if (!canvas) { console.error('Canvas #sky-canvas nicht gefunden'); return; }
 
-  renderer = new WebGLRenderer(canvas);
+  renderer = new SkyMapRenderer(canvas);
   const initialNow = new Date();
   const datetimeInput = document.getElementById('datetime-input');
   if (datetimeInput) {
