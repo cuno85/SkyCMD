@@ -76,7 +76,7 @@ function updateObserver() {
 function resize() {
   const container = document.getElementById('map-container');
   if (!container || !renderer) return;
-  const size = Math.min(container.clientWidth, container.clientHeight) - 20;
+  const size = Math.min(container.clientWidth || window.innerWidth - 280, container.clientHeight || window.innerHeight - 60) - 20;
   renderer.resize(size, size);
 }
 

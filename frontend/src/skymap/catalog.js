@@ -3,7 +3,7 @@
  * Laedt alle Sternkataloge und DSO-Daten
  */
 export class CatalogManager {
-  constructor(basePath = '../../data/catalogs') {
+  constructor(basePath = '/data/catalogs') {
     this.basePath = basePath;
     this.stars = [];
     this.starNames = {};
@@ -31,7 +31,7 @@ export class CatalogManager {
     const res = await fetch(`${this.basePath}/star_names.json`);
     const arr = await res.json();
     this.starNames = {};
-    arr.forEach(s => { this.starNames[s.hip] = s; });
+    arr.forEach(s => { this.starNames[s.id] = s; });
     return this.starNames;
   }
 

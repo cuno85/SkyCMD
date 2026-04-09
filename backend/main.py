@@ -14,7 +14,12 @@ import json
 app = FastAPI(title="SkyCMD API", version="0.1.0")
 
 # Frontend statisch ausliefern
-app.mount("/app", StaticFiles(directory="../frontend", html=True), name="frontend")
+#
+# Hinweis: Der Pfad wird absolut ausgehend vom Speicherort dieser Datei (main.py) aufgelöst.
+# Dadurch funktioniert das Mounten unabhängig vom aktuellen Arbeitsverzeichnis.
+import os
+frontend_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../frontend"))
+app.mount("/app", StaticFiles(directory=frontend_path, html=True), name="frontend")
 
 
 # ── REST Endpoints ────────────────────────────────────────────────

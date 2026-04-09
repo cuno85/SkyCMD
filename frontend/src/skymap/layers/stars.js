@@ -21,8 +21,8 @@ export class StarsLayer {
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
       ctx.fillStyle = color;
       ctx.fill();
-      if (showNames && starNames[star.hip]) {
-        const name = starNames[star.hip].name;
+      if (showNames && starNames[star.id]) {
+        const name = starNames[star.id].propername;
         ctx.fillStyle = 'rgba(200,200,255,0.7)';
         ctx.font = `${Math.max(9, size * 2)}px sans-serif`;
         ctx.fillText(name, p.x + size + 2, p.y - size - 2);
