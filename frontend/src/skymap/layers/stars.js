@@ -10,24 +10,49 @@ export class StarsLayer {
 
   draw(stars, starNames = {}, options = {}) {
     const { magLimit = 6.5, showNames = true, scaleFactor = 1 } = options;
+    const { hideBelowHorizon = false } = options;
     const ctx = this.ctx;
+    let drawn = 0;
+    const pickables = [];
+
     for (const star of stars) {
       if (star.mag > magLimit) continue;
       const p = this.projection.project(star.ra, star.dec);
       if (!p.visible) continue;
+      if (hideBelowHorizon && p.alt < 0) continue;
       const size = Math.max(0.5, (6.5 - star.mag) * scaleFactor * 0.8);
       const color = this._bvToColor(star.bv);
+      const nameData = starNames[star.id];
+      const propername = nameData?.propername;
+
       ctx.beginPath();
       ctx.arc(p.x, p.y, size, 0, Math.PI * 2);
       ctx.fillStyle = color;
       ctx.fill();
-      if (showNames && starNames[star.id]) {
-        const name = starNames[star.id].propername;
+
+      drawn += 1;
+      pickables.push({
+        kind: 'star',
+        id: star.id,
+        label: propername || star.id,
+        propername,
+        mag: star.mag,
+        ra: star.ra,
+        dec: star.dec,
+        x: p.x,
+        y: p.y,
+        radius: Math.max(4, size + 2),
+      });
+
+      if (showNames && propername) {
+        const name = propername;
         ctx.fillStyle = 'rgba(200,200,255,0.7)';
         ctx.font = `${Math.max(9, size * 2)}px sans-serif`;
         ctx.fillText(name, p.x + size + 2, p.y - size - 2);
       }
     }
+
+    return { drawn, pickables };
   }
 
   _bvToColor(bv) {

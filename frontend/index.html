@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SkyCMD</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050a14'/%3E%3Ccircle cx='32' cy='32' r='18' fill='none' stroke='%2380b6ff' stroke-width='4'/%3E%3Ccircle cx='39' cy='24' r='3' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="css/theme.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/controls.css">
@@ -17,46 +18,143 @@
       <h1 class="site-title">&#128301; SkyCMD</h1>
       <span class="version-badge" id="version-badge">v0.1.0</span>
     </div>
+    <nav class="site-header__actions" aria-label="Hauptaktionen">
+      <button id="header-search-btn" class="header-btn" type="button" aria-expanded="false">Suche</button>
+      <button id="header-standort-btn" class="header-btn" type="button" aria-expanded="false">Standort</button>
+      <button id="header-atlas-btn" class="header-btn" type="button" aria-expanded="false">Himmelsatlas</button>
+      <button id="header-layout-btn" class="header-btn" type="button" aria-expanded="false">Layout und Anzeige</button>
+      <button id="header-hardware-btn" class="header-btn" type="button" aria-expanded="false">Teleskopsteuerung</button>
+      <button id="header-properties-btn" class="header-btn" type="button" aria-expanded="false">Einstellungen</button>
+    </nav>
   </header>
 
-  <main class="app-layout">
-    <!-- Linkes Control-Panel -->
-    <aside id="controls" class="control-panel">
-      <section class="control-section control-section--first">
-        <h2 class="control-section__title">&#128205; Beobachtungsposten</h2>
-        <div class="form-row">
-          <label class="form-label" for="lat-input">Breite:</label>
-          <input type="number" id="lat-input" value="51.48" step="0.01" min="-90" max="90">
+  <section id="header-panels" class="header-panels">
+    <section id="search-modal" class="header-panel header-panel--search search-drawer" hidden aria-hidden="true">
+      <div class="search-drawer__header">
+        <div>
+          <div class="modal-card__eyebrow">Himmelsnavigation</div>
+          <h2 id="search-modal-title" class="modal-card__title">Suche</h2>
+        </div>
+        <button id="search-modal-close" class="header-btn modal-card__close" type="button" aria-label="Suche schließen">Schließen</button>
+      </div>
+      <div class="modal-card__body">
+        <div class="form-row form-row--stack">
+          <label class="form-label" for="search-input">Objektname oder Katalog-ID</label>
+          <input type="text" id="search-input" placeholder="z. B. M31, Sirius, HIP 32349">
         </div>
         <div class="form-row">
-          <label class="form-label" for="lon-input">Laenge:</label>
-          <input type="number" id="lon-input" value="11.97" step="0.01" min="-180" max="180">
+          <label class="form-label" for="search-include-satellites">Satelliten (TLE) einbeziehen</label>
+          <input type="checkbox" id="search-include-satellites">
+        </div>
+        <div class="form-row modal-card__actions">
+          <button id="search-btn" class="action-btn" type="button">Zentrieren</button>
+          <button id="search-reset-btn" class="action-btn action-btn--secondary" type="button">Reset</button>
+        </div>
+        <div id="search-status" class="search-status">Bereit.</div>
+        <section class="search-block">
+          <div class="search-block__title">Treffer</div>
+          <div id="search-data-info" class="search-data-info" style="display:none;"></div>
+          <div id="search-suggestions" class="search-list" role="listbox" aria-label="Suchtreffer"></div>
+        </section>
+        <section class="search-block">
+          <div class="search-block__title">Letzte Suchen</div>
+          <div id="search-recents" class="search-list search-list--recent"></div>
+        </section>
+      </div>
+    </section>
+    <div id="standort-panel" class="header-panel header-panel--standort" hidden>
+      <div class="header-panel__title">Standort</div>
+      <div class="header-panel__grid standort-panel__grid">
+        <div class="form-row">
+          <label class="form-label" for="lat-input">Breite</label>
+          <input type="text" id="lat-input" value="51° 28' 48.00&quot; N" placeholder="z. B. 51° 28' 48&quot; N">
         </div>
         <div class="form-row">
-          <label class="form-label" for="datetime-input">Zeit:</label>
-          <input type="datetime-local" id="datetime-input">
+          <label class="form-label" for="lon-input">Länge</label>
+          <input type="text" id="lon-input" value="11° 58' 12.00&quot; E" placeholder="z. B. 11° 58' 12&quot; E">
         </div>
-      </section>
-
-      <section class="control-section">
-        <h2 class="control-section__title">&#127775; Sterne</h2>
+        <div class="form-row standort-panel__actions">
+          <button id="standort-apply-btn" class="action-btn" type="button">Koordinaten übernehmen</button>
+        </div>
+        <div class="layout-panel__section standort-panel__section">
+          <div class="layout-panel__section-title">Ortsdatenbank</div>
+          <div class="form-row form-row--stack">
+            <label class="form-label" for="standort-search-input">Ort suchen</label>
+            <input type="text" id="standort-search-input" placeholder="z. B. Berlin, Köln, Wien">
+          </div>
+          <div class="form-row standort-panel__actions">
+            <button id="standort-search-btn" class="action-btn" type="button">Suchen</button>
+          </div>
+          <div id="standort-search-status" class="search-status">Bereit.</div>
+          <div id="standort-search-results" class="search-list" role="listbox" aria-label="Standortsuche Treffer"></div>
+        </div>
+        <div class="layout-panel__section standort-panel__section">
+          <div class="layout-panel__section-title">Automatisch erkennen</div>
+          <div class="form-row standort-panel__actions">
+            <button id="standort-gps-btn" class="action-btn" type="button">Per GPS-Gerät</button>
+            <button id="standort-network-btn" class="action-btn action-btn--secondary" type="button">Über Netzwerk</button>
+          </div>
+          <div id="standort-auto-status" class="search-status">Keine Ortung gestartet.</div>
+        </div>
+      </div>
+    </div>
+    <div id="atlas-panel" class="header-panel" hidden>
+      <div class="header-panel__title">Himmelsatlas</div>
+      <div class="header-panel__grid">
+        <div class="header-panel__row"><span>Sternkatalog</span><strong>Hipparcos</strong></div>
+        <div class="header-panel__row"><span>Deep-Sky</span><strong>Messier + NGC</strong></div>
+        <div class="header-panel__row"><span>Sternbilder</span><strong>Linien + Grenzen</strong></div>
+      </div>
+    </div>
+    <div id="hardware-panel" class="header-panel" hidden>
+      <div class="header-panel__title">Teleskopsteuerung</div>
+      <div class="header-panel__grid">
+        <div class="header-panel__row"><span>Mount</span><strong>Nicht verbunden</strong></div>
+        <div class="header-panel__row"><span>Kamera</span><strong>Nicht verbunden</strong></div>
+        <div class="header-panel__row"><span>WebSocket</span><strong>Bereit</strong></div>
+      </div>
+    </div>
+    <div id="layout-panel" class="header-panel header-panel--layout" hidden>
+      <div class="header-panel__title">Layout und Anzeige</div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Planetensystem</div>
+        <div class="form-row">
+          <label class="form-label" for="showPlanets">Planeten anzeigen</label>
+          <input type="checkbox" id="showPlanets" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showComets">Kometen anzeigen</label>
+          <input type="checkbox" id="showComets" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showAsteroids">Asteroiden anzeigen</label>
+          <input type="checkbox" id="showAsteroids" checked>
+        </div>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Sterne</div>
+        <div class="form-row">
+          <label class="form-label" for="starCatalog">Sternkatalog</label>
+          <select id="starCatalog">
+            <option value="mag4">Mag &lt;= 4</option>
+            <option value="tycho2">Tycho-2</option>
+          </select>
+        </div>
         <div class="form-row">
           <label class="form-label" for="showStars">Sterne anzeigen</label>
           <input type="checkbox" id="showStars" checked>
         </div>
         <div class="form-row">
-          <label class="form-label" for="showStarNames">Sternnamen</label>
+          <label class="form-label" for="showStarNames">Sternenamen</label>
           <input type="checkbox" id="showStarNames" checked>
         </div>
         <div class="form-row">
           <label class="form-label" for="mag-limit">Mag-Limit: <span id="mag-label">6.5</span></label>
-          <input type="range" id="mag-limit" min="3" max="7" step="0.5" value="6.5"
-            oninput="document.getElementById('mag-label').textContent=this.value">
+          <input type="range" id="mag-limit" min="0" max="25" step="0.5" value="6.5" oninput="document.getElementById('mag-label').textContent=this.value">
         </div>
-      </section>
-
-      <section class="control-section">
-        <h2 class="control-section__title">&#9733; Deep-Sky</h2>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Deep-Sky</div>
         <div class="form-row">
           <label class="form-label" for="showDSO">DSO anzeigen</label>
           <input type="checkbox" id="showDSO" checked>
@@ -65,24 +163,198 @@
           <label class="form-label" for="showDSOLabels">DSO-Bezeichnungen</label>
           <input type="checkbox" id="showDSOLabels" checked>
         </div>
-      </section>
-
-      <section class="control-section">
-        <h2 class="control-section__title">&#9654; Sternbilder</h2>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Sternbilder und Grenzen</div>
         <div class="form-row">
-          <label class="form-label" for="showConstellationLines">Linien</label>
+          <label class="form-label" for="showConstellationLines">Stellarium modern</label>
           <input type="checkbox" id="showConstellationLines" checked>
         </div>
         <div class="form-row">
-          <label class="form-label" for="showConstellationBoundaries">IAU-Grenzen</label>
+          <label class="form-label" for="showConstellationBoundaries">Sternbildgrenzen</label>
           <input type="checkbox" id="showConstellationBoundaries">
         </div>
+        <div class="form-row">
+          <label class="form-label" for="showConstellationLabels">Sternbild-Labels</label>
+          <input type="checkbox" id="showConstellationLabels">
+        </div>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Linien und Koordinatennetze</div>
+        <div class="form-row">
+          <label class="form-label" for="showCelestialEquator">Himmelsäquator</label>
+          <input type="checkbox" id="showCelestialEquator" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showMeridian">Meridian</label>
+          <input type="checkbox" id="showMeridian" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showEcliptic">Ekliptik</label>
+          <input type="checkbox" id="showEcliptic" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showEclipticGrid">Ekliptikales Koordinatennetz</label>
+          <input type="checkbox" id="showEclipticGrid">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showAzimuthGrid">Azimutales Koordinatennetz</label>
+          <input type="checkbox" id="showAzimuthGrid">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showHorizonLine">Horizontlinie</label>
+          <input type="checkbox" id="showHorizonLine" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showHorizonFill">Horizontfläche</label>
+          <input type="checkbox" id="showHorizonFill" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showCardinalDirections">Himmelsrichtungen (N/S/W/O)</label>
+          <input type="checkbox" id="showCardinalDirections" checked>
+        </div>
+      </div>
+    </div>
+    <div id="properties-panel" class="header-panel header-panel--console" hidden>
+      <div class="header-panel__title">Einstellungen</div>
+      <div class="header-panel__grid console-panel__grid">
+        <div class="layout-panel__section">
+          <div class="layout-panel__section-title">Datenquellen (Backend)</div>
+          <div class="form-row">
+            <label class="form-label" for="catalog-stars-select">Sternkatalog</label>
+            <select id="catalog-stars-select">
+              <option value="stars_mag4.json">stars_mag4.json (helle Sterne)</option>
+              <option value="stars_hip7.json">stars_hip7.json (erweitert)</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="catalog-dso-select">Deep-Sky Katalog</label>
+            <select id="catalog-dso-select">
+              <option value="dso_base.json">dso_base.json</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="catalog-constellations-select">Sternbilder</label>
+            <select id="catalog-constellations-select">
+              <option value="constellations.json">constellations.json</option>
+            </select>
+          </div>
+          <div class="form-row console-panel__actions">
+            <button id="catalog-apply-btn" class="action-btn" type="button">Kataloge neu laden</button>
+          </div>
+          <div id="catalog-apply-status" class="search-status">Bereit.</div>
+        </div>
+
+        <div class="layout-panel__section">
+          <div class="layout-panel__section-title">Datenbanken / APIs</div>
+          <div class="form-row">
+            <label class="form-label" for="use-backend-smallbodies">Kometen/Asteroiden DB nutzen</label>
+            <input type="checkbox" id="use-backend-smallbodies" checked>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="tle-provider-select">TLE Provider</label>
+            <select id="tle-provider-select">
+              <option value="celestrak-active">Celestrak Active</option>
+              <option value="celestrak-stations">Celestrak Stations</option>
+              <option value="custom">Custom URL</option>
+            </select>
+          </div>
+          <div class="form-row form-row--stack">
+            <label class="form-label" for="tle-provider-custom-url">TLE Custom URL</label>
+            <input type="text" id="tle-provider-custom-url" placeholder="https://..." />
+          </div>
+          <div class="form-row console-panel__actions">
+            <button id="tle-provider-save-btn" class="action-btn" type="button">TLE Provider speichern</button>
+            <button id="tle-provider-test-btn" class="action-btn action-btn--secondary" type="button">TLE Provider testen</button>
+          </div>
+          <div class="form-row">
+            <label class="form-label" for="default-include-satellites">TLE in Suche standardmäßig</label>
+            <input type="checkbox" id="default-include-satellites">
+          </div>
+        </div>
+
+        <div class="layout-panel__section">
+          <div class="layout-panel__section-title">Cache / Sync</div>
+          <div class="header-panel__row"><span>TLE zuletzt gecacht</span><strong id="sync-last-tle">-</strong></div>
+          <div class="header-panel__row"><span>Kometen zuletzt gecacht</span><strong id="sync-last-comets">-</strong></div>
+          <div class="header-panel__row"><span>Asteroiden zuletzt gecacht</span><strong id="sync-last-asteroids">-</strong></div>
+          <div class="console-panel__sync-actions">
+            <button id="sync-tle-btn" class="action-btn" type="button">TLE jetzt abrufen</button>
+            <button id="sync-comets-btn" class="action-btn" type="button">Kometen jetzt abrufen</button>
+            <button id="sync-asteroids-btn" class="action-btn" type="button">Asteroiden jetzt abrufen</button>
+            <button id="sync-all-btn" class="action-btn action-btn--secondary" type="button">Alles synchronisieren</button>
+          </div>
+          <div id="sync-status-text" class="search-status">Status wird geladen...</div>
+        </div>
+
+        <div class="header-panel__row"><span>Hinweis</span><strong>Erweiterte und Debug-Infos</strong></div>
+        <div class="header-panel__row"><span>Projektionsmodus</span><strong id="property-projection">stereographic</strong></div>
+        <div class="header-panel__row"><span>FOV</span><strong id="property-fov">120.0 deg</strong></div>
+        <div class="header-panel__row"><span>Delta-T</span><strong id="property-delta-t">0.0 s</strong></div>
+        <div class="header-panel__row"><span>UT</span><strong id="property-ut">-</strong></div>
+        <div class="header-panel__row"><span>TT</span><strong id="property-tt">-</strong></div>
+        <div class="header-panel__row"><span>Auswahl</span><strong id="property-selection">-</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <main class="app-layout">
+    <!-- Linkes Control-Panel -->
+    <aside id="controls" class="control-panel">
+      <section class="control-section control-section--first">
+        <div id="selected-location-card" class="selected-location-card" aria-live="polite">
+          <div class="selected-location-row">
+            <span class="selected-location-row__label">Standort:</span>
+            <span id="selected-location-display" class="selected-location-card__value">Halle (Saale)</span>
+            <button type="button" id="selected-location-info-btn" class="selected-location-info-btn" aria-expanded="false" aria-controls="selected-location-info" aria-label="Standortdetails anzeigen">i</button>
+          </div>
+          <div id="selected-location-info" class="selected-location-info" hidden>
+            <div class="selected-location-info__title">Standortdetails</div>
+            <div class="selected-location-info__row"><span>Koordinaten</span><strong id="selected-location-coords">-</strong></div>
+            <div class="selected-location-info__row"><span>Zeitzone</span><strong id="selected-location-timezone">-</strong></div>
+            <p class="selected-location-info__note">Kometen und Asteroiden werden aus MPC-Elementdaten backendseitig berechnet und danach standortbezogen auf die Karte projiziert.</p>
+          </div>
+        </div>
+        <div class="form-row form-row--datetime">
+          <div class="datetime-input-group">
+            <input type="text" id="datetime-input" inputmode="numeric" placeholder="TT.MM.JJJJ HH:MM:SS MEZ">
+          </div>
+        </div>
+        <div class="form-row form-row--centered">
+          <button id="datetime-now-btn" class="action-btn" type="button">Jetzt</button>
+          <button id="time-auto-play-btn" class="action-btn time-auto-play-btn" type="button" aria-label="Zeit-Ablauf starten/pausieren">▶</button>
+        </div>
+        <div class="time-correction-card" aria-live="polite">
+          <div class="time-correction-row">
+            <span class="time-correction-row__label">Delta-T:</span>
+            <span id="time-correction-delta-display" class="time-correction-row__value">ΔT 0.00 s</span>
+            <button type="button" id="time-correction-info-btn" class="time-correction-info-btn" aria-expanded="false" aria-controls="time-correction-info" aria-label="Erklärung zur Zeitkorrektur öffnen">i</button>
+          </div>
+          <div id="time-correction-info" class="time-correction-info" hidden>
+            <div class="time-correction-info__title">Was passiert hier?</div>
+            <p>UT ist die eingegebene Universal Time. Delta-T ist die Differenz TT minus UT nach Meeus und Espenak.</p>
+            <p>Für Sternzeit und Ephemeriden wird intern TT verwendet. Deshalb wird UT um Delta-T nach vorn korrigiert.</p>
+            <p>Kometen und Asteroiden werden auf Basis von MPC-Orbitdaten backendseitig propagiert und anschließend topozentrisch für den gewählten Standort dargestellt.</p>
+            <p>Diese Lösung wurde abgeleitet aus F. Espenak und J. Meeus, auf Grundlage von Morrison &amp; Stephenson (2004) und einer polynomischen Angleichung durch tabellierte Werte für 1600-2000. Werte für 2015-2033 werden aus Beobachtungen und Vorhersagen des IERS Rapid Service/Prediction Center interpoliert. Gültigkeitsbereich: Jahre -1999 bis 3000. Als Vorgabe verwendet. Der vorgegebene Wert von -25.8580"/cy2 für ṅ (säkulare Beschleunigung des Mondes) erfordert eine Anpassung.</p>
+          </div>
+        </div>
       </section>
+
     </aside>
 
     <!-- Sternkarte -->
     <section id="map-container" class="map-area">
       <canvas id="sky-canvas"></canvas>
+      <div id="status-panel" class="info-panel info-panel--left">
+        <div class="status-row"><span>FPS</span><strong id="stat-fps">0</strong></div>
+        <div class="status-row"><span>Renderzeit</span><strong id="stat-render-ms">0.0 ms</strong></div>
+        <div class="status-row"><span>FOV</span><strong id="stat-fov">120.0 deg</strong></div>
+        <div class="status-row"><span>Projektion</span><strong id="stat-mode">stereographic</strong></div>
+        <div class="status-row"><span>Sterne</span><strong id="stat-stars">0 / 0</strong></div>
+        <div class="status-row"><span>DSO</span><strong id="stat-dso">0 / 0</strong></div>
+        <div class="status-row"><span>Auswahl</span><strong id="stat-selected">-</strong></div>
+      </div>
+      <div id="object-tooltip" class="object-tooltip"></div>
     </section>
 
     <!-- Legende rechts (Platzhalter) -->

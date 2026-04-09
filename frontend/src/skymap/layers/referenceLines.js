@@ -1,0 +1,290 @@
+/**
+ * SkyCMD - Referenzlinien Layer
+ * Zeichnet Himmelsaequator, lokalen Meridian und Ekliptik.
+ */
+export class ReferenceLinesLayer {
+  constructor(ctx, projection) {
+    this.ctx = ctx;
+    this.projection = projection;
+  }
+
+  draw(options = {}) {
+    const {
+      showCelestialEquator = true,
+      showMeridian = true,
+      showEcliptic = true,
+      showEclipticGrid = false,
+      showAzimuthGrid = false,
+      showHorizonLine = true,
+      showHorizonFill = true,
+      showCardinalDirections = true,
+    } = options;
+
+    const horizon = this._buildHorizonPoints();
+
+    if (showHorizonFill) {
+      this._drawHorizonFill(horizon);
+    }
+
+    if (showCelestialEquator) {
+      this._drawCurve(this._buildEquatorPoints(), {
+        color: 'rgba(120, 220, 255, 0.75)',
+        width: 1,
+        dash: [6, 4],
+        hideBelowHorizon: showHorizonFill,
+      });
+    }
+
+    if (showMeridian) {
+      this._drawProjectedCurve(this._buildMeridianProjectedPoints(), {
+        color: 'rgba(255, 192, 110, 0.78)',
+        width: 1,
+        dash: [5, 4],
+      });
+    }
+
+    if (showEcliptic) {
+      this._drawCurve(this._buildEclipticPoints(), {
+        color: 'rgba(172, 255, 138, 0.8)',
+        width: 1.1,
+        dash: [10, 4],
+        hideBelowHorizon: showHorizonFill,
+      });
+    }
+
+    if (showEclipticGrid) {
+      this._drawEclipticGrid(showHorizonFill);
+    }
+
+    if (showAzimuthGrid) {
+      this._drawAzimuthGrid();
+    }
+
+    if (showHorizonLine) {
+      this._drawProjectedCurve(horizon, {
+        color: 'rgba(255, 170, 120, 0.92)',
+        width: 1.25,
+        dash: [],
+      });
+    }
+
+    if (showCardinalDirections) {
+      this._drawCardinalDirections();
+    }
+  }
+
+  _drawCurve(samples, style) {
+    if (!samples || samples.length < 2) return;
+    const projected = samples.map((p) => this.projection.project(p.ra, p.dec));
+    this._drawProjectedCurve(projected, style);
+  }
+
+  _drawProjectedCurve(projected, style) {
+    if (!projected || projected.length < 2) return;
+    const ctx = this.ctx;
+    const hideBelowHorizon = Boolean(style?.hideBelowHorizon);
+
+    ctx.strokeStyle = style.color;
+    ctx.lineWidth = style.width;
+    ctx.setLineDash(style.dash || []);
+
+    for (let i = 0; i < projected.length - 1; i += 1) {
+      const a = projected[i];
+      const b = projected[i + 1];
+      if (!a.visible && !b.visible) continue;
+      if (hideBelowHorizon && (a.alt < 0 || b.alt < 0)) continue;
+
+      const dx = Math.abs(b.x - a.x);
+      const dy = Math.abs(b.y - a.y);
+      if (dx > 320 || dy > 320) continue;
+
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    ctx.setLineDash([]);
+  }
+
+  _drawHorizonFill(horizonProjected) {
+    if (!horizonProjected || horizonProjected.length < 3) return;
+    const ctx = this.ctx;
+    const { width, height } = this.projection;
+
+    ctx.save();
+    ctx.fillStyle = 'rgba(15, 28, 18, 0.62)';
+    ctx.fillRect(0, 0, width, height);
+
+    // Der sichtbare Himmel liegt innerhalb der Horizontkurve und wird ausgeschnitten.
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.moveTo(horizonProjected[0].x, horizonProjected[0].y);
+    for (let i = 1; i < horizonProjected.length; i += 1) {
+      ctx.lineTo(horizonProjected[i].x, horizonProjected[i].y);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
+  _buildEquatorPoints() {
+    const points = [];
+    for (let ra = 0; ra <= 24.0001; ra += 0.25) {
+      points.push({ ra, dec: 0 });
+    }
+    return points;
+  }
+
+  _buildMeridianProjectedPoints() {
+    const points = [];
+
+    // Sueden -> Zenit
+    for (let alt = 0; alt <= 90; alt += 2) {
+      points.push(this.projection.projectHorizontal(180, alt));
+    }
+
+    // Zenit -> Norden
+    for (let alt = 88; alt >= 0; alt -= 2) {
+      points.push(this.projection.projectHorizontal(0, alt));
+    }
+
+    return points;
+  }
+
+  _buildHorizonPoints() {
+    const points = [];
+    for (let az = 0; az <= 360; az += 2) {
+      points.push(this.projection.projectHorizontal(az, 0));
+    }
+    return points;
+  }
+
+  _drawCardinalDirections() {
+    const ctx = this.ctx;
+    const points = [
+      { label: 'N', az: 0 },
+      { label: 'O', az: 90 },
+      { label: 'S', az: 180 },
+      { label: 'W', az: 270 },
+    ];
+
+    ctx.save();
+    ctx.font = '700 12px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (const item of points) {
+      const p = this.projection.projectHorizontal(item.az, 2);
+      if (!p.visible) continue;
+
+      ctx.fillStyle = 'rgba(10, 24, 35, 0.85)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = 'rgba(164, 205, 242, 0.7)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(220, 239, 255, 0.96)';
+      ctx.fillText(item.label, p.x, p.y + 0.3);
+    }
+
+    ctx.restore();
+  }
+
+  _buildEclipticPoints() {
+    const points = [];
+
+    for (let lambdaDeg = 0; lambdaDeg <= 360.0001; lambdaDeg += 2) {
+      points.push(this._eclipticToEquatorial(lambdaDeg, 0));
+    }
+
+    return points;
+  }
+
+  _eclipticToEquatorial(lambdaDeg, betaDeg) {
+    const eps = (23.439291 * Math.PI) / 180;
+    const lambda = (lambdaDeg * Math.PI) / 180;
+    const beta = (betaDeg * Math.PI) / 180;
+
+    const sinLambda = Math.sin(lambda);
+    const cosLambda = Math.cos(lambda);
+    const sinBeta = Math.sin(beta);
+    const cosBeta = Math.cos(beta);
+
+    const raRad = Math.atan2(
+      sinLambda * Math.cos(eps) - Math.tan(beta) * Math.sin(eps),
+      cosLambda,
+    );
+    const decRad = Math.asin(sinBeta * Math.cos(eps) + cosBeta * Math.sin(eps) * sinLambda);
+
+    let raHours = (raRad * 12) / Math.PI;
+    if (raHours < 0) raHours += 24;
+    return {
+      ra: raHours,
+      dec: (decRad * 180) / Math.PI,
+    };
+  }
+
+  _drawEclipticGrid(hideBelowHorizon) {
+    const lonColor = 'rgba(132, 232, 180, 0.33)';
+    const latColor = 'rgba(112, 214, 165, 0.26)';
+
+    for (let lon = 0; lon < 360; lon += 30) {
+      const line = [];
+      for (let beta = -75; beta <= 75; beta += 3) {
+        line.push(this._eclipticToEquatorial(lon, beta));
+      }
+      this._drawCurve(line, {
+        color: lonColor,
+        width: 0.8,
+        dash: [3, 5],
+        hideBelowHorizon,
+      });
+    }
+
+    for (let beta = -60; beta <= 60; beta += 30) {
+      const line = [];
+      for (let lon = 0; lon <= 360; lon += 3) {
+        line.push(this._eclipticToEquatorial(lon, beta));
+      }
+      this._drawCurve(line, {
+        color: latColor,
+        width: 0.8,
+        dash: [2, 6],
+        hideBelowHorizon,
+      });
+    }
+  }
+
+  _drawAzimuthGrid() {
+    const circleColor = 'rgba(130, 170, 255, 0.24)';
+    const spokeColor = 'rgba(160, 190, 255, 0.22)';
+
+    for (let alt = 15; alt <= 75; alt += 15) {
+      const ring = [];
+      for (let az = 0; az <= 360; az += 3) {
+        ring.push(this.projection.projectHorizontal(az, alt));
+      }
+      this._drawProjectedCurve(ring, {
+        color: circleColor,
+        width: 0.75,
+        dash: [2, 6],
+      });
+    }
+
+    for (let az = 0; az < 360; az += 30) {
+      const spoke = [];
+      for (let alt = 0; alt <= 90; alt += 2) {
+        spoke.push(this.projection.projectHorizontal(az, alt));
+      }
+      this._drawProjectedCurve(spoke, {
+        color: spokeColor,
+        width: 0.75,
+        dash: [2, 6],
+      });
+    }
+  }
+}

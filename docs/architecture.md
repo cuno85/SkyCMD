@@ -32,6 +32,28 @@ Siehe `README.md` → Projektstruktur.
 
 ## Backend
 
+### Ephemeriden und Sichtbarkeit
+
+- Die astronomischen Basispositionen (RA/Dec für Planeten, Sonne, Mond) werden **im Backend** berechnet.
+- Quelle in der Implementierung: REST-Endpunkt `/api/planets` in `backend/main.py`.
+- Das Backend liefert aktuell den Frame `geocentric_ra_dec_of_date`.
+- Das Frontend übernimmt diese RA/Dec-Werte und rechnet sie mit Beobachter-Breite/Länge + Zeit in Alt/Az um.
+- Damit ist die Darstellung standortabhängig (lokale Horizontalprojektion), während die Ephemeriden-Quelle zentral serverseitig bleibt.
+- Topozentrische Parallaxenkorrektur wird im Frontend auf Projektionsebene angewendet, sofern Distanzdaten verfügbar sind (`distanceAu` oder `distanceKm`).
+- Diese Korrektur greift generisch für Sonnensystem-Objekte (`planet`, `luminary`, `comet`, `asteroid`, `satellite`, `tle`) und ist damit auch für zukünftige Objektquellen vorbereitet.
+- Ergebnis: Geozentrische Ephemeriden aus dem Backend + topozentrische Beobachterkorrektur im Frontend.
+
+### Kleine Körper (MPC/TLE) — Import, Datenbank, Fallback
+
+- Kometen und Asteroiden werden über MPC-Datenfeeds importiert und in einer lokalen SQLite-Datenbank abgelegt (`backend/data/solar_system_objects.sqlite3`).
+- Standardfeeds:
+    - Kometen: `allcometels.json.gz`
+    - Asteroiden (inkrementell): `daily_extended.json.gz`
+- Optionaler Vollbootstrap für Asteroiden ist per `MPC_BOOTSTRAP_FULL=1` aktivierbar (`mpcorb_extended.json.gz`).
+- TLE-Satelliten werden über eine konfigurierbare Feed-URL importiert (`MPC_TLE_URL`) und ebenfalls lokal gespeichert.
+- Fallback-Verhalten: Falls externe Feeds temporär nicht erreichbar sind, liefert das Backend weiter die zuletzt erfolgreich gespeicherten Daten aus SQLite.
+- Synchronisation läuft automatisch alle 24h (konfigurierbar über `MPC_SYNC_INTERVAL_SECONDS`) und fügt neue Objekte per Upsert in die Datenbank ein.
+
 ### Hardware Abstraction Layer (HAL)
 
 ```

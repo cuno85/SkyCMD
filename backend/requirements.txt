@@ -6,6 +6,8 @@ python-multipart>=0.0.9
 aiofiles>=23.0.0
 numpy>=1.26.0
 Pillow>=10.0.0
+pymeeus>=0.5.12
+skyfield>=1.49
 # ASCOM (Windows only)
 # pywin32>=306
 # comtypes>=1.4.0
