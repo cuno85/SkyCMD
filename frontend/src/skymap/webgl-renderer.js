@@ -95,7 +95,6 @@ export class WebGLRenderer {
       in float magnitude;
       in vec3 color;
       
-      uniform mat4 projectionMatrix;
       uniform float magLimit;
       
       out VS_OUT {
@@ -110,7 +109,7 @@ export class WebGLRenderer {
           return;
         }
         
-        gl_Position = projectionMatrix * vec4(position, 0.0, 1.0);
+        gl_Position = vec4(position, 0.0, 1.0);
         
         // Size based on magnitude
         float size = max(0.5, (6.5 - magnitude) * 0.8);
@@ -270,26 +269,49 @@ export class WebGLRenderer {
     
     if (stars.length === 0) return;
     
-    // Build vertex data
+    // Build vertex data with per-frame projection
     const positions = new Float32Array(stars.length * 2);
     const magnitudes = new Float32Array(stars.length);
     const colors = new Float32Array(stars.length * 3);
+    let visibleCount = 0;
     
     for (let i = 0; i < stars.length; i++) {
       const star = stars[i];
       
-      // Project to screen
+      // Project to screen using current projection
       const p = this.projection.project(star.ra, star.dec);
-      positions[i * 2] = p.x / this.canvas.width * 2 - 1;
-      positions[i * 2 + 1] = 1 - p.y / this.canvas.height * 2;
+      
+      // Convert to NDC (Normalized Device Coordinates: -1 to 1)
+      const x = (p.x / this.canvas.width) * 2 - 1;
+      const y = 1 - (p.y / this.canvas.height) * 2;
+      
+      positions[i * 2] = x;
+      positions[i * 2 + 1] = y;
       
       magnitudes[i] = star.mag;
       
-      // Basic star color (simplified, could use B-V color index)
-      const intensity = Math.max(0.3, 1.0 - Math.max(0, star.mag) / 8.0);
-      colors[i * 3] = 0.8 + 0.2 * intensity;
-      colors[i * 3 + 1] = 0.8 + 0.2 * intensity;
-      colors[i * 3 + 2] = 1.0;
+      // Star color based on B-V color index
+      const bv = star.bv || 0.0;
+      let r, g, b;
+      
+      // B-V color mapping (Yerkes spectral type approximation)
+      if (bv < -0.4) {
+        r = 0.7; g = 0.85; b = 1.0; // Blue (O/B stars)
+      } else if (bv < 0.0) {
+        r = 0.8; g = 0.9; b = 1.0;  // Blue-white (A stars)
+      } else if (bv < 0.5) {
+        r = 1.0; g = 0.95; b = 0.9; // White (F stars)
+      } else if (bv < 1.0) {
+        r = 1.0; g = 0.85; b = 0.6; // Yellow (G stars)
+      } else {
+        r = 1.0; g = 0.6; b = 0.3;  // Orange-red (K/M stars)
+      }
+      
+      colors[i * 3] = r;
+      colors[i * 3 + 1] = g;
+      colors[i * 3 + 2] = b;
+      
+      visibleCount++;
     }
     
     // Create VAO
@@ -338,15 +360,6 @@ export class WebGLRenderer {
       if (this.options.showStars && this.vaos.stars) {
         gl.useProgram(this.programs.star);
         gl.bindVertexArray(this.vaos.stars);
-        
-        // Setup projection matrix (identity for now, could be extended)
-        const projLoc = gl.getUniformLocation(this.programs.star, 'projectionMatrix');
-        gl.uniformMatrix4fv(projLoc, false, [
-          1, 0, 0, 0,
-          0, 1, 0, 0,
-          0, 0, 1, 0,
-          0, 0, 0, 1
-        ]);
         
         const magLimitLoc = gl.getUniformLocation(this.programs.star, 'magLimit');
         gl.uniform1f(magLimitLoc, this.options.magLimit);
