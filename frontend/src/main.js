@@ -51,6 +51,7 @@ const DISPLAY_OPTION_KEYS = [
   'showConstellationBoundaries',
   'showConstellationLabels',
   'showCelestialEquator',
+  'showEquatorialGrid',
   'showMeridian',
   'showEcliptic',
   'showEclipticGrid',
@@ -84,6 +85,11 @@ async function init() {
     updateGermanTimeFormat(initialNow);
   }
   resize();
+  // Pre-set magMax before init() so loadAll() respects the saved mag limit
+  const _preSettings = loadDisplaySettings();
+  if (Number.isFinite(_preSettings.magLimit)) {
+    renderer.catalog.currentMagMax = Math.max(1, Math.min(25, Number(_preSettings.magLimit)));
+  }
   await renderer.init();
   await initDataSourceControls();
   const initialDateValue = document.getElementById('datetime-input')?.value;
@@ -133,11 +139,11 @@ async function init() {
   document.getElementById('header-atlas-btn')?.addEventListener('click', () => toggleHeaderPanel('atlas'));
     document.getElementById('header-standort-btn')?.addEventListener('click', () => toggleHeaderPanel('standort'));
   document.getElementById('header-layout-btn')?.addEventListener('click', () => toggleHeaderPanel('layout'));
+  document.getElementById('header-manual-btn')?.addEventListener('click', () => toggleHeaderPanel('manual'));
   document.getElementById('header-hardware-btn')?.addEventListener('click', () => toggleHeaderPanel('hardware'));
   document.getElementById('header-properties-btn')?.addEventListener('click', () => toggleHeaderPanel('properties'));
   document.getElementById('search-modal-close')?.addEventListener('click', closeSearchModal);
   document.getElementById('search-include-satellites')?.addEventListener('change', refreshSearchSuggestions);
-  document.getElementById('starCatalog')?.addEventListener('change', onStarCatalogChange);
   document.getElementById('catalog-apply-btn')?.addEventListener('click', applyCatalogSelection);
   document.getElementById('sync-tle-btn')?.addEventListener('click', () => triggerFeedSync('satellites_tle', 'TLE'));
   document.getElementById('sync-comets-btn')?.addEventListener('click', () => triggerFeedSync('comets', 'Kometen'));
@@ -145,6 +151,7 @@ async function init() {
   document.getElementById('sync-all-btn')?.addEventListener('click', triggerSyncAll);
   document.getElementById('default-include-satellites')?.addEventListener('change', onDefaultIncludeSatellitesChange);
   document.getElementById('use-backend-smallbodies')?.addEventListener('change', onUseBackendSmallBodiesChange);
+  document.getElementById('planet-mag-algorithm')?.addEventListener('change', onPlanetMagnitudeAlgorithmChange);
   document.getElementById('tle-provider-save-btn')?.addEventListener('click', saveTleProviderConfig);
   document.getElementById('tle-provider-test-btn')?.addEventListener('click', testTleProviderConfig);
   document.getElementById('tle-provider-select')?.addEventListener('change', onTleProviderSelectChange);
@@ -203,11 +210,22 @@ async function init() {
   bindSmallBodyToggle('showComets', 'showComets');
   bindSmallBodyToggle('showAsteroids', 'showAsteroids');
 
-  // Magnitude Slider
+  // Magnitude Slider - debounced reload from SQL API with mag_max
+  let _magLimitDebounce = null;
   document.getElementById('mag-limit')?.addEventListener('input', (e) => {
-    renderer.options.magLimit = parseFloat(e.target.value);
+    const newMagLimit = parseFloat(e.target.value);
+    renderer.options.magLimit = newMagLimit;
     saveDisplaySettings();
-    renderer.render();
+    clearTimeout(_magLimitDebounce);
+    _magLimitDebounce = setTimeout(() => {
+      renderer.catalog.loadStars(newMagLimit).then(() => {
+        renderer.stats.totalStars = renderer.catalog.getStars().length;
+        renderer.render();
+      }).catch(err => {
+        console.error('Failed to reload stars with new mag limit:', err);
+        renderer.render();
+      });
+    }, 400);
   });
 
   // Resize
@@ -960,6 +978,10 @@ function setHeaderPanelVisibility(panelName, visible) {
       panel: document.getElementById('layout-panel'),
       button: document.getElementById('header-layout-btn'),
     },
+    manual: {
+      panel: document.getElementById('manual-panel'),
+      button: document.getElementById('header-manual-btn'),
+    },
     hardware: {
       panel: document.getElementById('hardware-panel'),
       button: document.getElementById('header-hardware-btn'),
@@ -983,6 +1005,7 @@ function toggleHeaderPanel(panelName) {
   setHeaderPanelVisibility('standort', nextState === 'standort');
   setHeaderPanelVisibility('atlas', nextState === 'atlas');
   setHeaderPanelVisibility('layout', nextState === 'layout');
+  setHeaderPanelVisibility('manual', nextState === 'manual');
   setHeaderPanelVisibility('hardware', nextState === 'hardware');
   setHeaderPanelVisibility('properties', nextState === 'properties');
   if (nextState === 'properties') {
@@ -1488,7 +1511,9 @@ function loadDisplaySettings() {
 
 function saveDisplaySettings() {
   if (!renderer) return;
-  const payload = { magLimit: renderer.options.magLimit };
+  const payload = {
+    magLimit: renderer.options.magLimit,
+  };
   DISPLAY_OPTION_KEYS.forEach((key) => {
     payload[key] = Boolean(renderer.options[key]);
   });
@@ -1512,26 +1537,27 @@ function applyDisplaySettings() {
   });
 
   if (Number.isFinite(settings.magLimit)) {
-    renderer.options.magLimit = Math.max(0, Math.min(25, Number(settings.magLimit)));
+    renderer.options.magLimit = Math.max(1, Math.min(25, Number(settings.magLimit)));
+    // Sync magMax into CatalogManager so subsequent loadAll() calls respect it
+    renderer.catalog.currentMagMax = renderer.options.magLimit;
   }
   const magInput = document.getElementById('mag-limit');
   if (magInput) magInput.value = String(renderer.options.magLimit);
   const magLabel = document.getElementById('mag-label');
   if (magLabel) magLabel.textContent = String(renderer.options.magLimit);
 
-  // Sternkatalog initialisieren
-  const dataSettings = loadDataSourceSettings();
-  const starCatalogSelect = document.getElementById('starCatalog');
-  if (starCatalogSelect) {
-    starCatalogSelect.value = dataSettings.starCatalog || 'mag4';
-  }
+  renderer.projection?.setProjectionMode('auto');
+  renderer.requestDraw();
 }
+
+
 
 function loadDataSourceSettings() {
   const defaults = {
     starCatalog: 'mag4',
     dsoCatalog: 'dso_base.json',
     constellationsCatalog: 'constellations.json',
+    planetMagnitudeAlgorithm: 'mallama-hilton-2018',
     useBackendSmallBodies: true,
     defaultIncludeSatellites: false,
   };
@@ -1539,12 +1565,13 @@ function loadDataSourceSettings() {
     const raw = window.localStorage.getItem(DATA_SOURCE_SETTINGS_KEY);
     const parsed = raw ? JSON.parse(raw) : null;
     if (!parsed || typeof parsed !== 'object') return defaults;
-    return {
+    const merged = {
       ...defaults,
       ...parsed,
       useBackendSmallBodies: parsed.useBackendSmallBodies !== false,
       defaultIncludeSatellites: parsed.defaultIncludeSatellites === true,
     };
+    return merged;
   } catch {
     return defaults;
   }
@@ -1741,37 +1768,19 @@ async function triggerSyncAll() {
   }
 }
 
-async function onStarCatalogChange() {
-  const catalogSelect = document.getElementById('starCatalog');
-  if (!catalogSelect || !renderer) return;
-  
-  const catalogName = catalogSelect.value;
-  const settings = loadDataSourceSettings();
-  settings.starCatalog = catalogName;
-  saveDataSourceSettings(settings);
-  
-  try {
-    console.log(`Switching to star catalog: ${catalogName}`);
-    await renderer.catalog.setStarCatalog(catalogName);
-    renderer.render();
-    console.log(`Star catalog switched to ${catalogName}`);
-  } catch (error) {
-    console.error(`Failed to switch star catalog:`, error);
-    catalogSelect.value = settings.starCatalog;
-  }
-}
-
 async function applyCatalogSelection() {
-  const starsCatalog = document.getElementById('catalog-stars-select')?.value || 'stars_mag4.json';
+  const starCatalog = document.getElementById('catalog-stars-select')?.value || 'mag4';
   const dsoCatalog = document.getElementById('catalog-dso-select')?.value || 'dso_base.json';
   const constellationsCatalog = document.getElementById('catalog-constellations-select')?.value || 'constellations.json';
+  const planetMagnitudeAlgorithm = document.getElementById('planet-mag-algorithm')?.value || 'mallama-hilton-2018';
   const useBackendSmallBodies = Boolean(document.getElementById('use-backend-smallbodies')?.checked);
   const defaultIncludeSatellites = Boolean(document.getElementById('default-include-satellites')?.checked);
 
   const settings = {
-    starsCatalog,
+    starCatalog,
     dsoCatalog,
     constellationsCatalog,
+    planetMagnitudeAlgorithm,
     useBackendSmallBodies,
     defaultIncludeSatellites,
   };
@@ -1780,7 +1789,7 @@ async function applyCatalogSelection() {
   try {
     renderer.setDataSourceOptions({ useBackendSmallBodies });
     await renderer.reconfigureCatalogSources({
-      stars: starsCatalog,
+      stars: starCatalog,
       dso: dsoCatalog,
       constellations: constellationsCatalog,
     });
@@ -1815,6 +1824,18 @@ function onUseBackendSmallBodiesChange() {
   updateObserver();
 }
 
+function onPlanetMagnitudeAlgorithmChange() {
+  const select = document.getElementById('planet-mag-algorithm');
+  if (!select) return;
+  const value = String(select.value || 'mallama-hilton-2018');
+  if (renderer?.options) {
+    renderer.options.planetMagnitudeAlgorithm = value;
+  }
+  const settings = loadDataSourceSettings();
+  settings.planetMagnitudeAlgorithm = value;
+  saveDataSourceSettings(settings);
+}
+
 async function initDataSourceControls() {
   const settings = loadDataSourceSettings();
 
@@ -1824,15 +1845,26 @@ async function initDataSourceControls() {
   const useSmallBodies = document.getElementById('use-backend-smallbodies');
   const defaultIncludeSat = document.getElementById('default-include-satellites');
   const searchIncludeSat = document.getElementById('search-include-satellites');
+  const planetMagAlgorithmSelect = document.getElementById('planet-mag-algorithm');
   const tleProviderSelect = document.getElementById('tle-provider-select');
   const tleProviderCustomInput = document.getElementById('tle-provider-custom-url');
 
-  if (starsSelect) starsSelect.value = settings.starsCatalog;
+  if (starsSelect) starsSelect.value = settings.starCatalog;
   if (dsoSelect) dsoSelect.value = settings.dsoCatalog;
   if (constellationsSelect) constellationsSelect.value = settings.constellationsCatalog;
   if (useSmallBodies) useSmallBodies.checked = Boolean(settings.useBackendSmallBodies);
   if (defaultIncludeSat) defaultIncludeSat.checked = Boolean(settings.defaultIncludeSatellites);
   if (searchIncludeSat) searchIncludeSat.checked = Boolean(settings.defaultIncludeSatellites);
+  if (planetMagAlgorithmSelect) {
+    const algorithm = String(settings.planetMagnitudeAlgorithm || 'mallama-hilton-2018');
+    planetMagAlgorithmSelect.value = algorithm;
+    if (planetMagAlgorithmSelect.value !== algorithm) {
+      planetMagAlgorithmSelect.value = 'mallama-hilton-2018';
+    }
+  }
+  if (renderer?.options) {
+    renderer.options.planetMagnitudeAlgorithm = planetMagAlgorithmSelect?.value || 'mallama-hilton-2018';
+  }
 
   try {
     const res = await fetch('/api/solar-system/feed-config');
@@ -1849,16 +1881,17 @@ async function initDataSourceControls() {
   }
 
   renderer.setDataSourceOptions({ useBackendSmallBodies: Boolean(settings.useBackendSmallBodies) });
-  try {
-    await renderer.reconfigureCatalogSources({
-      stars: settings.starsCatalog,
-      dso: settings.dsoCatalog,
-      constellations: settings.constellationsCatalog,
-    });
-    setCatalogApplyStatus('Kataloge bereit.');
-  } catch {
-    setCatalogApplyStatus('Kataloge mit Standardquelle geladen.');
+  // Catalog already loaded by renderer.init() – only apply star catalog setting here.
+  if (settings.starCatalog && settings.starCatalog !== renderer.catalog.getActiveStarCatalog()) {
+    try {
+      await renderer.catalog.setStarCatalog(settings.starCatalog);
+      renderer.stats.totalStars = renderer.catalog.getStars().length;
+      renderer.render();
+    } catch {
+      // swallow
+    }
   }
+  setCatalogApplyStatus('Kataloge bereit.');
   refreshBackendSyncStatus();
 }
 

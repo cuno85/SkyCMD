@@ -15,6 +15,7 @@ import math
 from datetime import datetime, timezone
 from typing import Any
 
+from .catalog_repo import CatalogRepository
 from .small_bodies import SmallBodyRepository, SmallBodySyncService
 
 from pymeeus.Epoch import Epoch
@@ -33,6 +34,7 @@ from skyfield.api import load_constellation_map, position_from_radec
 app = FastAPI(title="SkyCMD API", version="0.1.0")
 
 small_body_repo = SmallBodyRepository()
+catalog_repo = CatalogRepository()
 small_body_sync = SmallBodySyncService(
     small_body_repo,
     interval_seconds=int(os.getenv("MPC_SYNC_INTERVAL_SECONDS", 24 * 60 * 60)),
@@ -120,6 +122,7 @@ async def get_status():
 async def startup_small_body_sync():
     small_body_repo.init_db()
     small_body_repo.load_persisted_feed_config()
+    catalog_repo.init_db()
     small_body_sync.start(asyncio.get_running_loop())
 
 
@@ -320,6 +323,54 @@ def _to_cartesian(lon_deg: float, lat_deg: float, radius: float) -> tuple[float,
         radius * cos_lat * math.sin(lon),
         radius * math.sin(lat),
     )
+
+
+@app.get("/api/catalog/status")
+async def get_catalog_status():
+    return {
+        "db": catalog_repo.db_path,
+        "stars": {
+            "total": catalog_repo.count_stars(),
+            "mag4": catalog_repo.count_stars("mag4"),
+            "tycho2": catalog_repo.count_stars("tycho2"),
+        },
+    }
+
+
+@app.get("/api/catalog/stars")
+async def get_catalog_stars(
+    catalog: str = "tycho2",
+    mag_max: float | None = None,
+    ra_min: float | None = None,
+    ra_max: float | None = None,
+    dec_min: float | None = None,
+    dec_max: float | None = None,
+    limit: int = 100000,
+    offset: int = 0,
+):
+    allowed = {"mag4", "tycho2"}
+    catalog_norm = str(catalog or "").strip().lower()
+    if catalog_norm not in allowed:
+        raise HTTPException(status_code=400, detail=f"Unsupported catalog '{catalog}'")
+
+    items = catalog_repo.query_stars(
+        catalog=catalog_norm,
+        mag_max=mag_max,
+        ra_min=ra_min,
+        ra_max=ra_max,
+        dec_min=dec_min,
+        dec_max=dec_max,
+        limit=limit,
+        offset=offset,
+    )
+    return {
+        "source": "sqlite",
+        "catalog": catalog_norm,
+        "limit": max(1, min(int(limit), 2_000_000)),
+        "offset": max(0, int(offset)),
+        "count": len(items),
+        "items": items,
+    }
 
 
 def _phase_angle_deg(r_planet: float, r_earth: float, delta_earth_planet: float) -> float:

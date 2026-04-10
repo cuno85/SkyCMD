@@ -23,6 +23,7 @@ export class WebGLRenderer {
       showConstellationBoundaries: false,
       showConstellationLabels: false,
       showCelestialEquator: true,
+      showEquatorialGrid: false,
       showMeridian: true,
       showEcliptic: true,
       showEclipticGrid: false,
@@ -125,8 +126,50 @@ export class WebGLRenderer {
       `#version 300 es
       precision mediump float;
       uniform vec4 uColor;
+      uniform vec2 uCanvasSize;
+      uniform vec2 uCenter;
+      uniform vec2 uScale;
+      uniform float uDistance;
+      uniform float uViewRadius;
+      uniform float uCosHalfFov;
+      uniform int uUseRectClip;
+      uniform vec3 uRight;
+      uniform vec3 uUp;
+      uniform vec3 uForward;
       out vec4 outColor;
       void main() {
+        float sx = gl_FragCoord.x - uCenter.x;
+        float sy = (uCanvasSize.y - gl_FragCoord.y) - uCenter.y;
+
+        bool useRect = (uUseRectClip != 0);
+        if (!useRect && length(vec2(sx, sy)) > uViewRadius) {
+          discard;
+        }
+
+        float scaleX = max(uScale.x, 1e-6);
+        float scaleY = max(uScale.y, 1e-6);
+        // Must match projection.screenToCameraVector(): X uses mirrored sign.
+        float X = -sx / scaleX;
+        float Y = -sy / scaleY;
+
+        float factor = max(uDistance + 1.0, 1e-6);
+        float u = X / factor;
+        float v = Y / factor;
+        float q = u * u + v * v;
+        float disc = max(0.0, 1.0 + q * (1.0 - uDistance * uDistance));
+        float z = (-q * uDistance + sqrt(disc)) / (q + 1.0);
+        float k = uDistance + z;
+        vec3 cam = normalize(vec3(u * k, v * k, z));
+
+        if (!useRect && cam.z < uCosHalfFov) {
+          discard;
+        }
+
+        vec3 world = uRight * cam.x + uUp * cam.y + uForward * cam.z;
+        if (world.z >= 0.0) {
+          discard;
+        }
+
         outColor = uColor;
       }`
     );
@@ -457,10 +500,6 @@ export class WebGLRenderer {
       gl.clear(gl.COLOR_BUFFER_BIT);
       this.pickables = [];
 
-      if (this.options.showHorizonFill) {
-        this._drawHorizonFillMask();
-      }
-
       const pointPos = [];
       const pointSize = [];
       const pointColor = [];
@@ -503,6 +542,9 @@ export class WebGLRenderer {
       if (this.options.showStars) {
         const stars = this.catalog.getStars();
         const heuristic = this._computeStarHeuristic(view.fovDeg, this.canvas.width, this.canvas.height, stars.length);
+        const magLimit = Number.isFinite(this.options?.magLimit)
+          ? Number(this.options.magLimit)
+          : 6.5;
         const gridCols = Math.max(1, Math.ceil(this.canvas.width / heuristic.cellPx));
         const gridRows = Math.max(1, Math.ceil(this.canvas.height / heuristic.cellPx));
         const occupancy = new Uint8Array(gridCols * gridRows);
@@ -510,18 +552,11 @@ export class WebGLRenderer {
         let visibleStars = 0;
         let brightRendered = 0;
         let faintRendered = 0;
-        let faintStride = 1;
-        let faintStart = stars.length;
+        const faintStride = 1;
 
-        for (let i = 0; i < stars.length; i += 1) {
-          if (Number.isFinite(stars[i]?.mag) && stars[i].mag > heuristic.brightLimit) {
-            faintStart = i;
-            break;
-          }
-        }
-
-        const tryRenderStar = (star, allowDense = false) => {
+        const tryRenderStar = (star, allowDense = false, ignoreDensity = false) => {
           if (!Number.isFinite(star?.mag)) return false;
+          if (star.mag > magLimit) return false;
           const p = this.projection.project(star.ra, star.dec);
           if (!p.visible) return false;
           if (this.options.showHorizonFill && p.alt < 0) return false;
@@ -529,7 +564,7 @@ export class WebGLRenderer {
           const gx = Math.max(0, Math.min(gridCols - 1, Math.floor(p.x / heuristic.cellPx)));
           const gy = Math.max(0, Math.min(gridRows - 1, Math.floor(p.y / heuristic.cellPx)));
           const gIdx = gy * gridCols + gx;
-          if (!allowDense && occupancy[gIdx] >= heuristic.maxPerCell) return false;
+          if (!ignoreDensity && !allowDense && occupancy[gIdx] >= heuristic.maxPerCell) return false;
           occupancy[gIdx] = Math.min(255, occupancy[gIdx] + 1);
 
           const ndc = this._toNdc(p.x, p.y);
@@ -538,6 +573,7 @@ export class WebGLRenderer {
           const size = Math.max(0.9, Math.min(5.2, (7.0 - star.mag) * 0.9));
           const starId = String(star.id || star.name || 'star');
           const propername = this.catalog.starNames?.[starId]?.propername;
+          const displayName = this._formatStarDisplayName(starId, propername);
 
           pointPos.push(ndc.x, ndc.y);
           pointSize.push(size);
@@ -545,14 +581,14 @@ export class WebGLRenderer {
           this.pickables.push({
             kind: 'star',
             id: starId,
-            label: propername || starId,
+            label: displayName,
             ra: star.ra,
             dec: star.dec,
             mag: star.mag,
             x: p.x,
             y: p.y,
             radius: Math.max(6, size + 2),
-            name: propername || starId,
+            name: displayName,
           });
 
           if (this.options.showStarNames && star.mag <= 2.5 && (propername || starId)) {
@@ -562,27 +598,17 @@ export class WebGLRenderer {
           return true;
         };
 
-        for (let i = 0; i < faintStart && visibleStars < heuristic.budget; i += 1) {
-          if (tryRenderStar(stars[i], true)) {
+        // Wissenschaftlich/strikt: zeige alle Katalogsterne bis zum gesetzten Mag-Limit.
+        for (let i = 0; i < stars.length; i += 1) {
+          if (tryRenderStar(stars[i], true, true)) {
             visibleStars += 1;
-            brightRendered += 1;
-          }
-        }
-
-        const remainingBudget = Math.max(0, heuristic.budget - visibleStars);
-        if (remainingBudget > 0 && faintStart < stars.length) {
-          const faintCount = stars.length - faintStart;
-          faintStride = Math.max(1, Math.ceil(faintCount / remainingBudget));
-          for (let i = faintStart; i < stars.length && visibleStars < heuristic.budget; i += faintStride) {
-            if (tryRenderStar(stars[i], false)) {
-              visibleStars += 1;
-              faintRendered += 1;
-            }
+            if (stars[i].mag <= heuristic.brightLimit) brightRendered += 1;
+            else faintRendered += 1;
           }
         }
 
         this.stats.visibleStars = visibleStars;
-        this.stats.starBudget = heuristic.budget;
+        this.stats.starBudget = visibleStars;
         this.stats.starBrightLimit = heuristic.brightLimit;
         this.stats.starSamplingStride = faintStride;
         this.stats.starBrightRendered = brightRendered;
@@ -625,9 +651,16 @@ export class WebGLRenderer {
         pushPoint(body, 3.0, color, kind || 'smallbody', body.name || body.id);
       }
 
+      if (this.options.showCardinalDirections) {
+        this._appendCardinalLabels(labels);
+      }
+
       this._drawLines();
       this._drawPoints(pointPos, pointSize, pointColor);
       this._drawSelectionLines();
+      if (this.options.showHorizonFill) {
+        this._drawHorizonFillMask();
+      }
       this._drawLabels(labels);
 
       this._renderErrorLogged = false;
@@ -647,36 +680,6 @@ export class WebGLRenderer {
 
   _drawHorizonFillMask() {
     const gl = this.gl;
-    const horizon = this._buildHorizonProjectedPoints();
-    if (!horizon || horizon.length < 3) return;
-
-    const poly = [];
-    for (const p of horizon) {
-      const n = this._toNdc(p.x, p.y);
-      poly.push(n.x, n.y);
-    }
-
-    gl.enable(gl.STENCIL_TEST);
-    gl.stencilMask(0xff);
-    gl.clear(gl.STENCIL_BUFFER_BIT);
-    gl.colorMask(false, false, false, false);
-    gl.stencilFunc(gl.ALWAYS, 1, 0xff);
-    gl.stencilOp(gl.KEEP, gl.KEEP, gl.REPLACE);
-
-    gl.useProgram(this.fillProgram);
-    gl.bindVertexArray(this.fillVao);
-
-    const posLoc = gl.getAttribLocation(this.fillProgram, 'aPos');
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.fillPosBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(poly), gl.DYNAMIC_DRAW);
-    gl.enableVertexAttribArray(posLoc);
-    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, poly.length / 2);
-
-    gl.colorMask(true, true, true, true);
-    gl.stencilFunc(gl.EQUAL, 0, 0xff);
-    gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
-
     const overlay = new Float32Array([
       -1, -1,
        1, -1,
@@ -686,14 +689,37 @@ export class WebGLRenderer {
        1,  1,
     ]);
 
+    const view = this.projection.getViewState();
+    const blend = Math.max(0, Math.min(1, Number(view?.blendToPlanar || 0)));
+    const distance = 1 - blend;
+    const scaleX = this.projection.stereoScale * (1 - blend) + this.projection.gnomonicScaleX * blend;
+    const scaleY = this.projection.stereoScale * (1 - blend) + this.projection.gnomonicScaleY * blend;
+    const useRectClip = view?.modeLabel === 'gnomonic' || view?.modeLabel === 'transition';
+    const halfFovRad = (Number(this.projection.fovDeg) * Math.PI) / 360;
+    const cosHalfFov = Math.cos(halfFovRad);
+
+    gl.useProgram(this.fillProgram);
+    gl.bindVertexArray(this.fillVao);
+
+    const posLoc = gl.getAttribLocation(this.fillProgram, 'aPos');
     gl.bindBuffer(gl.ARRAY_BUFFER, this.fillPosBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, overlay, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(posLoc);
     gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    gl.uniform2f(gl.getUniformLocation(this.fillProgram, 'uCanvasSize'), this.canvas.width, this.canvas.height);
+    gl.uniform2f(gl.getUniformLocation(this.fillProgram, 'uCenter'), this.projection.cx, this.projection.cy);
+    gl.uniform2f(gl.getUniformLocation(this.fillProgram, 'uScale'), scaleX, scaleY);
+    gl.uniform1f(gl.getUniformLocation(this.fillProgram, 'uDistance'), distance);
+    gl.uniform1f(gl.getUniformLocation(this.fillProgram, 'uViewRadius'), this.projection.viewRadius);
+    gl.uniform1f(gl.getUniformLocation(this.fillProgram, 'uCosHalfFov'), cosHalfFov);
+    gl.uniform1i(gl.getUniformLocation(this.fillProgram, 'uUseRectClip'), useRectClip ? 1 : 0);
+    gl.uniform3f(gl.getUniformLocation(this.fillProgram, 'uRight'), this.projection.right.x, this.projection.right.y, this.projection.right.z);
+    gl.uniform3f(gl.getUniformLocation(this.fillProgram, 'uUp'), this.projection.up.x, this.projection.up.y, this.projection.up.z);
+    gl.uniform3f(gl.getUniformLocation(this.fillProgram, 'uForward'), this.projection.forward.x, this.projection.forward.y, this.projection.forward.z);
     const colorLoc = gl.getUniformLocation(this.fillProgram, 'uColor');
     gl.uniform4f(colorLoc, 0.06, 0.12, 0.08, 0.62);
     gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-    gl.disable(gl.STENCIL_TEST);
   }
 
   _drawLabels(labels) {
@@ -814,31 +840,54 @@ export class WebGLRenderer {
     const lineColor = [];
 
     const pushProjectedSegment = (p1, p2, color, hideBelowHorizon = false) => {
-      if (!p1.visible || !p2.visible) return;
-      if (hideBelowHorizon && (p1.alt < 0 || p2.alt < 0)) return;
-      if (this.options.showHorizonFill && p1.alt < 0 && p2.alt < 0) return;
-      const n1 = this._toNdc(p1.x, p1.y);
-      const n2 = this._toNdc(p2.x, p2.y);
+      let a = p1;
+      let b = p2;
+
+      if (hideBelowHorizon) {
+        if (a.alt < 0 && b.alt < 0) return;
+        if (a.alt < 0 || b.alt < 0) {
+          const denom = a.alt - b.alt;
+          if (Math.abs(denom) < 1e-6) return;
+          const t = Math.max(0, Math.min(1, a.alt / denom));
+          const clipped = {
+            x: a.x + (b.x - a.x) * t,
+            y: a.y + (b.y - a.y) * t,
+            alt: 0,
+            visible: true,
+          };
+          if (a.alt < 0) a = clipped;
+          else b = clipped;
+        }
+      }
+
+      if (!a.visible && !b.visible) return;
+      if (this.options.showHorizonFill && a.alt < 0 && b.alt < 0) return;
+      const n1 = this._toNdc(a.x, a.y);
+      const n2 = this._toNdc(b.x, b.y);
       linePos.push(n1.x, n1.y, n2.x, n2.y);
       lineColor.push(color[0], color[1], color[2], color[0], color[1], color[2]);
     };
 
     const pushProjectedPolyline = (points, color, hideBelowHorizon = false) => {
       if (!points || points.length < 2) return;
+      // Only drop truly discontinuous jumps (projection branch cuts),
+      // not legitimate long edge segments near the viewport border.
+      const maxJumpX = this.canvas.width * 1.8;
+      const maxJumpY = this.canvas.height * 1.8;
       for (let i = 1; i < points.length; i += 1) {
         const a = points[i - 1];
         const b = points[i];
         const dx = Math.abs(b.x - a.x);
         const dy = Math.abs(b.y - a.y);
-        if (dx > 320 || dy > 320) continue;
+        if (dx > maxJumpX || dy > maxJumpY) continue;
         pushProjectedSegment(a, b, color, hideBelowHorizon);
       }
     };
 
-    const pushSegment = (a, b, color) => {
+    const pushSegment = (a, b, color, hideBelowHorizon = false) => {
       const p1 = this.projection.project(a.ra, a.dec);
       const p2 = this.projection.project(b.ra, b.dec);
-      pushProjectedSegment(p1, p2, color, false);
+      pushProjectedSegment(p1, p2, color, hideBelowHorizon);
     };
 
     // Reference lines
@@ -846,8 +895,15 @@ export class WebGLRenderer {
       pushProjectedPolyline(this._buildEquatorProjectedPoints(), [0.47, 0.86, 0.98], this.options.showHorizonFill);
     }
 
+    if (this.options.showEquatorialGrid) {
+      const equatorialGrid = this._buildEquatorialGridProjected();
+      for (const line of equatorialGrid) {
+        pushProjectedPolyline(line.points, line.color, this.options.showHorizonFill);
+      }
+    }
+
     if (this.options.showMeridian) {
-      pushProjectedPolyline(this._buildMeridianProjectedPoints(), [1.0, 0.75, 0.45], false);
+      pushProjectedPolyline(this._buildMeridianProjectedPoints(), [1.0, 0.75, 0.45], this.options.showHorizonFill);
     }
 
     if (this.options.showEcliptic) {
@@ -861,31 +917,40 @@ export class WebGLRenderer {
     if (this.options.showEclipticGrid) {
       const eclipticGrid = this._buildEclipticGridProjected();
       for (const line of eclipticGrid) {
-        pushProjectedPolyline(line, [0.46, 0.82, 0.64], this.options.showHorizonFill);
+        pushProjectedPolyline(line.points, line.color, this.options.showHorizonFill);
       }
     }
 
     if (this.options.showAzimuthGrid) {
       const azimuthGrid = this._buildAzimuthGridProjected();
       for (const line of azimuthGrid) {
-        pushProjectedPolyline(line, [0.5, 0.62, 0.86], false);
+        pushProjectedPolyline(line.points, line.color, this.options.showHorizonFill);
       }
     }
 
     if (this.options.showConstellationLines) {
+      const hideConstellationsBelowHorizon = this.options.showHorizonFill;
       for (const c of this.catalog.getConstellations() || []) {
         for (const line of c.lines || []) {
-          for (let i = 1; i < line.length; i++) pushSegment(line[i - 1], line[i], [0.33, 0.46, 0.7]);
+          for (let i = 1; i < line.length; i++) {
+            pushSegment(line[i - 1], line[i], [0.33, 0.46, 0.7], hideConstellationsBelowHorizon);
+          }
         }
       }
     }
 
     if (this.options.showConstellationBoundaries) {
+      const hideBoundariesBelowHorizon = this.options.showHorizonFill;
       for (const poly of this.catalog.getConstellationBoundaries() || []) {
         for (let i = 1; i < poly.length; i++) {
           const prev = poly[i - 1];
           const curr = poly[i];
-          pushSegment({ ra: prev.ra / 15, dec: prev.dec }, { ra: curr.ra / 15, dec: curr.dec }, [0.45, 0.55, 0.75]);
+          pushSegment(
+            { ra: prev.ra / 15, dec: prev.dec },
+            { ra: curr.ra / 15, dec: curr.dec },
+            [0.45, 0.55, 0.75],
+            hideBoundariesBelowHorizon,
+          );
         }
       }
     }
@@ -937,6 +1002,34 @@ export class WebGLRenderer {
     return points;
   }
 
+  _appendCardinalLabels(labels) {
+    if (!Array.isArray(labels)) return;
+    const cardinalPoints = [
+      { text: 'N', az: 0 },
+      { text: 'O', az: 90 },
+      { text: 'S', az: 180 },
+      { text: 'W', az: 270 },
+    ];
+
+    for (const c of cardinalPoints) {
+      const p = this.projection.projectHorizontal(c.az, 0);
+      if (!p.visible) continue;
+      if (this.options.showHorizonFill && p.alt < 0) continue;
+
+      const vx = this.projection.cx - p.x;
+      const vy = this.projection.cy - p.y;
+      const len = Math.hypot(vx, vy) || 1;
+      const inset = 14;
+
+      labels.push({
+        x: p.x + (vx / len) * inset - 4,
+        y: p.y + (vy / len) * inset - 8,
+        text: c.text,
+        color: [1.0, 0.26, 0.26],
+      });
+    }
+  }
+
   _eclipticToEquatorial(lambdaDeg, betaDeg) {
     const eps = (23.439291 * Math.PI) / 180;
     const lambda = (lambdaDeg * Math.PI) / 180;
@@ -976,11 +1069,11 @@ export class WebGLRenderer {
 
     for (let lon = 0; lon < 360; lon += 30) {
       const line = [];
-      for (let beta = -75; beta <= 75; beta += 3) {
+      for (let beta = -90; beta <= 90; beta += 3) {
         const eq = this._eclipticToEquatorial(lon, beta);
         line.push(this.projection.project(eq.ra, eq.dec));
       }
-      lines.push(line);
+      lines.push({ points: line, color: [0.4, 0.72, 0.58] });
     }
 
     for (let beta = -60; beta <= 60; beta += 30) {
@@ -989,7 +1082,29 @@ export class WebGLRenderer {
         const eq = this._eclipticToEquatorial(lon, beta);
         line.push(this.projection.project(eq.ra, eq.dec));
       }
-      lines.push(line);
+      lines.push({ points: line, color: [0.36, 0.68, 0.54] });
+    }
+
+    return lines;
+  }
+
+  _buildEquatorialGridProjected() {
+    const lines = [];
+
+    for (let ra = 0; ra < 24; ra += 1) {
+      const line = [];
+      for (let dec = -90; dec <= 90; dec += 3) {
+        line.push(this.projection.project(ra, dec));
+      }
+      lines.push({ points: line, color: [0.37, 0.68, 0.84] });
+    }
+
+    for (let dec = -60; dec <= 60; dec += 30) {
+      const line = [];
+      for (let ra = 0; ra <= 24; ra += 0.2) {
+        line.push(this.projection.project(ra, dec));
+      }
+      lines.push({ points: line, color: [0.42, 0.74, 0.86] });
     }
 
     return lines;
@@ -1003,7 +1118,7 @@ export class WebGLRenderer {
       for (let az = 0; az <= 360; az += 3) {
         ring.push(this.projection.projectHorizontal(az, alt));
       }
-      lines.push(ring);
+      lines.push({ points: ring, color: [0.42, 0.52, 0.72] });
     }
 
     for (let az = 0; az < 360; az += 30) {
@@ -1011,7 +1126,7 @@ export class WebGLRenderer {
       for (let alt = 0; alt <= 90; alt += 2) {
         spoke.push(this.projection.projectHorizontal(az, alt));
       }
-      lines.push(spoke);
+      lines.push({ points: spoke, color: [0.48, 0.58, 0.76] });
     }
 
     return lines;
@@ -1230,10 +1345,16 @@ export class WebGLRenderer {
 
   _normalizeDsoResult(obj) { return { kind: 'dso', id: obj.id, label: obj.name || obj.id, name: obj.name, type: obj.type, mag: obj.mag, ra: obj.ra, dec: obj.dec }; }
 
+  _formatStarDisplayName(starId, propername) {
+    if (propername) return `${propername} (${starId})`;
+    return starId;
+  }
+
   _normalizeStarResult(star, names) {
     const starId = String(star.id || star.name || 'star');
     const propername = names[starId]?.propername;
-    return { kind: 'star', id: starId, label: propername || starId, propername, mag: star.mag, ra: star.ra, dec: star.dec };
+    const displayName = this._formatStarDisplayName(starId, propername);
+    return { kind: 'star', id: starId, label: displayName, name: displayName, propername, mag: star.mag, ra: star.ra, dec: star.dec };
   }
 
   _normalizePlanetResult(planet) {

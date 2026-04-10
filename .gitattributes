@@ -1,0 +1,2 @@
+data/catalogs/stars_tycho2.json filter=lfs diff=lfs merge=lfs -text
+backend/data/catalogs.sqlite3 filter=lfs diff=lfs merge=lfs -text

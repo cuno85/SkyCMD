@@ -2,481 +2,2878 @@
   {
     "id": "HIP 32349",
     "propername": "Sirius",
-    "magnitude": -1.44,
-    "constellation": "CMa"
+    "magnitude": -1.45,
+    "constellation": "CMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 30438",
-    "propername": "Kanopus",
+    "propername": "Canopus",
     "magnitude": -0.62,
-    "constellation": "Car"
+    "constellation": "Car",
+    "source": "IAU"
   },
   {
     "id": "HIP 69673",
-    "propername": "Arkturus",
+    "propername": "Arcturus",
     "magnitude": -0.05,
-    "constellation": "Boo"
+    "constellation": "Boo",
+    "source": "IAU"
   },
   {
     "id": "HIP 71683",
     "propername": "Rigil Kentaurus",
     "magnitude": -0.01,
-    "constellation": "Cen"
+    "constellation": "Cen",
+    "source": "IAU"
   },
   {
     "id": "HIP 91262",
-    "propername": "Wega",
+    "propername": "Vega",
     "magnitude": 0.03,
-    "constellation": "Lyr"
+    "constellation": "Lyr",
+    "source": "IAU"
   },
   {
     "id": "HIP 24608",
-    "propername": "Kapella",
+    "propername": "Capella",
     "magnitude": 0.08,
-    "constellation": "Aur"
+    "constellation": "Aur",
+    "source": "IAU"
   },
   {
     "id": "HIP 24436",
     "propername": "Rigel",
     "magnitude": 0.18,
-    "constellation": "Ori"
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 37279",
-    "propername": "Prokyon",
+    "propername": "Procyon",
     "magnitude": 0.4,
-    "constellation": "CMi"
+    "constellation": "CMi",
+    "source": "IAU"
   },
   {
     "id": "HIP 7588",
     "propername": "Achernar",
     "magnitude": 0.45,
-    "constellation": "Eri"
+    "constellation": "Eri",
+    "source": "IAU"
   },
   {
     "id": "HIP 27989",
-    "propername": "Beteigeuze",
+    "propername": "Betelgeuse",
     "magnitude": 0.45,
-    "constellation": "Ori"
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 68702",
     "propername": "Hadar",
     "magnitude": 0.61,
-    "constellation": "Cen"
+    "constellation": "Cen",
+    "source": "IAU"
   },
   {
     "id": "HIP 97649",
     "propername": "Altair",
     "magnitude": 0.76,
-    "constellation": "Aql"
-  },
-  {
-    "id": "HIP 60718",
-    "propername": "Acrux",
-    "magnitude": 0.77,
-    "constellation": "Cru"
+    "constellation": "Aql",
+    "source": "IAU"
   },
   {
     "id": "HIP 21421",
     "propername": "Aldebaran",
     "magnitude": 0.87,
-    "constellation": "Tau"
+    "constellation": "Tau",
+    "source": "IAU"
   },
   {
     "id": "HIP 65474",
-    "propername": "Spika",
+    "propername": "Spica",
     "magnitude": 0.98,
-    "constellation": "Vir"
+    "constellation": "Vir",
+    "source": "IAU"
   },
   {
     "id": "HIP 80763",
     "propername": "Antares",
     "magnitude": 1.06,
-    "constellation": "Sco"
+    "constellation": "Sco",
+    "source": "IAU"
   },
   {
     "id": "HIP 37826",
     "propername": "Pollux",
     "magnitude": 1.16,
-    "constellation": "Gem"
+    "constellation": "Gem",
+    "source": "IAU"
   },
   {
     "id": "HIP 113368",
     "propername": "Fomalhaut",
     "magnitude": 1.17,
-    "constellation": "PsA"
+    "constellation": "PsA",
+    "source": "IAU"
   },
   {
     "id": "HIP 102098",
     "propername": "Deneb",
     "magnitude": 1.25,
-    "constellation": "Cyg"
+    "constellation": "Cyg",
+    "source": "IAU"
   },
   {
     "id": "HIP 62434",
     "propername": "Mimosa",
     "magnitude": 1.25,
-    "constellation": "Cru"
+    "constellation": "Cru",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 60718",
+    "propername": "Acrux",
+    "magnitude": 1.33,
+    "constellation": "Cru",
+    "source": "IAU"
   },
   {
     "id": "HIP 71681",
     "propername": "Toliman",
     "magnitude": 1.35,
-    "constellation": "Cen"
+    "constellation": "Cen",
+    "source": "IAU"
   },
   {
     "id": "HIP 49669",
     "propername": "Regulus",
     "magnitude": 1.36,
-    "constellation": "Leo"
+    "constellation": "Leo",
+    "source": "IAU"
   },
   {
-    "id": "HIP 36850",
-    "propername": "Kastor",
-    "magnitude": 1.58,
-    "constellation": "Gem"
+    "id": "HIP 33579",
+    "propername": "Adhara",
+    "magnitude": 1.5,
+    "constellation": "CMa",
+    "source": "IAU"
   },
   {
-    "id": "HIP 85927",
-    "propername": "Schaula",
-    "magnitude": 1.62,
-    "constellation": "Sco"
+    "id": "HIP 61084",
+    "propername": "Gacrux",
+    "magnitude": 1.59,
+    "constellation": "Cru",
+    "source": "IAU"
   },
   {
     "id": "HIP 25336",
     "propername": "Bellatrix",
     "magnitude": 1.64,
-    "constellation": "Ori"
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 25428",
-    "propername": "Alnath",
+    "propername": "Elnath",
     "magnitude": 1.65,
-    "constellation": "Tau"
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 45238",
+    "propername": "Miaplacidus",
+    "magnitude": 1.67,
+    "constellation": "Car",
+    "source": "IAU"
   },
   {
     "id": "HIP 26311",
     "propername": "Alnilam",
     "magnitude": 1.69,
-    "constellation": "Ori"
+    "constellation": "Ori",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 109268",
+    "propername": "Alnair",
+    "magnitude": 1.73,
+    "constellation": "Gru",
+    "source": "IAU"
   },
   {
     "id": "HIP 26727",
     "propername": "Alnitak",
     "magnitude": 1.74,
-    "constellation": "Ori"
-  },
-  {
-    "id": "HIP 39953",
-    "propername": "Regor",
-    "magnitude": 1.75,
-    "constellation": "Vel"
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 62956",
     "propername": "Alioth",
     "magnitude": 1.76,
-    "constellation": "UMa"
-  },
-  {
-    "id": "HIP 15863",
-    "propername": "Mirfak",
-    "magnitude": 1.79,
-    "constellation": "Per"
+    "constellation": "UMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 90185",
     "propername": "Kaus Australis",
     "magnitude": 1.79,
-    "constellation": "Sgr"
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 15863",
+    "propername": "Mirfak",
+    "magnitude": 1.79,
+    "constellation": "Per",
+    "source": "IAU"
   },
   {
     "id": "HIP 54061",
     "propername": "Dubhe",
     "magnitude": 1.81,
-    "constellation": "UMa"
+    "constellation": "UMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 34444",
     "propername": "Wezen",
     "magnitude": 1.83,
-    "constellation": "CMa"
+    "constellation": "CMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 67301",
     "propername": "Alkaid",
     "magnitude": 1.85,
-    "constellation": "UMa"
-  },
-  {
-    "id": "HIP 86228",
-    "propername": "Sargas",
-    "magnitude": 1.86,
-    "constellation": "Sco"
+    "constellation": "UMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 41037",
     "propername": "Avior",
     "magnitude": 1.86,
-    "constellation": "Car"
+    "constellation": "Car",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 86228",
+    "propername": "Sargas",
+    "magnitude": 1.86,
+    "constellation": "Sco",
+    "source": "IAU"
   },
   {
     "id": "HIP 28360",
     "propername": "Menkalinan",
     "magnitude": 1.9,
-    "constellation": "Aur"
+    "constellation": "Aur",
+    "source": "IAU"
   },
   {
     "id": "HIP 82273",
     "propername": "Atria",
     "magnitude": 1.91,
-    "constellation": "TrA"
+    "constellation": "TrA",
+    "source": "IAU"
   },
   {
-    "id": "HIP 11767",
-    "propername": "Polaris",
-    "magnitude": 1.97,
-    "constellation": "UMi"
+    "id": "HIP 31681",
+    "propername": "Alhena",
+    "magnitude": 1.93,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 100751",
+    "propername": "Peacock",
+    "magnitude": 1.94,
+    "constellation": "Pav",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 36850",
+    "propername": "Castor",
+    "magnitude": 1.98,
+    "constellation": "Gem",
+    "source": "IAU"
   },
   {
     "id": "HIP 30324",
-    "propername": "Murzim",
+    "propername": "Mirzam",
     "magnitude": 1.98,
-    "constellation": "CMa"
+    "constellation": "CMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 46390",
     "propername": "Alphard",
     "magnitude": 1.99,
-    "constellation": "Hya"
+    "constellation": "Hya",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 42913",
+    "propername": "Alsephina",
+    "magnitude": 1.99,
+    "constellation": "Vel",
+    "source": "IAU"
   },
   {
     "id": "HIP 9884",
     "propername": "Hamal",
     "magnitude": 2.01,
-    "constellation": "Ari"
+    "constellation": "Ari",
+    "source": "IAU"
   },
   {
     "id": "HIP 3419",
     "propername": "Diphda",
     "magnitude": 2.04,
-    "constellation": "Cet"
+    "constellation": "Cet",
+    "source": "IAU"
   },
   {
     "id": "HIP 92855",
     "propername": "Nunki",
     "magnitude": 2.05,
-    "constellation": "Sgr"
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 68933",
+    "propername": "Menkent",
+    "magnitude": 2.06,
+    "constellation": "Cen",
+    "source": "IAU"
   },
   {
     "id": "HIP 677",
     "propername": "Alpheratz",
     "magnitude": 2.07,
-    "constellation": "And"
-  },
-  {
-    "id": "HIP 5447",
-    "propername": "Mirach",
-    "magnitude": 2.07,
-    "constellation": "And"
+    "constellation": "And",
+    "source": "IAU"
   },
   {
     "id": "HIP 72607",
     "propername": "Kochab",
     "magnitude": 2.07,
-    "constellation": "UMi"
+    "constellation": "UMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 5447",
+    "propername": "Mirach",
+    "magnitude": 2.07,
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 27366",
+    "propername": "Saiph",
+    "magnitude": 2.07,
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 86032",
     "propername": "Rasalhague",
     "magnitude": 2.08,
-    "constellation": "Oph"
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 85927",
+    "propername": "Shaula",
+    "magnitude": 2.08,
+    "constellation": "Sco",
+    "source": "IAU"
   },
   {
     "id": "HIP 14576",
     "propername": "Algol",
     "magnitude": 2.09,
-    "constellation": "Per"
+    "constellation": "Per",
+    "source": "IAU"
   },
   {
     "id": "HIP 9640",
     "propername": "Almach",
     "magnitude": 2.1,
-    "constellation": "And"
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 112122",
+    "propername": "Tiaki",
+    "magnitude": 2.12,
+    "constellation": "Gru",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 11767",
+    "propername": "Polaris",
+    "magnitude": 2.13,
+    "constellation": "UMi",
+    "source": "IAU"
   },
   {
     "id": "HIP 57632",
     "propername": "Denebola",
     "magnitude": 2.14,
-    "constellation": "Leo"
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 45556",
+    "propername": "Aspidiske",
+    "magnitude": 2.21,
+    "constellation": "Car",
+    "source": "IAU"
   },
   {
     "id": "HIP 39429",
     "propername": "Naos",
     "magnitude": 2.21,
-    "constellation": "Pup"
+    "constellation": "Pup",
+    "source": "IAU"
   },
   {
     "id": "HIP 76267",
-    "propername": "Alphekka",
+    "propername": "Alphecca",
     "magnitude": 2.22,
-    "constellation": "CrB"
-  },
-  {
-    "id": "HIP 44816",
-    "propername": "Suhail",
-    "magnitude": 2.23,
-    "constellation": "Vel"
-  },
-  {
-    "id": "HIP 100453",
-    "propername": "Sadr",
-    "magnitude": 2.23,
-    "constellation": "Cyg"
+    "constellation": "CrB",
+    "source": "IAU"
   },
   {
     "id": "HIP 65378",
     "propername": "Mizar",
     "magnitude": 2.23,
-    "constellation": "UMa"
+    "constellation": "UMa",
+    "source": "IAU"
   },
   {
-    "id": "HIP 3179",
-    "propername": "Schedar",
-    "magnitude": 2.24,
-    "constellation": "Cas"
+    "id": "HIP 100453",
+    "propername": "Sadr",
+    "magnitude": 2.23,
+    "constellation": "Cyg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 44816",
+    "propername": "Suhail",
+    "magnitude": 2.23,
+    "constellation": "Vel",
+    "source": "IAU"
   },
   {
     "id": "HIP 87833",
     "propername": "Eltanin",
     "magnitude": 2.24,
-    "constellation": "Dra"
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 3179",
+    "propername": "Schedar",
+    "magnitude": 2.24,
+    "constellation": "Cas",
+    "source": "IAU"
   },
   {
     "id": "HIP 25930",
     "propername": "Mintaka",
     "magnitude": 2.25,
-    "constellation": "Ori"
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 746",
     "propername": "Caph",
     "magnitude": 2.28,
-    "constellation": "Cas"
+    "constellation": "Cas",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 78401",
+    "propername": "Dschubba",
+    "magnitude": 2.29,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 82396",
+    "propername": "Larawag",
+    "magnitude": 2.29,
+    "constellation": "Sco",
+    "source": "IAU"
   },
   {
     "id": "HIP 53910",
     "propername": "Merak",
     "magnitude": 2.34,
-    "constellation": "UMa"
+    "constellation": "UMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 72105",
     "propername": "Izar",
     "magnitude": 2.35,
-    "constellation": "Boo"
+    "constellation": "Boo",
+    "source": "IAU"
   },
   {
     "id": "HIP 107315",
     "propername": "Enif",
     "magnitude": 2.38,
-    "constellation": "Peg"
+    "constellation": "Peg",
+    "source": "IAU"
   },
   {
     "id": "HIP 2081",
     "propername": "Ankaa",
     "magnitude": 2.4,
-    "constellation": "Phe"
+    "constellation": "Phe",
+    "source": "IAU"
   },
   {
     "id": "HIP 58001",
     "propername": "Phecda",
     "magnitude": 2.41,
-    "constellation": "UMa"
+    "constellation": "UMa",
+    "source": "IAU"
   },
   {
     "id": "HIP 84012",
     "propername": "Sabik",
     "magnitude": 2.43,
-    "constellation": "Oph"
+    "constellation": "Oph",
+    "source": "IAU"
   },
   {
     "id": "HIP 113881",
     "propername": "Scheat",
     "magnitude": 2.44,
-    "constellation": "Peg"
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 105199",
+    "propername": "Alderamin",
+    "magnitude": 2.45,
+    "constellation": "Cep",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 35904",
+    "propername": "Aludra",
+    "magnitude": 2.45,
+    "constellation": "CMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 45941",
+    "propername": "Markeb",
+    "magnitude": 2.47,
+    "constellation": "Vel",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 102488",
+    "propername": "Aljanah",
+    "magnitude": 2.48,
+    "constellation": "Cyg",
+    "source": "IAU"
   },
   {
     "id": "HIP 113963",
     "propername": "Markab",
     "magnitude": 2.49,
-    "constellation": "Peg"
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 14135",
+    "propername": "Menkar",
+    "magnitude": 2.54,
+    "constellation": "Cet",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 78820",
+    "propername": "Acrab",
+    "magnitude": 2.56,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 54872",
+    "propername": "Zosma",
+    "magnitude": 2.56,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 25985",
+    "propername": "Arneb",
+    "magnitude": 2.58,
+    "constellation": "Lep",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 59803",
+    "propername": "Gienah",
+    "magnitude": 2.58,
+    "constellation": "Crv",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 93506",
+    "propername": "Ascella",
+    "magnitude": 2.6,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 50583",
+    "propername": "Algieba",
+    "magnitude": 2.61,
+    "constellation": "Leo",
+    "source": "IAU"
   },
   {
     "id": "HIP 74785",
     "propername": "Zubeneschamali",
     "magnitude": 2.61,
-    "constellation": "Lib"
+    "constellation": "Lib",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 77070",
+    "propername": "Unukalhai",
+    "magnitude": 2.63,
+    "constellation": "Ser",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 61359",
+    "propername": "Kraz",
+    "magnitude": 2.65,
+    "constellation": "Crv",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 28380",
+    "propername": "Mahasim",
+    "magnitude": 2.65,
+    "constellation": "Aur",
+    "source": "IAU"
   },
   {
     "id": "HIP 26634",
-    "propername": "Phakt",
+    "propername": "Phact",
     "magnitude": 2.65,
-    "constellation": "Col"
+    "constellation": "Col",
+    "source": "IAU"
   },
   {
     "id": "HIP 6686",
     "propername": "Ruchbah",
     "magnitude": 2.66,
-    "constellation": "Cas"
+    "constellation": "Cas",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 67927",
+    "propername": "Muphrid",
+    "magnitude": 2.68,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 23015",
+    "propername": "Hassaleh",
+    "magnitude": 2.69,
+    "constellation": "Aur",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 85696",
+    "propername": "Lesath",
+    "magnitude": 2.7,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 8903",
+    "propername": "Sheratan",
+    "magnitude": 2.7,
+    "constellation": "Ari",
+    "source": "IAU"
   },
   {
     "id": "HIP 89931",
     "propername": "Kaus Media",
     "magnitude": 2.72,
-    "constellation": "Sgr"
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 97278",
+    "propername": "Tarazed",
+    "magnitude": 2.72,
+    "constellation": "Aql",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80331",
+    "propername": "Athebyne",
+    "magnitude": 2.73,
+    "constellation": "Dra",
+    "source": "IAU"
   },
   {
     "id": "HIP 79593",
     "propername": "Yed Prior",
     "magnitude": 2.73,
-    "constellation": "Oph"
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 59747",
+    "propername": "Imai",
+    "magnitude": 2.75,
+    "constellation": "Cru",
+    "source": "IAU"
   },
   {
     "id": "HIP 72622",
     "propername": "Zubenelgenubi",
     "magnitude": 2.75,
-    "constellation": "Lib"
+    "constellation": "Lib",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 86742",
+    "propername": "Cebalrai",
+    "magnitude": 2.76,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 23875",
+    "propername": "Cursa",
+    "magnitude": 2.78,
+    "constellation": "Eri",
+    "source": "IAU"
   },
   {
     "id": "HIP 80816",
     "propername": "Kornephoros",
     "magnitude": 2.78,
-    "constellation": "Her"
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 85670",
+    "propername": "Rastaban",
+    "magnitude": 2.79,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 26241",
+    "propername": "Hatysa",
+    "magnitude": 2.8,
+    "constellation": "Ori",
+    "source": "IAU"
   },
   {
     "id": "HIP 90496",
     "propername": "Kaus Borealis",
     "magnitude": 2.82,
-    "constellation": "Sgr"
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 81266",
+    "propername": "Paikauhale",
+    "magnitude": 2.82,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 1067",
+    "propername": "Algenib",
+    "magnitude": 2.83,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 25606",
+    "propername": "Nihal",
+    "magnitude": 2.83,
+    "constellation": "Lep",
+    "source": "IAU"
   },
   {
     "id": "HIP 39757",
     "propername": "Tureis",
     "magnitude": 2.83,
-    "constellation": "Pup"
+    "constellation": "Pup",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17702",
+    "propername": "Alcyone",
+    "magnitude": 2.85,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 107556",
+    "propername": "Deneb Algedi",
+    "magnitude": 2.85,
+    "constellation": "Cap",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 63608",
+    "propername": "Vindemiatrix",
+    "magnitude": 2.85,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 30343",
+    "propername": "Tejat",
+    "magnitude": 2.87,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13847",
+    "propername": "Acamar",
+    "magnitude": 2.88,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 94141",
+    "propername": "Albaldah",
+    "magnitude": 2.88,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 63125",
+    "propername": "Cor Caroli",
+    "magnitude": 2.89,
+    "constellation": "CVn",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 78265",
+    "propername": "Fang",
+    "magnitude": 2.89,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 36188",
+    "propername": "Gomeisa",
+    "magnitude": 2.89,
+    "constellation": "CMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80112",
+    "propername": "Alniyat",
+    "magnitude": 2.9,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 97165",
+    "propername": "Fawaris",
+    "magnitude": 2.9,
+    "constellation": "Cyg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 106278",
+    "propername": "Sadalsuud",
+    "magnitude": 2.9,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 112158",
+    "propername": "Matar",
+    "magnitude": 2.93,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 60965",
+    "propername": "Algorab",
+    "magnitude": 2.94,
+    "constellation": "Crv",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 109074",
+    "propername": "Sadalmelik",
+    "magnitude": 2.95,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 26451",
+    "propername": "Tianguan",
+    "magnitude": 2.97,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 18543",
+    "propername": "Zaurak",
+    "magnitude": 2.97,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 88635",
+    "propername": "Alnasl",
+    "magnitude": 2.98,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 93747",
+    "propername": "Okab",
+    "magnitude": 2.99,
+    "constellation": "Aql",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 108085",
+    "propername": "Aldhanab",
+    "magnitude": 3.0,
+    "constellation": "Gru",
+    "source": "IAU"
   },
   {
     "id": "HIP 75097",
     "propername": "Pherkad",
-    "magnitude": 3,
-    "constellation": "UMi"
+    "magnitude": 3.0,
+    "constellation": "UMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 82514",
+    "propername": "Xamidimura",
+    "magnitude": 3.0,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 30122",
+    "propername": "Furud",
+    "magnitude": 3.02,
+    "constellation": "CMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 23416",
+    "propername": "Almaaz",
+    "magnitude": 3.03,
+    "constellation": "Aur",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 71075",
+    "propername": "Seginus",
+    "magnitude": 3.04,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 100345",
+    "propername": "Dabih",
+    "magnitude": 3.05,
+    "constellation": "Cap",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 32246",
+    "propername": "Mebsuta",
+    "magnitude": 3.06,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 50801",
+    "propername": "Tania Australis",
+    "magnitude": 3.06,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 94376",
+    "propername": "Altais",
+    "magnitude": 3.07,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 84379",
+    "propername": "Sarin",
+    "magnitude": 3.12,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 44127",
+    "propername": "Talitha",
+    "magnitude": 3.12,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 27628",
+    "propername": "Wazn",
+    "magnitude": 3.12,
+    "constellation": "Col",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 83895",
+    "propername": "Aldhibah",
+    "magnitude": 3.17,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 23767",
+    "propername": "Haedus",
+    "magnitude": 3.18,
+    "constellation": "Aur",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 87261",
+    "propername": "Fuyue",
+    "magnitude": 3.19,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 22449",
+    "propername": "Tabit",
+    "magnitude": 3.19,
+    "constellation": "Ori",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 116727",
+    "propername": "Errai",
+    "magnitude": 3.21,
+    "constellation": "Cep",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 106032",
+    "propername": "Alfirk",
+    "magnitude": 3.23,
+    "constellation": "Cep",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 79882",
+    "propername": "Yed Posterior",
+    "magnitude": 3.23,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 73714",
+    "propername": "Brachium",
+    "magnitude": 3.25,
+    "constellation": "Lib",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 93194",
+    "propername": "Sulafat",
+    "magnitude": 3.25,
+    "constellation": "Lyr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 113136",
+    "propername": "Skat",
+    "magnitude": 3.27,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 75458",
+    "propername": "Edasich",
+    "magnitude": 3.29,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 59774",
+    "propername": "Megrez",
+    "magnitude": 3.32,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 29655",
+    "propername": "Propus",
+    "magnitude": 3.32,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 54879",
+    "propername": "Chertan",
+    "magnitude": 3.33,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 32362",
+    "propername": "Alzirr",
+    "magnitude": 3.35,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 41704",
+    "propername": "Muscida",
+    "magnitude": 3.35,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 8886",
+    "propername": "Segin",
+    "magnitude": 3.35,
+    "constellation": "Cas",
+    "source": "IAU"
   },
   {
     "id": "HIP 95947",
     "propername": "Albireo",
-    "magnitude": 3.05,
-    "constellation": "Cyg"
+    "magnitude": 3.37,
+    "constellation": "Cyg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 84345",
+    "propername": "Rasalgethi",
+    "magnitude": 3.37,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 66249",
+    "propername": "Heze",
+    "magnitude": 3.38,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 26207",
+    "propername": "Meissa",
+    "magnitude": 3.39,
+    "constellation": "Ori",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 63090",
+    "propername": "Minelauva",
+    "magnitude": 3.39,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 112029",
+    "propername": "Homam",
+    "magnitude": 3.41,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 8796",
+    "propername": "Mothallah",
+    "magnitude": 3.42,
+    "constellation": "Tri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 50335",
+    "propername": "Adhafera",
+    "magnitude": 3.43,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 61941",
+    "propername": "Porrima",
+    "magnitude": 3.44,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 38170",
+    "propername": "Azmidi",
+    "magnitude": 3.45,
+    "constellation": "Pup",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 50372",
+    "propername": "Tania Borealis",
+    "magnitude": 3.45,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 3821",
+    "propername": "Achird",
+    "magnitude": 3.46,
+    "constellation": "Cas",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 55219",
+    "propername": "Alula Borealis",
+    "magnitude": 3.49,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 43109",
+    "propername": "Ashlesha",
+    "magnitude": 3.49,
+    "constellation": "Hya",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 73555",
+    "propername": "Nekkar",
+    "magnitude": 3.49,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 33856",
+    "propername": "Nganurganity",
+    "magnitude": 3.49,
+    "constellation": "CMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 112748",
+    "propername": "Sadalbari",
+    "magnitude": 3.51,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 109427",
+    "propername": "Biham",
+    "magnitude": 3.52,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 47508",
+    "propername": "Subra",
+    "magnitude": 3.52,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 35550",
+    "propername": "Wasat",
+    "magnitude": 3.52,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 20889",
+    "propername": "Ain",
+    "magnitude": 3.53,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17378",
+    "propername": "Rana",
+    "magnitude": 3.53,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 40526",
+    "propername": "Tarf",
+    "magnitude": 3.53,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 12706",
+    "propername": "Kaffaljidhma",
+    "magnitude": 3.56,
+    "constellation": "Cet",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 82545",
+    "propername": "Pipirima",
+    "magnitude": 3.56,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 100064",
+    "propername": "Algedi",
+    "magnitude": 3.58,
+    "constellation": "Cap",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 60260",
+    "propername": "Ginan",
+    "magnitude": 3.59,
+    "constellation": "Cru",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 7607",
+    "propername": "Nembus",
+    "magnitude": 3.59,
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 57757",
+    "propername": "Zavijava",
+    "magnitude": 3.59,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 92420",
+    "propername": "Sheliak",
+    "magnitude": 3.6,
+    "constellation": "Lyr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13209",
+    "propername": "Bharani",
+    "magnitude": 3.61,
+    "constellation": "Ari",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17847",
+    "propername": "Atlas",
+    "magnitude": 3.62,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 101769",
+    "propername": "Rotanev",
+    "magnitude": 3.64,
+    "constellation": "Del",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 20205",
+    "propername": "Prima Hyadum",
+    "magnitude": 3.65,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 68756",
+    "propername": "Thuban",
+    "magnitude": 3.67,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 2920",
+    "propername": "Fulu",
+    "magnitude": 3.69,
+    "constellation": "Cas",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 106985",
+    "propername": "Nashira",
+    "magnitude": 3.69,
+    "constellation": "Cap",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 23453",
+    "propername": "Saclateni",
+    "magnitude": 3.69,
+    "constellation": "Aur",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 57399",
+    "propername": "Taiyangshou",
+    "magnitude": 3.69,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 98036",
+    "propername": "Alshain",
+    "magnitude": 3.71,
+    "constellation": "Aql",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17499",
+    "propername": "Electra",
+    "magnitude": 3.72,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 20894",
+    "propername": "Chamukuy",
+    "magnitude": 3.73,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 87585",
+    "propername": "Grumium",
+    "magnitude": 3.73,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 16537",
+    "propername": "Ran",
+    "magnitude": 3.73,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 8645",
+    "propername": "Baten Kaitos",
+    "magnitude": 3.74,
+    "constellation": "Cet",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13268",
+    "propername": "Miram",
+    "magnitude": 3.77,
+    "constellation": "Per",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 102618",
+    "propername": "Albali",
+    "magnitude": 3.78,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 20455",
+    "propername": "Secunda Hyadum",
+    "magnitude": 3.78,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 14668",
+    "propername": "Misam",
+    "magnitude": 3.79,
+    "constellation": "Per",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 53229",
+    "propername": "Praecipua",
+    "magnitude": 3.79,
+    "constellation": "LMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 21393",
+    "propername": "Theemin",
+    "magnitude": 3.81,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 9487",
+    "propername": "Alrescha",
+    "magnitude": 3.82,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 56211",
+    "propername": "Giausar",
+    "magnitude": 3.82,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80883",
+    "propername": "Marfik",
+    "magnitude": 3.82,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 7097",
+    "propername": "Alpherg",
+    "magnitude": 3.83,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17448",
+    "propername": "Atik",
+    "magnitude": 3.84,
+    "constellation": "Per",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 89341",
+    "propername": "Polis",
+    "magnitude": 3.84,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 14879",
+    "propername": "Dalim",
+    "magnitude": 3.86,
+    "constellation": "For",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 110395",
+    "propername": "Sadachbia",
+    "magnitude": 3.86,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 101958",
+    "propername": "Sualocin",
+    "magnitude": 3.86,
+    "constellation": "Del",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 78104",
+    "propername": "Iklil",
+    "magnitude": 3.87,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17573",
+    "propername": "Maia",
+    "magnitude": 3.87,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 48455",
+    "propername": "Rasalas",
+    "magnitude": 3.88,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13701",
+    "propername": "Azha",
+    "magnitude": 3.89,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 75695",
+    "propername": "Nusakan",
+    "magnitude": 3.9,
+    "constellation": "CrB",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 47431",
+    "propername": "Ukdah",
+    "magnitude": 3.9,
+    "constellation": "Hya",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 76333",
+    "propername": "Zubenelhakrabi",
+    "magnitude": 3.91,
+    "constellation": "Lib",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 104987",
+    "propername": "Kitalpha",
+    "magnitude": 3.92,
+    "constellation": "Equ",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 42911",
+    "propername": "Asellus Australis",
+    "magnitude": 3.94,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 95241",
+    "propername": "Arkab Prior",
+    "magnitude": 3.96,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 95347",
+    "propername": "Rukbat",
+    "magnitude": 3.96,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 20535",
+    "propername": "Beemim",
+    "magnitude": 3.97,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 18614",
+    "propername": "Menkib",
+    "magnitude": 3.98,
+    "constellation": "Per",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 65477",
+    "propername": "Alcor",
+    "magnitude": 3.99,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 34088",
+    "propername": "Mekbuda",
+    "magnitude": 4.01,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 59199",
+    "propername": "Alchiba",
+    "magnitude": 4.02,
+    "constellation": "Crv",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 21594",
+    "propername": "Sceptrum",
+    "magnitude": 4.02,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 5348",
+    "propername": "Wurren",
+    "magnitude": 4.02,
+    "constellation": "Phe",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 101421",
+    "propername": "Aldulfin",
+    "magnitude": 4.03,
+    "constellation": "Del",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 19587",
+    "propername": "Beid",
+    "magnitude": 4.04,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 69701",
+    "propername": "Syrma",
+    "magnitude": 4.07,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 53740",
+    "propername": "Alkes",
+    "magnitude": 4.08,
+    "constellation": "Crt",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 77450",
+    "propername": "Gudja",
+    "magnitude": 4.09,
+    "constellation": "Ser",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 7513",
+    "propername": "Titawin",
+    "magnitude": 4.09,
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 94114",
+    "propername": "Meridiana",
+    "magnitude": 4.11,
+    "constellation": "CrA",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 34045",
+    "propername": "Muliphein",
+    "magnitude": 4.11,
+    "constellation": "CMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 48356",
+    "propername": "Zhang",
+    "magnitude": 4.11,
+    "constellation": "Hya",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17608",
+    "propername": "Merope",
+    "magnitude": 4.14,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 44471",
+    "propername": "Alkaphrah",
+    "magnitude": 4.16,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 110003",
+    "propername": "Ancha",
+    "magnitude": 4.17,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 69427",
+    "propername": "Kang",
+    "magnitude": 4.18,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 69732",
+    "propername": "Xuange",
+    "magnitude": 4.18,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 61317",
+    "propername": "Chara",
+    "magnitude": 4.24,
+    "constellation": "CVn",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 41075",
+    "propername": "Alsciaukat",
+    "magnitude": 4.25,
+    "constellation": "Lyn",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 44066",
+    "propername": "Acubens",
+    "magnitude": 4.26,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 108917",
+    "propername": "Kurhah",
+    "magnitude": 4.26,
+    "constellation": "Cep",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 95294",
+    "propername": "Arkab Posterior",
+    "magnitude": 4.27,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 8198",
+    "propername": "Torcular",
+    "magnitude": 4.29,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17531",
+    "propername": "Taygeta",
+    "magnitude": 4.3,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 75411",
+    "propername": "Alkalurops",
+    "magnitude": 4.31,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 46750",
+    "propername": "Alterf",
+    "magnitude": 4.32,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 14838",
+    "propername": "Botein",
+    "magnitude": 4.35,
+    "constellation": "Ari",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 85822",
+    "propername": "Yildun",
+    "magnitude": 4.35,
+    "constellation": "UMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 96757",
+    "propername": "Sham",
+    "magnitude": 4.39,
+    "constellation": "Sge",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 55203",
+    "propername": "Alula Australis",
+    "magnitude": 4.41,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 85693",
+    "propername": "Maasym",
+    "magnitude": 4.41,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 115623",
+    "propername": "Alkarab",
+    "magnitude": 4.42,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 94481",
+    "propername": "Aladfar",
+    "magnitude": 4.43,
+    "constellation": "Lyr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 19849",
+    "propername": "Keid",
+    "magnitude": 4.43,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 95771",
+    "propername": "Anser",
+    "magnitude": 4.44,
+    "constellation": "Vul",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 42402",
+    "propername": "Minchir",
+    "magnitude": 4.45,
+    "constellation": "Hya",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 113889",
+    "propername": "Fumalsamakah",
+    "magnitude": 4.48,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 79374",
+    "propername": "Jabbah",
+    "magnitude": 4.5,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 69974",
+    "propername": "Khambalia",
+    "magnitude": 4.52,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13061",
+    "propername": "Lilii Borea",
+    "magnitude": 4.52,
+    "constellation": "Ari",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80463",
+    "propername": "Cujam",
+    "magnitude": 4.57,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 86614",
+    "propername": "Dziban",
+    "magnitude": 4.57,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 115250",
+    "propername": "Salm",
+    "magnitude": 4.58,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 60129",
+    "propername": "Zaniah",
+    "magnitude": 4.6,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 92946",
+    "propername": "Alya",
+    "magnitude": 4.62,
+    "constellation": "Ser",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 4422",
+    "propername": "Castula",
+    "magnitude": 4.62,
+    "constellation": "Cas",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 42806",
+    "propername": "Asellus Borealis",
+    "magnitude": 4.66,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 96100",
+    "propername": "Alsafi",
+    "magnitude": 4.67,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 107136",
+    "propername": "Azelfafage",
+    "magnitude": 4.69,
+    "constellation": "Cyg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 98066",
+    "propername": "Terebellum",
+    "magnitude": 4.7,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 97938",
+    "propername": "Libertas",
+    "magnitude": 4.71,
+    "constellation": "Aql",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 8832",
+    "propername": "Mesarthim",
+    "magnitude": 4.75,
+    "constellation": "Ari",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13288",
+    "propername": "Angetenar",
+    "magnitude": 4.76,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 100310",
+    "propername": "Alshat",
+    "magnitude": 4.77,
+    "constellation": "Cap",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 106786",
+    "propername": "Bunda",
+    "magnitude": 4.8,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 15197",
+    "propername": "Zibal",
+    "magnitude": 4.8,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 90344",
+    "propername": "Fafnir",
+    "magnitude": 4.82,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 70755",
+    "propername": "Elgafar",
+    "magnitude": 4.84,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 64241",
+    "propername": "Diadem",
+    "magnitude": 4.85,
+    "constellation": "Com",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 92761",
+    "propername": "Ainalrami",
+    "magnitude": 4.86,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 6411",
+    "propername": "Adhil",
+    "magnitude": 4.87,
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 37265",
+    "propername": "Jishui",
+    "magnitude": 4.89,
+    "constellation": "Gem",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 48615",
+    "propername": "Felis",
+    "magnitude": 4.94,
+    "constellation": "Hya",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 29034",
+    "propername": "Elkurud",
+    "magnitude": 5.0,
+    "constellation": "Col",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 79043",
+    "propername": "Marsic",
+    "magnitude": 5.0,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 53721",
+    "propername": "Chalawan",
+    "magnitude": 5.03,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 111710",
+    "propername": "Situla",
+    "magnitude": 5.04,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17851",
+    "propername": "Pleione",
+    "magnitude": 5.05,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 84405",
+    "propername": "Guniibuu",
+    "magnitude": 5.07,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 86796",
+    "propername": "Cervantes",
+    "magnitude": 5.15,
+    "constellation": "Ara",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 5737",
+    "propername": "Revati",
+    "magnitude": 5.21,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 116076",
+    "propername": "Veritate",
+    "magnitude": 5.22,
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 63076",
+    "propername": "Taiyi",
+    "magnitude": 5.23,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 40167",
+    "propername": "Tegmine",
+    "magnitude": 5.24,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 46471",
+    "propername": "Intercrus",
+    "magnitude": 5.41,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 62223",
+    "propername": "La Superba",
+    "magnitude": 5.42,
+    "constellation": "CVn",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 62423",
+    "propername": "Tianyi",
+    "magnitude": 5.43,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17489",
+    "propername": "Celaeno",
+    "magnitude": 5.45,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 104382",
+    "propername": "Polaris Australis",
+    "magnitude": 5.45,
+    "constellation": "Oct",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 103527",
+    "propername": "Musica",
+    "magnitude": 5.48,
+    "constellation": "Del",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 113357",
+    "propername": "Helvetios",
+    "magnitude": 5.49,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 83608",
+    "propername": "Alrakis",
+    "magnitude": 5.55,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 44946",
+    "propername": "Nahn",
+    "magnitude": 5.7,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 86782",
+    "propername": "Alruba",
+    "magnitude": 5.75,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17579",
+    "propername": "Asterope",
+    "magnitude": 5.76,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 72487",
+    "propername": "Merga",
+    "magnitude": 5.76,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 58952",
+    "propername": "Tonatiuh",
+    "magnitude": 5.8,
+    "constellation": "Cam",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 40881",
+    "propername": "Piautos",
+    "magnitude": 5.92,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 43587",
+    "propername": "Copernicus",
+    "magnitude": 5.95,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 91852",
+    "propername": "Xihe",
+    "magnitude": 6.04,
+    "constellation": "Lyr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 94645",
+    "propername": "Gumala",
+    "magnitude": 6.25,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 33719",
+    "propername": "Citala",
+    "magnitude": 6.29,
+    "constellation": "Mon",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 42556",
+    "propername": "Meleph",
+    "magnitude": 6.29,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 24003",
+    "propername": "Mago",
+    "magnitude": 6.43,
+    "constellation": "Cam",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 99894",
+    "propername": "Chechia",
+    "magnitude": 6.44,
+    "constellation": "Aql",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 56508",
+    "propername": "Formosa",
+    "magnitude": 6.45,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 10826",
+    "propername": "Mira",
+    "magnitude": 6.47,
+    "constellation": "Cet",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 79219",
+    "propername": "Kamuy",
+    "magnitude": 6.57,
+    "constellation": "CrB",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 84787",
+    "propername": "Inquill",
+    "magnitude": 6.67,
+    "constellation": "Ara",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 26380",
+    "propername": "Bubup",
+    "magnitude": 6.69,
+    "constellation": "Men",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 73136",
+    "propername": "Baekdu",
+    "magnitude": 6.83,
+    "constellation": "UMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80687",
+    "propername": "Timir",
+    "magnitude": 6.89,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 60644",
+    "propername": "Tupa",
+    "magnitude": 6.99,
+    "constellation": "Cru",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 6643",
+    "propername": "Belenos",
+    "magnitude": 7.12,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 17096",
+    "propername": "Tupi",
+    "magnitude": 7.12,
+    "constellation": "Ret",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 66047",
+    "propername": "Dofida",
+    "magnitude": 7.17,
+    "constellation": "Cen",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 12191",
+    "propername": "Buna",
+    "magnitude": 7.28,
+    "constellation": "And",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 83547",
+    "propername": "Rapeto",
+    "magnitude": 7.39,
+    "constellation": "Sco",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 108375",
+    "propername": "Itonda",
+    "magnitude": 7.47,
+    "constellation": "Gru",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 57291",
+    "propername": "Uklun",
+    "magnitude": 7.47,
+    "constellation": "Cen",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 95124",
+    "propername": "Belel",
+    "magnitude": 7.55,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 110813",
+    "propername": "Lionrock",
+    "magnitude": 7.6,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 47087",
+    "propername": "Illyrian",
+    "magnitude": 7.62,
+    "constellation": "LMi",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 5054",
+    "propername": "Nenque",
+    "magnitude": 7.72,
+    "constellation": "Phe",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 3479",
+    "propername": "Cocibolca",
+    "magnitude": 7.78,
+    "constellation": "Scl",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 99711",
+    "propername": "Phoenicia",
+    "magnitude": 7.79,
+    "constellation": "Aql",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 72845",
+    "propername": "Arcalis",
+    "magnitude": 7.8,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13993",
+    "propername": "Ayeyarwady",
+    "magnitude": 7.81,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 116084",
+    "propername": "Poerava",
+    "magnitude": 7.82,
+    "constellation": "Tuc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 95262",
+    "propername": "Sika",
+    "magnitude": 7.84,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 57820",
+    "propername": "Aniara",
+    "magnitude": 7.86,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 74961",
+    "propername": "Nikawiy",
+    "magnitude": 7.88,
+    "constellation": "Boo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 30860",
+    "propername": "Lucilinburhuc",
+    "magnitude": 7.89,
+    "constellation": "Aur",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 81022",
+    "propername": "Rosaliadecastro",
+    "magnitude": 7.89,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 22491",
+    "propername": "Mouhoun",
+    "magnitude": 7.91,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 90004",
+    "propername": "Alasia",
+    "magnitude": 7.95,
+    "constellation": "Ser",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 92895",
+    "propername": "Kaveh",
+    "magnitude": 8.02,
+    "constellation": "Ser",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 43674",
+    "propername": "Stribor",
+    "magnitude": 8.03,
+    "constellation": "Lyn",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 72339",
+    "propername": "Monch",
+    "magnitude": 8.04,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 55174",
+    "propername": "Hunahpu",
+    "magnitude": 8.05,
+    "constellation": "Crt",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 66192",
+    "propername": "Liesma",
+    "magnitude": 8.05,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 31895",
+    "propername": "Nosaxa",
+    "magnitude": 8.05,
+    "constellation": "Pup",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 5529",
+    "propername": "Emiw",
+    "magnitude": 8.06,
+    "constellation": "Tuc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 57370",
+    "propername": "Flegetonte",
+    "magnitude": 8.07,
+    "constellation": "Vir",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 30905",
+    "propername": "Lusitania",
+    "magnitude": 8.1,
+    "constellation": "Mon",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 32916",
+    "propername": "Nervia",
+    "magnitude": 8.1,
+    "constellation": "Aur",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 38041",
+    "propername": "Tapecue",
+    "magnitude": 8.1,
+    "constellation": "Car",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80838",
+    "propername": "Ogma",
+    "magnitude": 8.16,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 13192",
+    "propername": "Nushagak",
+    "magnitude": 8.17,
+    "constellation": "Cas",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 40687",
+    "propername": "Nasti",
+    "magnitude": 8.2,
+    "constellation": "UMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 54158",
+    "propername": "Dingolay",
+    "magnitude": 8.21,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 118319",
+    "propername": "Axolotl",
+    "magnitude": 8.23,
+    "constellation": "Cet",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 42446",
+    "propername": "Gakyid",
+    "magnitude": 8.23,
+    "constellation": "Cnc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 47202",
+    "propername": "Kalausi",
+    "magnitude": 8.23,
+    "constellation": "Vel",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 52521",
+    "propername": "Macondo",
+    "magnitude": 8.3,
+    "constellation": "Ant",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 107251",
+    "propername": "Bosona",
+    "magnitude": 8.34,
+    "constellation": "Aqr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 1547",
+    "propername": "Citadelle",
+    "magnitude": 8.36,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 21109",
+    "propername": "Hoggar",
+    "magnitude": 8.38,
+    "constellation": "Tau",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 82651",
+    "propername": "Mahsati",
+    "magnitude": 8.38,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 56572",
+    "propername": "Sagarmatha",
+    "magnitude": 8.42,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 48235",
+    "propername": "Natasha",
+    "magnitude": 8.54,
+    "constellation": "Vel",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 106824",
+    "propername": "Samaya",
+    "magnitude": 8.56,
+    "constellation": "PsA",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 114322",
+    "propername": "Ebla",
+    "magnitude": 8.59,
+    "constellation": "Psc",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 76351",
+    "propername": "Karaka",
+    "magnitude": 8.71,
+    "constellation": "Aps",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 80076",
+    "propername": "Hunor",
+    "magnitude": 8.72,
+    "constellation": "Her",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 48711",
+    "propername": "Bibha",
+    "magnitude": 8.73,
+    "constellation": "Sex",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 61177",
+    "propername": "Funi",
+    "magnitude": 8.75,
+    "constellation": "Dra",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 96078",
+    "propername": "Uruk",
+    "magnitude": 8.97,
+    "constellation": "Sge",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 29550",
+    "propername": "Amadioha",
+    "magnitude": 8.98,
+    "constellation": "CMa",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 55664",
+    "propername": "Shama",
+    "magnitude": 9.1,
+    "constellation": "Leo",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 37284",
+    "propername": "Ceibo",
+    "magnitude": 9.37,
+    "constellation": "Cha",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 87937",
+    "propername": "Barnard's Star",
+    "magnitude": 9.54,
+    "constellation": "Oph",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 2247",
+    "propername": "Felixvarela",
+    "magnitude": 9.62,
+    "constellation": "Cet",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 88414",
+    "propername": "Pincoya",
+    "magnitude": 9.66,
+    "constellation": "Sgr",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 104780",
+    "propername": "Solaris",
+    "magnitude": 9.78,
+    "constellation": "Peg",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 15578",
+    "propername": "Intan",
+    "magnitude": 9.92,
+    "constellation": "For",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 12961",
+    "propername": "Koeia",
+    "magnitude": 10.25,
+    "constellation": "Eri",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 70890",
+    "propername": "Proxima Centauri",
+    "magnitude": 11.01,
+    "constellation": "Cen",
+    "source": "IAU"
+  },
+  {
+    "id": "HIP 79431",
+    "propername": "Sharjah",
+    "magnitude": 11.34,
+    "constellation": "Sco",
+    "source": "IAU"
   }
 ]

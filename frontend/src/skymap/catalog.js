@@ -5,13 +5,10 @@
 export class CatalogManager {
   constructor(basePath = '/data/catalogs') {
     this.basePath = basePath;
-    this.starCatalogOptions = {
-      mag4: 'stars_mag4.json',
-      tycho2: 'stars_tycho2.json',
-    };
+    this.catalogApiPath = '/api/catalog/stars';
     this.activeStarCatalog = 'mag4';
+    this.currentMagMax = null;
     this.sources = {
-      stars: this.starCatalogOptions.mag4,
       starNames: 'star_names.json',
       dso: 'dso_base.json',
       constellations: 'constellations.json',
@@ -26,9 +23,15 @@ export class CatalogManager {
 
   setSources(partial = {}) {
     if (!partial || typeof partial !== 'object') return;
+    // Handle backward compatibility: if 'stars' is passed as a catalog name
+    if (partial.stars && typeof partial.stars === 'string' && ['mag4', 'tycho2'].includes(partial.stars)) {
+      this.activeStarCatalog = partial.stars;
+    }
+    // Merge non-stars fields into sources
+    const { stars, ...otherSources } = partial;
     this.sources = {
       ...this.sources,
-      ...partial,
+      ...otherSources,
     };
   }
 
@@ -37,7 +40,7 @@ export class CatalogManager {
   }
 
   getStarCatalogOptions() {
-    return Object.keys(this.starCatalogOptions);
+    return ['mag4', 'tycho2'];
   }
 
   getActiveStarCatalog() {
@@ -45,19 +48,18 @@ export class CatalogManager {
   }
 
   async setStarCatalog(catalogName) {
-    if (!this.starCatalogOptions[catalogName]) {
+    if (!['mag4', 'tycho2'].includes(catalogName)) {
       console.error(`Unknown star catalog: ${catalogName}`);
       return false;
     }
     this.activeStarCatalog = catalogName;
-    this.sources.stars = this.starCatalogOptions[catalogName];
-    await this.loadStars();
+    await this.loadStars(this.currentMagMax);
     return true;
   }
 
   async loadAll() {
     await Promise.all([
-      this.loadStars(),
+      this.loadStars(this.currentMagMax),
       this.loadStarNames(),
       this.loadDSO(),
       this.loadConstellations(),
@@ -65,24 +67,34 @@ export class CatalogManager {
     ]);
   }
 
-  async loadStars() {
+  async loadStars(magMax = null) {
+    if (magMax !== null && Number.isFinite(magMax)) {
+      this.currentMagMax = magMax;
+    }
+    const effectiveMag = this.currentMagMax;
     try {
-      const res = await fetch(`${this.basePath}/${this.sources.stars}`);
-      if (!res.ok) {
-        console.warn(`Star catalog ${this.sources.stars} not found, falling back to mag4`);
-        if (this.activeStarCatalog !== 'mag4') {
-          this.activeStarCatalog = 'mag4';
-          this.sources.stars = this.starCatalogOptions.mag4;
-          return this.loadStars();
-        }
-        this.stars = [];
-        return this.stars;
+      // Use stored/provided magMax or allow unlimited
+      const params = new URLSearchParams({
+        catalog: this.activeStarCatalog,
+        limit: 2000000,
+      });
+      if (effectiveMag !== null && Number.isFinite(effectiveMag)) {
+        params.append('mag_max', String(Math.max(1, effectiveMag)));
       }
-      this.stars = await res.json();
-      console.log(`Loaded ${this.stars.length} stars from ${this.activeStarCatalog} catalog`);
+      const dbRes = await fetch(`${this.catalogApiPath}?${params}`, { cache: 'no-store' });
+      if (!dbRes.ok) {
+        throw new Error(`API returned ${dbRes.status}`);
+      }
+      const payload = await dbRes.json();
+      if (!Array.isArray(payload?.items) || payload.items.length === 0) {
+        throw new Error('No items in API response');
+      }
+      this.stars = payload.items;
+      const magDisplay = effectiveMag !== null ? ` (mag ≤ ${effectiveMag})` : '';
+      console.log(`Loaded ${this.stars.length} stars from ${this.activeStarCatalog} catalog${magDisplay}`);
       return this.stars;
     } catch (err) {
-      console.error(`Failed to load star catalog ${this.sources.stars}:`, err);
+      console.error(`Failed to load ${this.activeStarCatalog} stars from API:`, err);
       this.stars = [];
       return this.stars;
     }
@@ -92,7 +104,18 @@ export class CatalogManager {
     const res = await fetch(`${this.basePath}/${this.sources.starNames}`);
     const arr = await res.json();
     this.starNames = {};
-    arr.forEach(s => { this.starNames[s.id] = s; });
+    arr.forEach((s) => {
+      const id = s?.id;
+      if (!id) return;
+      const current = this.starNames[id];
+      const currentIsIau = String(current?.source || '').toUpperCase() === 'IAU';
+      const nextIsIau = String(s?.source || '').toUpperCase() === 'IAU';
+
+      // Priority rule: IAU name wins over any other designation source.
+      if (!current || (!currentIsIau && nextIsIau)) {
+        this.starNames[id] = s;
+      }
+    });
     return this.starNames;
   }
 

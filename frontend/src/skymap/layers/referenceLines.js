@@ -11,6 +11,7 @@ export class ReferenceLinesLayer {
   draw(options = {}) {
     const {
       showCelestialEquator = true,
+      showEquatorialGrid = false,
       showMeridian = true,
       showEcliptic = true,
       showEclipticGrid = false,
@@ -33,6 +34,10 @@ export class ReferenceLinesLayer {
         dash: [6, 4],
         hideBelowHorizon: showHorizonFill,
       });
+    }
+
+    if (showEquatorialGrid) {
+      this._drawEquatorialGrid(showHorizonFill);
     }
 
     if (showMeridian) {
@@ -229,17 +234,17 @@ export class ReferenceLinesLayer {
   }
 
   _drawEclipticGrid(hideBelowHorizon) {
-    const lonColor = 'rgba(132, 232, 180, 0.33)';
-    const latColor = 'rgba(112, 214, 165, 0.26)';
+    const lonColor = 'rgba(132, 232, 180, 0.24)';
+    const latColor = 'rgba(112, 214, 165, 0.19)';
 
     for (let lon = 0; lon < 360; lon += 30) {
       const line = [];
-      for (let beta = -75; beta <= 75; beta += 3) {
+      for (let beta = -90; beta <= 90; beta += 3) {
         line.push(this._eclipticToEquatorial(lon, beta));
       }
       this._drawCurve(line, {
         color: lonColor,
-        width: 0.8,
+        width: 0.55,
         dash: [3, 5],
         hideBelowHorizon,
       });
@@ -252,7 +257,38 @@ export class ReferenceLinesLayer {
       }
       this._drawCurve(line, {
         color: latColor,
-        width: 0.8,
+        width: 0.55,
+        dash: [2, 6],
+        hideBelowHorizon,
+      });
+    }
+  }
+
+  _drawEquatorialGrid(hideBelowHorizon) {
+    const raColor = 'rgba(110, 205, 255, 0.2)';
+    const decColor = 'rgba(130, 225, 255, 0.16)';
+
+    for (let ra = 0; ra < 24; ra += 1) {
+      const line = [];
+      for (let dec = -90; dec <= 90; dec += 3) {
+        line.push({ ra, dec });
+      }
+      this._drawCurve(line, {
+        color: raColor,
+        width: 0.55,
+        dash: [3, 5],
+        hideBelowHorizon,
+      });
+    }
+
+    for (let dec = -60; dec <= 60; dec += 30) {
+      const line = [];
+      for (let ra = 0; ra <= 24; ra += 0.2) {
+        line.push({ ra, dec });
+      }
+      this._drawCurve(line, {
+        color: decColor,
+        width: 0.55,
         dash: [2, 6],
         hideBelowHorizon,
       });
@@ -260,8 +296,8 @@ export class ReferenceLinesLayer {
   }
 
   _drawAzimuthGrid() {
-    const circleColor = 'rgba(130, 170, 255, 0.24)';
-    const spokeColor = 'rgba(160, 190, 255, 0.22)';
+    const circleColor = 'rgba(130, 170, 255, 0.18)';
+    const spokeColor = 'rgba(160, 190, 255, 0.16)';
 
     for (let alt = 15; alt <= 75; alt += 15) {
       const ring = [];
@@ -270,7 +306,7 @@ export class ReferenceLinesLayer {
       }
       this._drawProjectedCurve(ring, {
         color: circleColor,
-        width: 0.75,
+        width: 0.5,
         dash: [2, 6],
       });
     }
@@ -282,7 +318,7 @@ export class ReferenceLinesLayer {
       }
       this._drawProjectedCurve(spoke, {
         color: spokeColor,
-        width: 0.75,
+        width: 0.5,
         dash: [2, 6],
       });
     }

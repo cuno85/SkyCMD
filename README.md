@@ -129,6 +129,24 @@ SkyCMD/
 
 ---
 
+## Sternnamen (IAU)
+
+SkyCMD verwendet fuer Eigennamen von Sternen die Datei `data/catalogs/star_names.json`.
+Diese Datei wird aus dem IAU Catalog of Star Names (IAU-CSN) erzeugt.
+
+- Quelle: https://www.pas.rochester.edu/~emamajek/WGSN/IAU-CSN.txt
+- Update-Befehl: `py scripts/update_star_names.py`
+- Prioritaetsregel: Wenn mehrere Namenseintraege fuer dieselbe Stern-ID existieren, gewinnt ein Eintrag mit `source = IAU`.
+- Aktueller Erwartungswert: 411 Eintraege in `star_names.json`
+
+Hinweise:
+
+- Der Parser ueberspringt Eintraege ohne zuordenbare HIP- oder HD-ID, da diese im Frontend nicht stabil gemappt werden koennen.
+- Nicht als Datenzeilen interpretierbare Textfragmente aus der Quelle werden ignoriert.
+- Die UI verwendet fuer Such- und Tooltip-Pfade das Format `Propername (ID)`, waehrend kurze Kartenlabels weiterhin knapp bleiben.
+
+---
+
 ## 🚀 Entwicklungs-Meilensteine
 
 ### Phase 1 — Frontend: WebGL Sternenkarte
@@ -198,6 +216,47 @@ SkyCMD/
 | Teleskop (Linux) | INDI / PyIndi |
 | Kommunikation | WebSocket + REST |
 | Datenbank | SQLite (Beobachtungslog) |
+
+---
+
+## 📘 Handbuch (Bedienung)
+
+In der App gibt es ein eigenes Header-Menue **Handbuch** mit Schnellhilfe.
+
+### Schnellstart
+- Standort setzen: Panel **Standort**
+- Datum/Zeit setzen: Felder links
+- Zielobjekt suchen: Panel **Suche**
+- Darstellung anpassen: Panel **Layout und Anzeige**
+
+### Navigation
+- Schwenken: Maus ziehen oder 1-Finger-Geste
+- Zoom: Mausrad oder Pinch
+- Objekt-Info: Hover oder Klick
+- Zentrieren: Doppelklick auf ein Objekt
+
+---
+
+## 🧭 Projektionsmodell (Stand 2026-04)
+
+SkyCMD verwendet eine kontinuierliche azimutale Perspektiv-Familie anstelle eines harten Wechsels.
+
+- Maximaler FOV: **202.3 deg**
+- Bei großem FOV: Verhalten nahe **stereographisch**
+- Bei kleinem FOV: Verhalten nahe **gnomonisch**
+- Dazwischen: kontinuierlicher Uebergang mit einer Stellarium-aehnlichen Sigmoid-Kurve
+
+### Berechnung im Ueberblick
+
+1. Aus dem FOV wird ein Blendwert `b` berechnet (`0 = stereographisch`, `1 = gnomonisch`).
+2. Der Projektionsparameter `d` wird aus `b` bestimmt:
+       - `d = 1 - b`
+3. Die Projektion eines normierten Richtungsvektors `(x, y, z)` erfolgt mit:
+       - `X = ((d + 1) * x) / (d + z)`
+       - `Y = ((d + 1) * y) / (d + z)`
+4. Die Rueckprojektion (Screen -> Richtung) nutzt die mathematisch konsistente Inverse derselben Familie.
+
+Damit bleibt der Uebergang visuell stabil und vermeidet die harte Verzerrung, die bei linearem Mix zweier verschiedener Projektionsbilder entsteht.
 
 ---
 

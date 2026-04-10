@@ -16,6 +16,7 @@ node_modules/
 *.fits
 *.fit
 *.fts
+data/catalogs/.tycho2_cache/
 
 # OS
 .DS_Store

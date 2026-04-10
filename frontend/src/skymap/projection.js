@@ -1,5 +1,5 @@
 /**
- * SkyCMD - Stereographische Projektion mit planarem Nahzoom
+ * SkyCMD - Stereographisch auf Maximalzoom-out, gnomonisch beim Reinzoomen
  * Konvertiert RA/Dec in Bildschirmkoordinaten
  */
 import { buildTimeState, gmstHoursFromUt } from '../astronomy/time.js';
@@ -18,13 +18,13 @@ export class Projection {
 
     this.eps = 1e-9;
     this.minFov = 5;
-    this.maxFov = 235;
-    this.fovDeg = 120;
-
-    // Beim Reinzoomen von stereographisch nach planar ueberblenden.
-    // Der Uebergang startet bewusst frueher, damit das Umschalten auch visuell klar wird.
-    this.planarBlendStartDeg = 112;
-    this.planarBlendEndDeg = 72;
+    this.maxFov = 202.3;
+    this.fovDeg = this.maxFov;
+    this.projectionMode = 'auto';
+    this.stereographicOnlyAtOrAboveDeg = 202.3;
+    this.gnomonicFullAtOrBelowDeg = 130;
+    this.stellariumLikeBlendCenterDeg = 50;
+    this.stellariumLikeBlendSteepness = 0.17;
 
     this.centerAzDeg = 0;
     this.centerAltDeg = 90;
@@ -88,16 +88,63 @@ export class Projection {
     this.viewHalfWidth = this.width / 2;
     this.viewHalfHeight = this.height / 2;
     this.stereoScale = this.viewRadius / (2 * Math.tan(halfFovRad * 0.5));
-    const planarExtent = Math.max(Math.tan(halfFovRad), this.eps);
-    this.planarScaleX = this.viewHalfWidth / planarExtent;
-    this.planarScaleY = this.viewHalfHeight / planarExtent;
+    const gnomonicExtent = Math.max(Math.tan(halfFovRad), this.eps);
+    this.gnomonicScaleX = this.viewHalfWidth / gnomonicExtent;
+    this.gnomonicScaleY = this.viewHalfHeight / gnomonicExtent;
+  }
+
+  _projectionBlend() {
+    const start = this.stereographicOnlyAtOrAboveDeg;
+    const end = this.gnomonicFullAtOrBelowDeg;
+    if (this.fovDeg >= start - 1e-6) return 0;
+    if (this.fovDeg <= end + 1e-6) return 1;
+
+    // Stellarium-aehnlich: lange stereographisch bleiben und erst bei kleinen FOV
+    // deutlich in Richtung gnomonisch uebergehen.
+    const center = this.stellariumLikeBlendCenterDeg;
+    const steepness = Math.max(this.stellariumLikeBlendSteepness, 1e-4);
+    const x = steepness * (center - this.fovDeg);
+    const logistic = 1 / (1 + Math.exp(-x));
+
+    // Im definierten Arbeitsfenster [end..start] auf [0..1] normieren.
+    const minRaw = 1 / (1 + Math.exp(-steepness * (center - start)));
+    const maxRaw = 1 / (1 + Math.exp(-steepness * (center - end)));
+    const denom = Math.max(maxRaw - minRaw, this.eps);
+    return this._clamp((logistic - minRaw) / denom, 0, 1);
+  }
+
+  _perspectiveDistanceFromBlend(blend) {
+    // d=1 => stereographisch, d=0 => gnomonisch
+    return this._lerp(1, 0, this._clamp(blend, 0, 1));
+  }
+
+  _forwardPerspectiveFamily(v, distance) {
+    const denom = distance + v.z;
+    if (denom < this.eps) return null;
+    const factor = distance + 1;
+    return {
+      X: (factor * v.x) / denom,
+      Y: (factor * v.y) / denom,
+    };
+  }
+
+  _backwardPerspectiveFamily(X, Y, distance) {
+    const factor = Math.max(distance + 1, this.eps);
+    const u = X / factor;
+    const v = Y / factor;
+    const q = u * u + v * v;
+    const disc = Math.max(0, 1 + q * (1 - distance * distance));
+    const z = (-q * distance + Math.sqrt(disc)) / (q + 1);
+    const k = distance + z;
+    return this._norm3({
+      x: u * k,
+      y: v * k,
+      z,
+    });
   }
 
   _planarBlend() {
-    const denom = this.planarBlendStartDeg - this.planarBlendEndDeg;
-    if (denom <= 0) return 0;
-    const t = (this.planarBlendStartDeg - this.fovDeg) / denom;
-    return this._smoothstep01(t);
+    return this._projectionBlend();
   }
 
   _forwardStereographic(v) {
@@ -126,12 +173,23 @@ export class Projection {
     }
   }
 
-  _forwardPlanar(v) {
+  _forwardGnomonic(v) {
     if (v.z < this.eps) return null;
     return {
       X: v.x / v.z,
       Y: v.y / v.z,
     };
+  }
+
+  setProjectionMode(mode) {
+    // Manueller Override ist deaktiviert: Das Verhalten ist fest verdrahtet.
+    this.projectionMode = 'auto';
+  }
+
+  _resolvedProjectionMode(blend = this._projectionBlend()) {
+    if (blend >= 0.999) return 'gnomonic';
+    if (blend <= 0.001) return 'stereographic';
+    return 'transition';
   }
 
   stereographicBackward(X, Y) {
@@ -146,19 +204,17 @@ export class Projection {
 
   projectCameraVector(v) {
     const normed = this._norm3(v);
-    const stereo = this._forwardStereographic(normed);
-    if (!stereo) return null;
+    const blend = this._projectionBlend();
+    const distance = this._perspectiveDistanceFromBlend(blend);
+    const projected = this._forwardPerspectiveFamily(normed, distance);
+    if (!projected) return null;
+    const resolvedMode = this._resolvedProjectionMode(blend);
 
-    const planar = this._forwardPlanar(normed) || stereo;
-    const blend = this._planarBlend();
-
-    const sxStereo = this.stereoScale * stereo.X;
-    const syStereo = -this.stereoScale * stereo.Y;
-    const sxPlanar = this.planarScaleX * planar.X;
-    const syPlanar = -this.planarScaleY * planar.Y;
-
-    const sx = this._lerp(sxStereo, sxPlanar, blend);
-    const sy = this._lerp(syStereo, syPlanar, blend);
+    const scaleX = this._lerp(this.stereoScale, this.gnomonicScaleX, blend);
+    const scaleY = this._lerp(this.stereoScale, this.gnomonicScaleY, blend);
+    // Himmelskarten-Konvention: Osten links, Westen rechts.
+    const sx = -scaleX * projected.X;
+    const sy = -scaleY * projected.Y;
 
     const screenX = this.cx + sx;
     const screenY = this.cy + sy;
@@ -168,7 +224,12 @@ export class Projection {
     const halfFov = this._toRad(this.fovDeg * 0.5);
     const insideFov = theta <= halfFov;
     const insideRect = screenX >= -2 && screenX <= this.width + 2 && screenY >= -2 && screenY <= this.height + 2;
-    const visible = insideFov && (blend >= 0.35 ? insideRect : r <= this.viewRadius);
+    const useRectClip = resolvedMode === 'gnomonic' || resolvedMode === 'transition';
+    // In gnomonisch/transition muss das Viewport-Rechteck gelten, sonst entsteht
+    // ein ungewollter kreisfoermiger Ausschnitt.
+    const visible = useRectClip
+      ? insideRect
+      : (insideFov && r <= this.viewRadius);
 
     return {
       x: screenX,
@@ -212,20 +273,13 @@ export class Projection {
     const sx = screenX - this.cx;
     const sy = screenY - this.cy;
 
-    const Xs = sx / Math.max(this.stereoScale, this.eps);
-    const Ys = -sy / Math.max(this.stereoScale, this.eps);
-    const stereo = this._norm3(this.stereographicBackward(Xs, Ys));
-
-    const Xp = sx / Math.max(this.planarScaleX, this.eps);
-    const Yp = -sy / Math.max(this.planarScaleY, this.eps);
-    const planar = this._norm3({ x: Xp, y: Yp, z: 1 });
-
-    const blend = this._planarBlend();
-    return this._norm3({
-      x: this._lerp(stereo.x, planar.x, blend),
-      y: this._lerp(stereo.y, planar.y, blend),
-      z: this._lerp(stereo.z, planar.z, blend),
-    });
+    const blend = this._projectionBlend();
+    const distance = this._perspectiveDistanceFromBlend(blend);
+    const scaleX = this._lerp(this.stereoScale, this.gnomonicScaleX, blend);
+    const scaleY = this._lerp(this.stereoScale, this.gnomonicScaleY, blend);
+    const X = -sx / Math.max(scaleX, this.eps);
+    const Y = -sy / Math.max(scaleY, this.eps);
+    return this._backwardPerspectiveFamily(X, Y, distance);
   }
 
   _updateCameraBasis() {
@@ -389,13 +443,15 @@ export class Projection {
   }
 
   getViewState() {
-    const blend = this._planarBlend();
+    const blend = this._projectionBlend();
+    const resolvedMode = this._resolvedProjectionMode(blend);
     return {
       fovDeg: this.fovDeg,
       centerAzDeg: this.centerAzDeg,
       centerAltDeg: this.centerAltDeg,
       blendToPlanar: blend,
-      modeLabel: blend > 0.85 ? 'planar' : (blend > 0.12 ? 'transition' : 'stereographic'),
+      modeLabel: resolvedMode,
+      projectionModeSetting: this.projectionMode,
       deltaTSeconds: this.timeState.deltaTSeconds,
       utIso: this.timeState.utDate.toISOString(),
       ttIso: this.timeState.ttDate.toISOString(),

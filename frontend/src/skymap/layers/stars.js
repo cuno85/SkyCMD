@@ -9,14 +9,14 @@ export class StarsLayer {
   }
 
   draw(stars, starNames = {}, options = {}) {
-    const { magLimit = 6.5, showNames = true, scaleFactor = 1 } = options;
+    const { showNames = true, scaleFactor = 1 } = options;
     const { hideBelowHorizon = false } = options;
     const ctx = this.ctx;
     let drawn = 0;
     const pickables = [];
 
     for (const star of stars) {
-      if (star.mag > magLimit) continue;
+      // Stars are pre-filtered by SQL API: mag_max constraint is applied at source
       const p = this.projection.project(star.ra, star.dec);
       if (!p.visible) continue;
       if (hideBelowHorizon && p.alt < 0) continue;

@@ -1,77 +1,196 @@
 #!/usr/bin/env python3
 """
-Create realistic Tycho-2 star catalog JSON file.
-Generates ~500k UV-selected stars down to V~10 mag.
-Intended for WebGL stress testing.
+Import the real Tycho-2 catalog from CDS (I/259) and build stars_tycho2.json.
+
+Source:
+  https://cdsarc.cds.unistra.fr/ftp/I/259/
+  Hog et al. (2000), Tycho-2 Catalogue
+
+This script removes any synthetic generation and only keeps catalog values.
 """
 
+from __future__ import annotations
+
+import argparse
+import contextlib
+import gzip
 import json
-import random
+import shutil
+import tempfile
+import time
+import urllib.request
 from pathlib import Path
 
-# Set seed for reproducibility
-random.seed(42)
+BASE_URL = "https://cdsarc.cds.unistra.fr/ftp/I/259"
+CHUNK_FILES = [f"tyc2.dat.{i:02d}.gz" for i in range(20)]
 
-def generate_tycho2_stars(count=500000):
-    """Generate realistic Tycho-2 star data."""
+
+def _clean_float(text: str):
+    value = text.strip()
+    if not value:
+        return None
+    try:
+        return float(value)
+    except ValueError:
+        return None
+
+
+def _download_with_retries(url: str, target: Path, retries: int = 5):
+    target.parent.mkdir(parents=True, exist_ok=True)
+    if target.exists() and target.stat().st_size > 0:
+        return
+
+    last_error = None
+    for attempt in range(1, retries + 1):
+        try:
+            with urllib.request.urlopen(url, timeout=120) as src, target.open("wb") as dst:
+                shutil.copyfileobj(src, dst, length=1024 * 1024)
+            if target.stat().st_size > 0:
+                return
+            raise RuntimeError("downloaded file is empty")
+        except Exception as exc:  # noqa: BLE001
+            last_error = exc
+            wait_s = min(20, 2 * attempt)
+            print(f"    download failed ({attempt}/{retries}): {exc}; retry in {wait_s}s")
+            time.sleep(wait_s)
+
+    raise RuntimeError(f"failed to download {url}: {last_error}")
+
+
+def _parse_tycho2_line(line: str):
+    # CDS format: 32 fields separated by '|'
+    parts = line.split("|")
+    if len(parts) < 26:
+        return None
+
+    tyc_field = parts[0].strip()
+    tyc_chunks = tyc_field.split()
+    if len(tyc_chunks) != 3:
+        return None
+
+    tyc1, tyc2, tyc3 = tyc_chunks
+    tyc_id = f"TYC {tyc1}-{tyc2}-{tyc3}"
+
+    ra_deg = _clean_float(parts[2])
+    dec_deg = _clean_float(parts[3])
+
+    # Prefer VT (visual-like); fallback to BT if VT missing.
+    bt_mag = _clean_float(parts[17])
+    vt_mag = _clean_float(parts[19])
+    mag = vt_mag if vt_mag is not None else bt_mag
+
+    if ra_deg is None or dec_deg is None or mag is None:
+        return None
+
+    bv = None
+    if bt_mag is not None and vt_mag is not None:
+        # ReadMe note(7): B-V ~= 0.850 * (BT - VT)
+        bv = 0.85 * (bt_mag - vt_mag)
+
+    return {
+        "id": tyc_id,
+        "name": tyc_id,
+        # Renderer expects RA in hours, not degrees.
+        "ra": round(ra_deg / 15.0, 8),
+        "dec": round(dec_deg, 8),
+        "mag": round(mag, 3),
+        "bv": round(bv, 3) if bv is not None else None,
+        "type": "star",
+    }
+
+
+def import_tycho2(output_path: Path, mag_max: float | None = None, cache_dir: Path | None = None):
     stars = []
-    
-    # Tycho-2 magnitude distribution
-    # Limit to V~10 for performance (can see ~100k stars, vs 2.5M full catalog)
-    def get_random_magnitude():
-        # Use exponential-like distribution for more faint stars
-        u = random.random()
-        # Transform to magnitude range (brightest around 0, faintest around 10)
-        mag = -2 + u ** 0.65 * 12  # Skewed towards fainter stars
-        return round(max(-2, min(10, mag)), 2)
-    
-    for i in range(count):
-        # Random celestial coordinates
-        ra = random.uniform(0, 360)
-        dec = random.gauss(0, 45)  # Gaussian distribution, centered at equator
-        
-        # Get realistic magnitude distribution
-        mag = get_random_magnitude()
-        
-        star = {
-            "ra": round(ra, 3),
-            "dec": round(max(-90, min(90, dec)), 3),
-            "mag": mag,
-            "name": f"TYC {i:07d}"
-        }
-        stars.append(star)
-    
-    return stars
+    skipped = 0
 
-# Generate stars
-print("Generating Tycho-2 catalog with 500k stars...")
-stars = generate_tycho2_stars(500000)
+    if cache_dir is None:
+        temp_ctx = tempfile.TemporaryDirectory(prefix="tycho2_")
+        tmp_path = Path(temp_ctx.__enter__())
+    else:
+        temp_ctx = None
+        tmp_path = cache_dir
+        tmp_path.mkdir(parents=True, exist_ok=True)
 
-# Sort by magnitude (brightest first)
-stars.sort(key=lambda s: s['mag'])
+    try:
+        for idx, filename in enumerate(CHUNK_FILES, start=1):
+            url = f"{BASE_URL}/{filename}"
+            local_gz = tmp_path / filename
+            chunk_done = False
+            parse_attempts = 0
+            while not chunk_done:
+                parse_attempts += 1
+                print(f"[{idx:02d}/20] Downloading {filename} ...")
+                _download_with_retries(url, local_gz)
 
-# Save to JSON
-output_path = Path(__file__).parent.parent / "data" / "catalogs" / "stars_tycho2.json"
-output_path.parent.mkdir(parents=True, exist_ok=True)
+                print(f"[{idx:02d}/20] Parsing {filename} ...")
+                try:
+                    with gzip.open(local_gz, "rt", encoding="ascii", errors="ignore") as fh:
+                        for raw in fh:
+                            row = _parse_tycho2_line(raw.rstrip("\n"))
+                            if row is None:
+                                skipped += 1
+                                continue
+                            if mag_max is not None and row["mag"] > mag_max:
+                                continue
+                            stars.append(row)
+                    chunk_done = True
+                except (EOFError, OSError) as exc:
+                    if parse_attempts >= 3:
+                        raise RuntimeError(f"failed parsing {filename} after {parse_attempts} attempts: {exc}") from exc
+                    print(f"    parse failed ({parse_attempts}/3): {exc}; re-downloading chunk")
+                    with contextlib.suppress(FileNotFoundError):
+                        local_gz.unlink()
+    finally:
+        if temp_ctx is not None:
+            temp_ctx.__exit__(None, None, None)
 
-with open(output_path, 'w', encoding='utf-8') as f:
-    json.dump(stars, f, separators=(',', ':'), indent=None)
+    stars.sort(key=lambda s: s["mag"])
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(stars, f, separators=(",", ":"), ensure_ascii=False)
 
-file_size_mb = output_path.stat().st_size / (1024 * 1024)
+    return stars, skipped
 
-# Count by magnitude ranges
-mag_ranges = {
-    "≤ 3": sum(1 for s in stars if s['mag'] <= 3),
-    "3-6": sum(1 for s in stars if 3 < s['mag'] <= 6),
-    "6-9": sum(1 for s in stars if 6 < s['mag'] <= 9),
-    "9-10": sum(1 for s in stars if 9 < s['mag'] <= 10),
-}
 
-print(f"✓ Created Tycho-2 catalog: {output_path}")
-print(f"  Total stars: {len(stars):,}")
-print(f"  File size: {file_size_mb:.2f} MB")
-print(f"  Magnitude range: {stars[0]['mag']:.2f} to {stars[-1]['mag']:.2f}")
-print(f"  Distribution:")
-for range_label, count in mag_ranges.items():
-    pct = count / len(stars) * 100
-    print(f"    Mag {range_label:>5}: {count:6,} stars ({pct:5.1f}%)")
+def main():
+    parser = argparse.ArgumentParser(description="Import real Tycho-2 data from CDS.")
+    parser.add_argument(
+        "--mag-max",
+        type=float,
+        default=12.0,
+        help="Optional faint-end cutoff in apparent magnitude (default: 12.0).",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path(__file__).resolve().parents[1] / "data" / "catalogs" / "stars_tycho2.json",
+        help="Output JSON path.",
+    )
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=Path(__file__).resolve().parents[1] / "data" / "catalogs" / ".tycho2_cache",
+        help="Directory for cached CDS chunk downloads.",
+    )
+    args = parser.parse_args()
+
+    mag_max = args.mag_max if args.mag_max is not None else None
+    print("Importing real Tycho-2 catalog from CDS...")
+    if mag_max is None:
+        print("Magnitude cutoff: none (full import)")
+    else:
+        print(f"Magnitude cutoff: <= {mag_max:.2f}")
+
+    stars, skipped = import_tycho2(args.output, mag_max=mag_max, cache_dir=args.cache_dir)
+    size_mb = args.output.stat().st_size / (1024 * 1024)
+
+    print(f"✓ Written: {args.output}")
+    print(f"  Stars: {len(stars):,}")
+    print(f"  Skipped malformed rows: {skipped:,}")
+    print(f"  File size: {size_mb:.2f} MB")
+    if stars:
+        print(f"  Mag range: {stars[0]['mag']:.3f} .. {stars[-1]['mag']:.3f}")
+
+
+if __name__ == "__main__":
+    main()

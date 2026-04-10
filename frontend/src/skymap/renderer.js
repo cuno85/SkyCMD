@@ -35,6 +35,7 @@ export class SkyMapRenderer {
       showConstellationBoundaries: false,
       showConstellationLabels: false,
       showCelestialEquator: true,
+      showEquatorialGrid: false,
       showMeridian: true,
       showEcliptic: true,
       showEclipticGrid: false,
@@ -75,7 +76,6 @@ export class SkyMapRenderer {
   async reconfigureCatalogSources(sources = {}) {
     this.catalog.setSources(sources);
     await this.catalog.loadAll();
-    await this.catalog.loadConstellationBoundaries();
     this._constellationIndexReady = false;
     this.stats.totalStars = this.catalog.getStars().length;
     this.stats.totalDSO = this.catalog.getDSO().length;
@@ -369,6 +369,7 @@ export class SkyMapRenderer {
       }
       this.layers.referenceLines.draw({
         showCelestialEquator: this.options.showCelestialEquator,
+        showEquatorialGrid: this.options.showEquatorialGrid,
         showMeridian: this.options.showMeridian,
         showEcliptic: this.options.showEcliptic,
         showEclipticGrid: this.options.showEclipticGrid,
@@ -419,7 +420,6 @@ export class SkyMapRenderer {
           this.catalog.getStars(),
           this.catalog.starNames,
           {
-            magLimit: this.options.magLimit,
             showNames: this.options.showStarNames,
             hideBelowHorizon: this.options.showHorizonFill,
           }

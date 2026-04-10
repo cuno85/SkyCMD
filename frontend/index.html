@@ -23,6 +23,7 @@
       <button id="header-standort-btn" class="header-btn" type="button" aria-expanded="false">Standort</button>
       <button id="header-atlas-btn" class="header-btn" type="button" aria-expanded="false">Himmelsatlas</button>
       <button id="header-layout-btn" class="header-btn" type="button" aria-expanded="false">Layout und Anzeige</button>
+      <button id="header-manual-btn" class="header-btn" type="button" aria-expanded="false">Handbuch</button>
       <button id="header-hardware-btn" class="header-btn" type="button" aria-expanded="false">Teleskopsteuerung</button>
       <button id="header-properties-btn" class="header-btn" type="button" aria-expanded="false">Einstellungen</button>
     </nav>
@@ -134,13 +135,6 @@
       <div class="layout-panel__section">
         <div class="layout-panel__section-title">Sterne</div>
         <div class="form-row">
-          <label class="form-label" for="starCatalog">Sternkatalog</label>
-          <select id="starCatalog">
-            <option value="mag4">Mag &lt;= 4</option>
-            <option value="tycho2">Tycho-2</option>
-          </select>
-        </div>
-        <div class="form-row">
           <label class="form-label" for="showStars">Sterne anzeigen</label>
           <input type="checkbox" id="showStars" checked>
         </div>
@@ -150,7 +144,7 @@
         </div>
         <div class="form-row">
           <label class="form-label" for="mag-limit">Mag-Limit: <span id="mag-label">6.5</span></label>
-          <input type="range" id="mag-limit" min="0" max="25" step="0.5" value="6.5" oninput="document.getElementById('mag-label').textContent=this.value">
+          <input type="range" id="mag-limit" min="1" max="25" step="0.5" value="6.5" oninput="document.getElementById('mag-label').textContent=this.value">
         </div>
       </div>
       <div class="layout-panel__section">
@@ -186,6 +180,10 @@
           <input type="checkbox" id="showCelestialEquator" checked>
         </div>
         <div class="form-row">
+          <label class="form-label" for="showEquatorialGrid">Äquatoriales Koordinatennetz</label>
+          <input type="checkbox" id="showEquatorialGrid">
+        </div>
+        <div class="form-row">
           <label class="form-label" for="showMeridian">Meridian</label>
           <input type="checkbox" id="showMeridian" checked>
         </div>
@@ -215,6 +213,30 @@
         </div>
       </div>
     </div>
+    <div id="manual-panel" class="header-panel header-panel--layout" hidden>
+      <div class="header-panel__title">Handbuch</div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Schnellstart</div>
+        <div class="header-panel__row"><span>1. Standort setzen</span><strong>Standort</strong></div>
+        <div class="header-panel__row"><span>2. Zeit setzen</span><strong>Datum/Zeit links</strong></div>
+        <div class="header-panel__row"><span>3. Objekt suchen</span><strong>Suche</strong></div>
+        <div class="header-panel__row"><span>4. Ansicht anpassen</span><strong>Layout und Anzeige</strong></div>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Navigation</div>
+        <div class="header-panel__row"><span>Schwenken</span><strong>Maus ziehen / 1 Finger</strong></div>
+        <div class="header-panel__row"><span>Zoom</span><strong>Mausrad / Pinch</strong></div>
+        <div class="header-panel__row"><span>Objektinfo</span><strong>Hover oder Klick</strong></div>
+        <div class="header-panel__row"><span>Auf Objekt zentrieren</span><strong>Doppelklick</strong></div>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Projektion (aktuell)</div>
+        <div class="header-panel__row"><span>Maximaler Blickwinkel</span><strong>202.3 deg</strong></div>
+        <div class="header-panel__row"><span>Großer FOV</span><strong>Stereographisch</strong></div>
+        <div class="header-panel__row"><span>Kleiner FOV</span><strong>Gnomonisch</strong></div>
+        <div class="header-panel__row"><span>Uebergang</span><strong>Stellarium-aehnliche Sigmoid-Kurve</strong></div>
+      </div>
+    </div>
     <div id="properties-panel" class="header-panel header-panel--console" hidden>
       <div class="header-panel__title">Einstellungen</div>
       <div class="header-panel__grid console-panel__grid">
@@ -223,8 +245,8 @@
           <div class="form-row">
             <label class="form-label" for="catalog-stars-select">Sternkatalog</label>
             <select id="catalog-stars-select">
-              <option value="stars_mag4.json">stars_mag4.json (helle Sterne)</option>
-              <option value="stars_hip7.json">stars_hip7.json (erweitert)</option>
+              <option value="mag4">Mag ≤ 4 (helle Sterne)</option>
+              <option value="tycho2">Tycho-2</option>
             </select>
           </div>
           <div class="form-row">
@@ -247,6 +269,13 @@
 
         <div class="layout-panel__section">
           <div class="layout-panel__section-title">Datenbanken / APIs</div>
+          <div class="form-row">
+            <label class="form-label" for="planet-mag-algorithm">Algorithmus für Planetenhelligkeit</label>
+            <select id="planet-mag-algorithm">
+              <option value="mallama-hilton-2018">Mallama &amp; Hilton (2018)</option>
+            </select>
+          </div>
+          <p class="search-status">Dieser Algorithmus entstammt der Arbeit von A. Mallama &amp; J. L. Hilton: <em>Computing apparent planetary magnitudes for the Astronomical Almanac</em>. Astronomy &amp; Computing 25 (2018) 10-24.</p>
           <div class="form-row">
             <label class="form-label" for="use-backend-smallbodies">Kometen/Asteroiden DB nutzen</label>
             <input type="checkbox" id="use-backend-smallbodies" checked>
