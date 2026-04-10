@@ -147,6 +147,24 @@ Hinweise:
 
 ---
 
+## Sternbilder / Konstellationen
+
+SkyCMD behandelt `data/catalogs/constellations.json` und
+`data/catalogs/constellation_boundaries_iau.json` als kanonische
+Frontend-Datensaetze fuer Sternbildlinien, Labels und IAU-Grenzen.
+
+- Pruefbefehl: `py scripts/regenerate_constellations.py --check`
+- Reformat-Befehl: `py scripts/regenerate_constellations.py --write`
+- Erwartungswerte: `86` Konstellationen und `257` Boundary-Features
+- Details zum Format: `docs/data-formats.md`
+
+Hinweise:
+
+- Die Sternbildlinien werden aktuell nicht aus dem Laufzeit-Sternkatalog abgeleitet.
+- Die Boundary-Datei wird als GeoJSON geladen und im Frontend nach RA/Dec transformiert.
+
+---
+
 ## 🚀 Entwicklungs-Meilensteine
 
 ### Phase 1 — Frontend: WebGL Sternenkarte
