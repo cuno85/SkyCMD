@@ -113,24 +113,74 @@ export class ReferenceLinesLayer {
   }
 
   _drawHorizonFill(horizonProjected) {
-    if (!horizonProjected || horizonProjected.length < 3) return;
-    const ctx = this.ctx;
-    const { width, height } = this.projection;
+    // Horizontflaeche deaktiviert: kein olivgruener Hintergrund.
+    void horizonProjected;
+  }
 
-    ctx.save();
-    ctx.fillStyle = 'rgba(15, 28, 18, 0.62)';
-    ctx.fillRect(0, 0, width, height);
+  _extractVisibleHorizonStrip(horizonProjected) {
+    const strips = [];
+    let current = [];
 
-    // Der sichtbare Himmel liegt innerhalb der Horizontkurve und wird ausgeschnitten.
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.moveTo(horizonProjected[0].x, horizonProjected[0].y);
-    for (let i = 1; i < horizonProjected.length; i += 1) {
-      ctx.lineTo(horizonProjected[i].x, horizonProjected[i].y);
+    const pushCurrent = () => {
+      if (current.length >= 2) strips.push(current);
+      current = [];
+    };
+
+    for (let i = 0; i < horizonProjected.length; i += 1) {
+      const p = horizonProjected[i];
+      if (!p?.visible || !Number.isFinite(p.x) || !Number.isFinite(p.y)) {
+        pushCurrent();
+        continue;
+      }
+
+      if (current.length > 0) {
+        const prev = current[current.length - 1];
+        if (Math.abs(p.x - prev.x) > 320 || Math.abs(p.y - prev.y) > 320) {
+          pushCurrent();
+        }
+      }
+
+      current.push(p);
     }
-    ctx.closePath();
-    ctx.fill();
-    ctx.restore();
+    pushCurrent();
+
+    if (!strips.length) return [];
+    strips.sort((a, b) => b.length - a.length);
+    const strip = strips[0].slice();
+
+    // Wenn die sichtbare Kurve geschlossen ist (voller Kreis), waehlen wir
+    // explizit den oberen Bogen von links nach rechts als Horizontkante.
+    const first = strip[0];
+    const last = strip[strip.length - 1];
+    const closes = Math.hypot(last.x - first.x, last.y - first.y) < 12;
+    if (closes && strip.length >= 8) {
+      let minXIndex = 0;
+      let maxXIndex = 0;
+      for (let i = 1; i < strip.length; i += 1) {
+        if (strip[i].x < strip[minXIndex].x) minXIndex = i;
+        if (strip[i].x > strip[maxXIndex].x) maxXIndex = i;
+      }
+
+      const forwardArc = [];
+      for (let i = minXIndex; ; i = (i + 1) % strip.length) {
+        forwardArc.push(strip[i]);
+        if (i === maxXIndex) break;
+      }
+
+      const backwardArc = [];
+      for (let i = minXIndex; ; i = (i - 1 + strip.length) % strip.length) {
+        backwardArc.push(strip[i]);
+        if (i === maxXIndex) break;
+      }
+
+      const avgYForward = forwardArc.reduce((sum, p) => sum + p.y, 0) / forwardArc.length;
+      const avgYBackward = backwardArc.reduce((sum, p) => sum + p.y, 0) / backwardArc.length;
+      return avgYForward <= avgYBackward ? forwardArc : backwardArc;
+    }
+
+    // Offene Kurve: nach links->rechts normalisieren.
+    if (strip[0].x <= strip[strip.length - 1].x) return strip;
+    return strip.reverse();
   }
 
   _buildEquatorPoints() {

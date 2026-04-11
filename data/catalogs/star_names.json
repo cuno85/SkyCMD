@@ -2,6 +2,8 @@
   {
     "id": "HIP 32349",
     "propername": "Sirius",
+    "bayer": "alpha CMa",
+    "flamsteed": "",
     "magnitude": -1.45,
     "constellation": "CMa",
     "source": "IAU"
@@ -9,6 +11,8 @@
   {
     "id": "HIP 30438",
     "propername": "Canopus",
+    "bayer": "alpha Car",
+    "flamsteed": "",
     "magnitude": -0.62,
     "constellation": "Car",
     "source": "IAU"
@@ -16,6 +20,8 @@
   {
     "id": "HIP 69673",
     "propername": "Arcturus",
+    "bayer": "alpha Boo",
+    "flamsteed": "",
     "magnitude": -0.05,
     "constellation": "Boo",
     "source": "IAU"
@@ -23,6 +29,8 @@
   {
     "id": "HIP 71683",
     "propername": "Rigil Kentaurus",
+    "bayer": "alpha Cen",
+    "flamsteed": "",
     "magnitude": -0.01,
     "constellation": "Cen",
     "source": "IAU"
@@ -30,6 +38,8 @@
   {
     "id": "HIP 91262",
     "propername": "Vega",
+    "bayer": "alpha Lyr",
+    "flamsteed": "",
     "magnitude": 0.03,
     "constellation": "Lyr",
     "source": "IAU"
@@ -37,6 +47,8 @@
   {
     "id": "HIP 24608",
     "propername": "Capella",
+    "bayer": "alpha Aur",
+    "flamsteed": "",
     "magnitude": 0.08,
     "constellation": "Aur",
     "source": "IAU"
@@ -44,6 +56,8 @@
   {
     "id": "HIP 24436",
     "propername": "Rigel",
+    "bayer": "beta Ori",
+    "flamsteed": "",
     "magnitude": 0.18,
     "constellation": "Ori",
     "source": "IAU"
@@ -51,6 +65,8 @@
   {
     "id": "HIP 37279",
     "propername": "Procyon",
+    "bayer": "alpha CMi",
+    "flamsteed": "",
     "magnitude": 0.4,
     "constellation": "CMi",
     "source": "IAU"
@@ -58,6 +74,8 @@
   {
     "id": "HIP 7588",
     "propername": "Achernar",
+    "bayer": "alpha Eri",
+    "flamsteed": "",
     "magnitude": 0.45,
     "constellation": "Eri",
     "source": "IAU"
@@ -65,6 +83,8 @@
   {
     "id": "HIP 27989",
     "propername": "Betelgeuse",
+    "bayer": "alpha Ori",
+    "flamsteed": "",
     "magnitude": 0.45,
     "constellation": "Ori",
     "source": "IAU"
@@ -72,6 +92,8 @@
   {
     "id": "HIP 68702",
     "propername": "Hadar",
+    "bayer": "beta Cen",
+    "flamsteed": "",
     "magnitude": 0.61,
     "constellation": "Cen",
     "source": "IAU"
@@ -79,6 +101,8 @@
   {
     "id": "HIP 97649",
     "propername": "Altair",
+    "bayer": "alpha Aql",
+    "flamsteed": "",
     "magnitude": 0.76,
     "constellation": "Aql",
     "source": "IAU"
@@ -86,6 +110,8 @@
   {
     "id": "HIP 21421",
     "propername": "Aldebaran",
+    "bayer": "alpha Tau",
+    "flamsteed": "",
     "magnitude": 0.87,
     "constellation": "Tau",
     "source": "IAU"
@@ -93,6 +119,8 @@
   {
     "id": "HIP 65474",
     "propername": "Spica",
+    "bayer": "alpha Vir",
+    "flamsteed": "",
     "magnitude": 0.98,
     "constellation": "Vir",
     "source": "IAU"
@@ -100,6 +128,8 @@
   {
     "id": "HIP 80763",
     "propername": "Antares",
+    "bayer": "alpha Sco",
+    "flamsteed": "",
     "magnitude": 1.06,
     "constellation": "Sco",
     "source": "IAU"
@@ -107,6 +137,8 @@
   {
     "id": "HIP 37826",
     "propername": "Pollux",
+    "bayer": "beta Gem",
+    "flamsteed": "",
     "magnitude": 1.16,
     "constellation": "Gem",
     "source": "IAU"
@@ -114,6 +146,8 @@
   {
     "id": "HIP 113368",
     "propername": "Fomalhaut",
+    "bayer": "alpha PsA",
+    "flamsteed": "",
     "magnitude": 1.17,
     "constellation": "PsA",
     "source": "IAU"
@@ -121,6 +155,8 @@
   {
     "id": "HIP 102098",
     "propername": "Deneb",
+    "bayer": "alpha Cyg",
+    "flamsteed": "",
     "magnitude": 1.25,
     "constellation": "Cyg",
     "source": "IAU"
@@ -128,6 +164,8 @@
   {
     "id": "HIP 62434",
     "propername": "Mimosa",
+    "bayer": "beta Cru",
+    "flamsteed": "",
     "magnitude": 1.25,
     "constellation": "Cru",
     "source": "IAU"
@@ -135,6 +173,8 @@
   {
     "id": "HIP 60718",
     "propername": "Acrux",
+    "bayer": "alpha Cru",
+    "flamsteed": "",
     "magnitude": 1.33,
     "constellation": "Cru",
     "source": "IAU"
@@ -142,6 +182,8 @@
   {
     "id": "HIP 71681",
     "propername": "Toliman",
+    "bayer": "alpha Cen",
+    "flamsteed": "",
     "magnitude": 1.35,
     "constellation": "Cen",
     "source": "IAU"
@@ -149,6 +191,8 @@
   {
     "id": "HIP 49669",
     "propername": "Regulus",
+    "bayer": "alpha Leo",
+    "flamsteed": "",
     "magnitude": 1.36,
     "constellation": "Leo",
     "source": "IAU"
@@ -156,6 +200,8 @@
   {
     "id": "HIP 33579",
     "propername": "Adhara",
+    "bayer": "epsilon CMa",
+    "flamsteed": "",
     "magnitude": 1.5,
     "constellation": "CMa",
     "source": "IAU"
@@ -163,6 +209,8 @@
   {
     "id": "HIP 61084",
     "propername": "Gacrux",
+    "bayer": "gamma Cru",
+    "flamsteed": "",
     "magnitude": 1.59,
     "constellation": "Cru",
     "source": "IAU"
@@ -170,6 +218,8 @@
   {
     "id": "HIP 25336",
     "propername": "Bellatrix",
+    "bayer": "gamma Ori",
+    "flamsteed": "",
     "magnitude": 1.64,
     "constellation": "Ori",
     "source": "IAU"
@@ -177,6 +227,8 @@
   {
     "id": "HIP 25428",
     "propername": "Elnath",
+    "bayer": "beta Tau",
+    "flamsteed": "",
     "magnitude": 1.65,
     "constellation": "Tau",
     "source": "IAU"
@@ -184,6 +236,8 @@
   {
     "id": "HIP 45238",
     "propername": "Miaplacidus",
+    "bayer": "beta Car",
+    "flamsteed": "",
     "magnitude": 1.67,
     "constellation": "Car",
     "source": "IAU"
@@ -191,6 +245,8 @@
   {
     "id": "HIP 26311",
     "propername": "Alnilam",
+    "bayer": "epsilon Ori",
+    "flamsteed": "",
     "magnitude": 1.69,
     "constellation": "Ori",
     "source": "IAU"
@@ -198,6 +254,8 @@
   {
     "id": "HIP 109268",
     "propername": "Alnair",
+    "bayer": "alpha Gru",
+    "flamsteed": "",
     "magnitude": 1.73,
     "constellation": "Gru",
     "source": "IAU"
@@ -205,6 +263,8 @@
   {
     "id": "HIP 26727",
     "propername": "Alnitak",
+    "bayer": "zeta Ori",
+    "flamsteed": "",
     "magnitude": 1.74,
     "constellation": "Ori",
     "source": "IAU"
@@ -212,6 +272,8 @@
   {
     "id": "HIP 62956",
     "propername": "Alioth",
+    "bayer": "epsilon UMa",
+    "flamsteed": "",
     "magnitude": 1.76,
     "constellation": "UMa",
     "source": "IAU"
@@ -219,6 +281,8 @@
   {
     "id": "HIP 90185",
     "propername": "Kaus Australis",
+    "bayer": "epsilon Sgr",
+    "flamsteed": "",
     "magnitude": 1.79,
     "constellation": "Sgr",
     "source": "IAU"
@@ -226,6 +290,8 @@
   {
     "id": "HIP 15863",
     "propername": "Mirfak",
+    "bayer": "alpha Per",
+    "flamsteed": "",
     "magnitude": 1.79,
     "constellation": "Per",
     "source": "IAU"
@@ -233,6 +299,8 @@
   {
     "id": "HIP 54061",
     "propername": "Dubhe",
+    "bayer": "alpha UMa",
+    "flamsteed": "",
     "magnitude": 1.81,
     "constellation": "UMa",
     "source": "IAU"
@@ -240,6 +308,8 @@
   {
     "id": "HIP 34444",
     "propername": "Wezen",
+    "bayer": "delta CMa",
+    "flamsteed": "",
     "magnitude": 1.83,
     "constellation": "CMa",
     "source": "IAU"
@@ -247,6 +317,8 @@
   {
     "id": "HIP 67301",
     "propername": "Alkaid",
+    "bayer": "eta UMa",
+    "flamsteed": "",
     "magnitude": 1.85,
     "constellation": "UMa",
     "source": "IAU"
@@ -254,6 +326,8 @@
   {
     "id": "HIP 41037",
     "propername": "Avior",
+    "bayer": "epsilon Car",
+    "flamsteed": "",
     "magnitude": 1.86,
     "constellation": "Car",
     "source": "IAU"
@@ -261,6 +335,8 @@
   {
     "id": "HIP 86228",
     "propername": "Sargas",
+    "bayer": "tet Sco",
+    "flamsteed": "",
     "magnitude": 1.86,
     "constellation": "Sco",
     "source": "IAU"
@@ -268,6 +344,8 @@
   {
     "id": "HIP 28360",
     "propername": "Menkalinan",
+    "bayer": "beta Aur",
+    "flamsteed": "",
     "magnitude": 1.9,
     "constellation": "Aur",
     "source": "IAU"
@@ -275,6 +353,8 @@
   {
     "id": "HIP 82273",
     "propername": "Atria",
+    "bayer": "alpha TrA",
+    "flamsteed": "",
     "magnitude": 1.91,
     "constellation": "TrA",
     "source": "IAU"
@@ -282,6 +362,8 @@
   {
     "id": "HIP 31681",
     "propername": "Alhena",
+    "bayer": "gamma Gem",
+    "flamsteed": "",
     "magnitude": 1.93,
     "constellation": "Gem",
     "source": "IAU"
@@ -289,6 +371,8 @@
   {
     "id": "HIP 100751",
     "propername": "Peacock",
+    "bayer": "alpha Pav",
+    "flamsteed": "",
     "magnitude": 1.94,
     "constellation": "Pav",
     "source": "IAU"
@@ -296,6 +380,8 @@
   {
     "id": "HIP 36850",
     "propername": "Castor",
+    "bayer": "alpha Gem",
+    "flamsteed": "",
     "magnitude": 1.98,
     "constellation": "Gem",
     "source": "IAU"
@@ -303,6 +389,8 @@
   {
     "id": "HIP 30324",
     "propername": "Mirzam",
+    "bayer": "beta CMa",
+    "flamsteed": "",
     "magnitude": 1.98,
     "constellation": "CMa",
     "source": "IAU"
@@ -310,6 +398,8 @@
   {
     "id": "HIP 46390",
     "propername": "Alphard",
+    "bayer": "alpha Hya",
+    "flamsteed": "",
     "magnitude": 1.99,
     "constellation": "Hya",
     "source": "IAU"
@@ -317,6 +407,8 @@
   {
     "id": "HIP 42913",
     "propername": "Alsephina",
+    "bayer": "delta Vel",
+    "flamsteed": "",
     "magnitude": 1.99,
     "constellation": "Vel",
     "source": "IAU"
@@ -324,6 +416,8 @@
   {
     "id": "HIP 9884",
     "propername": "Hamal",
+    "bayer": "alpha Ari",
+    "flamsteed": "",
     "magnitude": 2.01,
     "constellation": "Ari",
     "source": "IAU"
@@ -331,6 +425,8 @@
   {
     "id": "HIP 3419",
     "propername": "Diphda",
+    "bayer": "beta Cet",
+    "flamsteed": "",
     "magnitude": 2.04,
     "constellation": "Cet",
     "source": "IAU"
@@ -338,6 +434,8 @@
   {
     "id": "HIP 92855",
     "propername": "Nunki",
+    "bayer": "sigma Sgr",
+    "flamsteed": "",
     "magnitude": 2.05,
     "constellation": "Sgr",
     "source": "IAU"
@@ -345,6 +443,8 @@
   {
     "id": "HIP 68933",
     "propername": "Menkent",
+    "bayer": "tet Cen",
+    "flamsteed": "",
     "magnitude": 2.06,
     "constellation": "Cen",
     "source": "IAU"
@@ -352,6 +452,8 @@
   {
     "id": "HIP 677",
     "propername": "Alpheratz",
+    "bayer": "alpha And",
+    "flamsteed": "",
     "magnitude": 2.07,
     "constellation": "And",
     "source": "IAU"
@@ -359,6 +461,8 @@
   {
     "id": "HIP 72607",
     "propername": "Kochab",
+    "bayer": "beta UMi",
+    "flamsteed": "",
     "magnitude": 2.07,
     "constellation": "UMi",
     "source": "IAU"
@@ -366,6 +470,8 @@
   {
     "id": "HIP 5447",
     "propername": "Mirach",
+    "bayer": "beta And",
+    "flamsteed": "",
     "magnitude": 2.07,
     "constellation": "And",
     "source": "IAU"
@@ -373,6 +479,8 @@
   {
     "id": "HIP 27366",
     "propername": "Saiph",
+    "bayer": "kappa Ori",
+    "flamsteed": "",
     "magnitude": 2.07,
     "constellation": "Ori",
     "source": "IAU"
@@ -380,6 +488,8 @@
   {
     "id": "HIP 86032",
     "propername": "Rasalhague",
+    "bayer": "alpha Oph",
+    "flamsteed": "",
     "magnitude": 2.08,
     "constellation": "Oph",
     "source": "IAU"
@@ -387,6 +497,8 @@
   {
     "id": "HIP 85927",
     "propername": "Shaula",
+    "bayer": "lambda Sco",
+    "flamsteed": "",
     "magnitude": 2.08,
     "constellation": "Sco",
     "source": "IAU"
@@ -394,6 +506,8 @@
   {
     "id": "HIP 14576",
     "propername": "Algol",
+    "bayer": "beta Per",
+    "flamsteed": "",
     "magnitude": 2.09,
     "constellation": "Per",
     "source": "IAU"
@@ -401,6 +515,8 @@
   {
     "id": "HIP 9640",
     "propername": "Almach",
+    "bayer": "gamma And",
+    "flamsteed": "",
     "magnitude": 2.1,
     "constellation": "And",
     "source": "IAU"
@@ -408,6 +524,8 @@
   {
     "id": "HIP 112122",
     "propername": "Tiaki",
+    "bayer": "beta Gru",
+    "flamsteed": "",
     "magnitude": 2.12,
     "constellation": "Gru",
     "source": "IAU"
@@ -415,6 +533,8 @@
   {
     "id": "HIP 11767",
     "propername": "Polaris",
+    "bayer": "alpha UMi",
+    "flamsteed": "",
     "magnitude": 2.13,
     "constellation": "UMi",
     "source": "IAU"
@@ -422,6 +542,8 @@
   {
     "id": "HIP 57632",
     "propername": "Denebola",
+    "bayer": "beta Leo",
+    "flamsteed": "",
     "magnitude": 2.14,
     "constellation": "Leo",
     "source": "IAU"
@@ -429,6 +551,8 @@
   {
     "id": "HIP 45556",
     "propername": "Aspidiske",
+    "bayer": "iota Car",
+    "flamsteed": "",
     "magnitude": 2.21,
     "constellation": "Car",
     "source": "IAU"
@@ -436,6 +560,8 @@
   {
     "id": "HIP 39429",
     "propername": "Naos",
+    "bayer": "zeta Pup",
+    "flamsteed": "",
     "magnitude": 2.21,
     "constellation": "Pup",
     "source": "IAU"
@@ -443,6 +569,8 @@
   {
     "id": "HIP 76267",
     "propername": "Alphecca",
+    "bayer": "alpha CrB",
+    "flamsteed": "",
     "magnitude": 2.22,
     "constellation": "CrB",
     "source": "IAU"
@@ -450,6 +578,8 @@
   {
     "id": "HIP 65378",
     "propername": "Mizar",
+    "bayer": "zeta UMa",
+    "flamsteed": "",
     "magnitude": 2.23,
     "constellation": "UMa",
     "source": "IAU"
@@ -457,6 +587,8 @@
   {
     "id": "HIP 100453",
     "propername": "Sadr",
+    "bayer": "gamma Cyg",
+    "flamsteed": "",
     "magnitude": 2.23,
     "constellation": "Cyg",
     "source": "IAU"
@@ -464,6 +596,8 @@
   {
     "id": "HIP 44816",
     "propername": "Suhail",
+    "bayer": "lambda Vel",
+    "flamsteed": "",
     "magnitude": 2.23,
     "constellation": "Vel",
     "source": "IAU"
@@ -471,6 +605,8 @@
   {
     "id": "HIP 87833",
     "propername": "Eltanin",
+    "bayer": "gamma Dra",
+    "flamsteed": "",
     "magnitude": 2.24,
     "constellation": "Dra",
     "source": "IAU"
@@ -478,6 +614,8 @@
   {
     "id": "HIP 3179",
     "propername": "Schedar",
+    "bayer": "alpha Cas",
+    "flamsteed": "",
     "magnitude": 2.24,
     "constellation": "Cas",
     "source": "IAU"
@@ -485,6 +623,8 @@
   {
     "id": "HIP 25930",
     "propername": "Mintaka",
+    "bayer": "delta Ori",
+    "flamsteed": "",
     "magnitude": 2.25,
     "constellation": "Ori",
     "source": "IAU"
@@ -492,6 +632,8 @@
   {
     "id": "HIP 746",
     "propername": "Caph",
+    "bayer": "beta Cas",
+    "flamsteed": "",
     "magnitude": 2.28,
     "constellation": "Cas",
     "source": "IAU"
@@ -499,6 +641,8 @@
   {
     "id": "HIP 78401",
     "propername": "Dschubba",
+    "bayer": "delta Sco",
+    "flamsteed": "",
     "magnitude": 2.29,
     "constellation": "Sco",
     "source": "IAU"
@@ -506,6 +650,8 @@
   {
     "id": "HIP 82396",
     "propername": "Larawag",
+    "bayer": "epsilon Sco",
+    "flamsteed": "",
     "magnitude": 2.29,
     "constellation": "Sco",
     "source": "IAU"
@@ -513,6 +659,8 @@
   {
     "id": "HIP 53910",
     "propername": "Merak",
+    "bayer": "beta UMa",
+    "flamsteed": "",
     "magnitude": 2.34,
     "constellation": "UMa",
     "source": "IAU"
@@ -520,6 +668,8 @@
   {
     "id": "HIP 72105",
     "propername": "Izar",
+    "bayer": "epsilon Boo",
+    "flamsteed": "",
     "magnitude": 2.35,
     "constellation": "Boo",
     "source": "IAU"
@@ -527,6 +677,8 @@
   {
     "id": "HIP 107315",
     "propername": "Enif",
+    "bayer": "epsilon Peg",
+    "flamsteed": "",
     "magnitude": 2.38,
     "constellation": "Peg",
     "source": "IAU"
@@ -534,6 +686,8 @@
   {
     "id": "HIP 2081",
     "propername": "Ankaa",
+    "bayer": "alpha Phe",
+    "flamsteed": "",
     "magnitude": 2.4,
     "constellation": "Phe",
     "source": "IAU"
@@ -541,6 +695,8 @@
   {
     "id": "HIP 58001",
     "propername": "Phecda",
+    "bayer": "gamma UMa",
+    "flamsteed": "",
     "magnitude": 2.41,
     "constellation": "UMa",
     "source": "IAU"
@@ -548,6 +704,8 @@
   {
     "id": "HIP 84012",
     "propername": "Sabik",
+    "bayer": "eta Oph",
+    "flamsteed": "",
     "magnitude": 2.43,
     "constellation": "Oph",
     "source": "IAU"
@@ -555,6 +713,8 @@
   {
     "id": "HIP 113881",
     "propername": "Scheat",
+    "bayer": "beta Peg",
+    "flamsteed": "",
     "magnitude": 2.44,
     "constellation": "Peg",
     "source": "IAU"
@@ -562,6 +722,8 @@
   {
     "id": "HIP 105199",
     "propername": "Alderamin",
+    "bayer": "alpha Cep",
+    "flamsteed": "",
     "magnitude": 2.45,
     "constellation": "Cep",
     "source": "IAU"
@@ -569,6 +731,8 @@
   {
     "id": "HIP 35904",
     "propername": "Aludra",
+    "bayer": "eta CMa",
+    "flamsteed": "",
     "magnitude": 2.45,
     "constellation": "CMa",
     "source": "IAU"
@@ -576,6 +740,8 @@
   {
     "id": "HIP 45941",
     "propername": "Markeb",
+    "bayer": "kappa Vel",
+    "flamsteed": "",
     "magnitude": 2.47,
     "constellation": "Vel",
     "source": "IAU"
@@ -583,6 +749,8 @@
   {
     "id": "HIP 102488",
     "propername": "Aljanah",
+    "bayer": "epsilon Cyg",
+    "flamsteed": "",
     "magnitude": 2.48,
     "constellation": "Cyg",
     "source": "IAU"
@@ -590,6 +758,8 @@
   {
     "id": "HIP 113963",
     "propername": "Markab",
+    "bayer": "alpha Peg",
+    "flamsteed": "",
     "magnitude": 2.49,
     "constellation": "Peg",
     "source": "IAU"
@@ -597,6 +767,8 @@
   {
     "id": "HIP 14135",
     "propername": "Menkar",
+    "bayer": "alpha Cet",
+    "flamsteed": "",
     "magnitude": 2.54,
     "constellation": "Cet",
     "source": "IAU"
@@ -604,6 +776,8 @@
   {
     "id": "HIP 78820",
     "propername": "Acrab",
+    "bayer": "beta Sco",
+    "flamsteed": "",
     "magnitude": 2.56,
     "constellation": "Sco",
     "source": "IAU"
@@ -611,6 +785,8 @@
   {
     "id": "HIP 54872",
     "propername": "Zosma",
+    "bayer": "delta Leo",
+    "flamsteed": "",
     "magnitude": 2.56,
     "constellation": "Leo",
     "source": "IAU"
@@ -618,6 +794,8 @@
   {
     "id": "HIP 25985",
     "propername": "Arneb",
+    "bayer": "alpha Lep",
+    "flamsteed": "",
     "magnitude": 2.58,
     "constellation": "Lep",
     "source": "IAU"
@@ -625,6 +803,8 @@
   {
     "id": "HIP 59803",
     "propername": "Gienah",
+    "bayer": "gamma Crv",
+    "flamsteed": "",
     "magnitude": 2.58,
     "constellation": "Crv",
     "source": "IAU"
@@ -632,6 +812,8 @@
   {
     "id": "HIP 93506",
     "propername": "Ascella",
+    "bayer": "zeta Sgr",
+    "flamsteed": "",
     "magnitude": 2.6,
     "constellation": "Sgr",
     "source": "IAU"
@@ -639,6 +821,8 @@
   {
     "id": "HIP 50583",
     "propername": "Algieba",
+    "bayer": "gamma1 Leo",
+    "flamsteed": "",
     "magnitude": 2.61,
     "constellation": "Leo",
     "source": "IAU"
@@ -646,6 +830,8 @@
   {
     "id": "HIP 74785",
     "propername": "Zubeneschamali",
+    "bayer": "beta Lib",
+    "flamsteed": "",
     "magnitude": 2.61,
     "constellation": "Lib",
     "source": "IAU"
@@ -653,6 +839,8 @@
   {
     "id": "HIP 77070",
     "propername": "Unukalhai",
+    "bayer": "alpha Ser",
+    "flamsteed": "",
     "magnitude": 2.63,
     "constellation": "Ser",
     "source": "IAU"
@@ -660,6 +848,8 @@
   {
     "id": "HIP 61359",
     "propername": "Kraz",
+    "bayer": "beta Crv",
+    "flamsteed": "",
     "magnitude": 2.65,
     "constellation": "Crv",
     "source": "IAU"
@@ -667,6 +857,8 @@
   {
     "id": "HIP 28380",
     "propername": "Mahasim",
+    "bayer": "tet Aur",
+    "flamsteed": "",
     "magnitude": 2.65,
     "constellation": "Aur",
     "source": "IAU"
@@ -674,6 +866,8 @@
   {
     "id": "HIP 26634",
     "propername": "Phact",
+    "bayer": "alpha Col",
+    "flamsteed": "",
     "magnitude": 2.65,
     "constellation": "Col",
     "source": "IAU"
@@ -681,6 +875,8 @@
   {
     "id": "HIP 6686",
     "propername": "Ruchbah",
+    "bayer": "delta Cas",
+    "flamsteed": "",
     "magnitude": 2.66,
     "constellation": "Cas",
     "source": "IAU"
@@ -688,6 +884,8 @@
   {
     "id": "HIP 67927",
     "propername": "Muphrid",
+    "bayer": "eta Boo",
+    "flamsteed": "",
     "magnitude": 2.68,
     "constellation": "Boo",
     "source": "IAU"
@@ -695,6 +893,8 @@
   {
     "id": "HIP 23015",
     "propername": "Hassaleh",
+    "bayer": "iota Aur",
+    "flamsteed": "",
     "magnitude": 2.69,
     "constellation": "Aur",
     "source": "IAU"
@@ -702,6 +902,8 @@
   {
     "id": "HIP 85696",
     "propername": "Lesath",
+    "bayer": "upsilon Sco",
+    "flamsteed": "",
     "magnitude": 2.7,
     "constellation": "Sco",
     "source": "IAU"
@@ -709,6 +911,8 @@
   {
     "id": "HIP 8903",
     "propername": "Sheratan",
+    "bayer": "beta Ari",
+    "flamsteed": "",
     "magnitude": 2.7,
     "constellation": "Ari",
     "source": "IAU"
@@ -716,6 +920,8 @@
   {
     "id": "HIP 89931",
     "propername": "Kaus Media",
+    "bayer": "delta Sgr",
+    "flamsteed": "",
     "magnitude": 2.72,
     "constellation": "Sgr",
     "source": "IAU"
@@ -723,6 +929,8 @@
   {
     "id": "HIP 97278",
     "propername": "Tarazed",
+    "bayer": "gamma Aql",
+    "flamsteed": "",
     "magnitude": 2.72,
     "constellation": "Aql",
     "source": "IAU"
@@ -730,6 +938,8 @@
   {
     "id": "HIP 80331",
     "propername": "Athebyne",
+    "bayer": "eta Dra",
+    "flamsteed": "",
     "magnitude": 2.73,
     "constellation": "Dra",
     "source": "IAU"
@@ -737,6 +947,8 @@
   {
     "id": "HIP 79593",
     "propername": "Yed Prior",
+    "bayer": "delta Oph",
+    "flamsteed": "",
     "magnitude": 2.73,
     "constellation": "Oph",
     "source": "IAU"
@@ -744,6 +956,8 @@
   {
     "id": "HIP 59747",
     "propername": "Imai",
+    "bayer": "delta Cru",
+    "flamsteed": "",
     "magnitude": 2.75,
     "constellation": "Cru",
     "source": "IAU"
@@ -751,6 +965,8 @@
   {
     "id": "HIP 72622",
     "propername": "Zubenelgenubi",
+    "bayer": "alpha2 Lib",
+    "flamsteed": "",
     "magnitude": 2.75,
     "constellation": "Lib",
     "source": "IAU"
@@ -758,6 +974,8 @@
   {
     "id": "HIP 86742",
     "propername": "Cebalrai",
+    "bayer": "beta Oph",
+    "flamsteed": "",
     "magnitude": 2.76,
     "constellation": "Oph",
     "source": "IAU"
@@ -765,6 +983,8 @@
   {
     "id": "HIP 23875",
     "propername": "Cursa",
+    "bayer": "beta Eri",
+    "flamsteed": "",
     "magnitude": 2.78,
     "constellation": "Eri",
     "source": "IAU"
@@ -772,6 +992,8 @@
   {
     "id": "HIP 80816",
     "propername": "Kornephoros",
+    "bayer": "beta Her",
+    "flamsteed": "",
     "magnitude": 2.78,
     "constellation": "Her",
     "source": "IAU"
@@ -779,6 +1001,8 @@
   {
     "id": "HIP 85670",
     "propername": "Rastaban",
+    "bayer": "beta Dra",
+    "flamsteed": "",
     "magnitude": 2.79,
     "constellation": "Dra",
     "source": "IAU"
@@ -786,6 +1010,8 @@
   {
     "id": "HIP 26241",
     "propername": "Hatysa",
+    "bayer": "iota Ori",
+    "flamsteed": "",
     "magnitude": 2.8,
     "constellation": "Ori",
     "source": "IAU"
@@ -793,6 +1019,8 @@
   {
     "id": "HIP 90496",
     "propername": "Kaus Borealis",
+    "bayer": "lambda Sgr",
+    "flamsteed": "",
     "magnitude": 2.82,
     "constellation": "Sgr",
     "source": "IAU"
@@ -800,6 +1028,8 @@
   {
     "id": "HIP 81266",
     "propername": "Paikauhale",
+    "bayer": "tau Sco",
+    "flamsteed": "",
     "magnitude": 2.82,
     "constellation": "Sco",
     "source": "IAU"
@@ -807,6 +1037,8 @@
   {
     "id": "HIP 1067",
     "propername": "Algenib",
+    "bayer": "gamma Peg",
+    "flamsteed": "",
     "magnitude": 2.83,
     "constellation": "Peg",
     "source": "IAU"
@@ -814,6 +1046,8 @@
   {
     "id": "HIP 25606",
     "propername": "Nihal",
+    "bayer": "beta Lep",
+    "flamsteed": "",
     "magnitude": 2.83,
     "constellation": "Lep",
     "source": "IAU"
@@ -821,6 +1055,8 @@
   {
     "id": "HIP 39757",
     "propername": "Tureis",
+    "bayer": "rho Pup",
+    "flamsteed": "",
     "magnitude": 2.83,
     "constellation": "Pup",
     "source": "IAU"
@@ -828,6 +1064,8 @@
   {
     "id": "HIP 17702",
     "propername": "Alcyone",
+    "bayer": "eta Tau",
+    "flamsteed": "",
     "magnitude": 2.85,
     "constellation": "Tau",
     "source": "IAU"
@@ -835,6 +1073,8 @@
   {
     "id": "HIP 107556",
     "propername": "Deneb Algedi",
+    "bayer": "delta Cap",
+    "flamsteed": "",
     "magnitude": 2.85,
     "constellation": "Cap",
     "source": "IAU"
@@ -842,6 +1082,8 @@
   {
     "id": "HIP 63608",
     "propername": "Vindemiatrix",
+    "bayer": "epsilon Vir",
+    "flamsteed": "",
     "magnitude": 2.85,
     "constellation": "Vir",
     "source": "IAU"
@@ -849,6 +1091,8 @@
   {
     "id": "HIP 30343",
     "propername": "Tejat",
+    "bayer": "mu Gem",
+    "flamsteed": "",
     "magnitude": 2.87,
     "constellation": "Gem",
     "source": "IAU"
@@ -856,6 +1100,8 @@
   {
     "id": "HIP 13847",
     "propername": "Acamar",
+    "bayer": "tet1 Eri",
+    "flamsteed": "",
     "magnitude": 2.88,
     "constellation": "Eri",
     "source": "IAU"
@@ -863,6 +1109,8 @@
   {
     "id": "HIP 94141",
     "propername": "Albaldah",
+    "bayer": "pi Sgr",
+    "flamsteed": "",
     "magnitude": 2.88,
     "constellation": "Sgr",
     "source": "IAU"
@@ -870,6 +1118,8 @@
   {
     "id": "HIP 63125",
     "propername": "Cor Caroli",
+    "bayer": "alpha2 CVn",
+    "flamsteed": "",
     "magnitude": 2.89,
     "constellation": "CVn",
     "source": "IAU"
@@ -877,6 +1127,8 @@
   {
     "id": "HIP 78265",
     "propername": "Fang",
+    "bayer": "pi Sco",
+    "flamsteed": "",
     "magnitude": 2.89,
     "constellation": "Sco",
     "source": "IAU"
@@ -884,6 +1136,8 @@
   {
     "id": "HIP 36188",
     "propername": "Gomeisa",
+    "bayer": "beta CMi",
+    "flamsteed": "",
     "magnitude": 2.89,
     "constellation": "CMi",
     "source": "IAU"
@@ -891,6 +1145,8 @@
   {
     "id": "HIP 80112",
     "propername": "Alniyat",
+    "bayer": "sigma Sco",
+    "flamsteed": "",
     "magnitude": 2.9,
     "constellation": "Sco",
     "source": "IAU"
@@ -898,6 +1154,8 @@
   {
     "id": "HIP 97165",
     "propername": "Fawaris",
+    "bayer": "delta Cyg",
+    "flamsteed": "",
     "magnitude": 2.9,
     "constellation": "Cyg",
     "source": "IAU"
@@ -905,6 +1163,8 @@
   {
     "id": "HIP 106278",
     "propername": "Sadalsuud",
+    "bayer": "beta Aqr",
+    "flamsteed": "",
     "magnitude": 2.9,
     "constellation": "Aqr",
     "source": "IAU"
@@ -912,6 +1172,8 @@
   {
     "id": "HIP 112158",
     "propername": "Matar",
+    "bayer": "eta Peg",
+    "flamsteed": "",
     "magnitude": 2.93,
     "constellation": "Peg",
     "source": "IAU"
@@ -919,6 +1181,8 @@
   {
     "id": "HIP 60965",
     "propername": "Algorab",
+    "bayer": "delta Crv",
+    "flamsteed": "",
     "magnitude": 2.94,
     "constellation": "Crv",
     "source": "IAU"
@@ -926,6 +1190,8 @@
   {
     "id": "HIP 109074",
     "propername": "Sadalmelik",
+    "bayer": "alpha Aqr",
+    "flamsteed": "",
     "magnitude": 2.95,
     "constellation": "Aqr",
     "source": "IAU"
@@ -933,6 +1199,8 @@
   {
     "id": "HIP 26451",
     "propername": "Tianguan",
+    "bayer": "zeta Tau",
+    "flamsteed": "",
     "magnitude": 2.97,
     "constellation": "Tau",
     "source": "IAU"
@@ -940,6 +1208,8 @@
   {
     "id": "HIP 18543",
     "propername": "Zaurak",
+    "bayer": "gamma Eri",
+    "flamsteed": "",
     "magnitude": 2.97,
     "constellation": "Eri",
     "source": "IAU"
@@ -947,6 +1217,8 @@
   {
     "id": "HIP 88635",
     "propername": "Alnasl",
+    "bayer": "gamma2 Sgr",
+    "flamsteed": "",
     "magnitude": 2.98,
     "constellation": "Sgr",
     "source": "IAU"
@@ -954,6 +1226,8 @@
   {
     "id": "HIP 93747",
     "propername": "Okab",
+    "bayer": "zeta Aql",
+    "flamsteed": "",
     "magnitude": 2.99,
     "constellation": "Aql",
     "source": "IAU"
@@ -961,6 +1235,8 @@
   {
     "id": "HIP 108085",
     "propername": "Aldhanab",
+    "bayer": "gamma Gru",
+    "flamsteed": "",
     "magnitude": 3.0,
     "constellation": "Gru",
     "source": "IAU"
@@ -968,6 +1244,8 @@
   {
     "id": "HIP 75097",
     "propername": "Pherkad",
+    "bayer": "gamma UMi",
+    "flamsteed": "",
     "magnitude": 3.0,
     "constellation": "UMi",
     "source": "IAU"
@@ -975,6 +1253,8 @@
   {
     "id": "HIP 82514",
     "propername": "Xamidimura",
+    "bayer": "mu1 Sco",
+    "flamsteed": "",
     "magnitude": 3.0,
     "constellation": "Sco",
     "source": "IAU"
@@ -982,6 +1262,8 @@
   {
     "id": "HIP 30122",
     "propername": "Furud",
+    "bayer": "zeta CMa",
+    "flamsteed": "",
     "magnitude": 3.02,
     "constellation": "CMa",
     "source": "IAU"
@@ -989,6 +1271,8 @@
   {
     "id": "HIP 23416",
     "propername": "Almaaz",
+    "bayer": "epsilon Aur",
+    "flamsteed": "",
     "magnitude": 3.03,
     "constellation": "Aur",
     "source": "IAU"
@@ -996,6 +1280,8 @@
   {
     "id": "HIP 71075",
     "propername": "Seginus",
+    "bayer": "gamma Boo",
+    "flamsteed": "",
     "magnitude": 3.04,
     "constellation": "Boo",
     "source": "IAU"
@@ -1003,6 +1289,8 @@
   {
     "id": "HIP 100345",
     "propername": "Dabih",
+    "bayer": "beta1 Cap",
+    "flamsteed": "",
     "magnitude": 3.05,
     "constellation": "Cap",
     "source": "IAU"
@@ -1010,6 +1298,8 @@
   {
     "id": "HIP 32246",
     "propername": "Mebsuta",
+    "bayer": "epsilon Gem",
+    "flamsteed": "",
     "magnitude": 3.06,
     "constellation": "Gem",
     "source": "IAU"
@@ -1017,6 +1307,8 @@
   {
     "id": "HIP 50801",
     "propername": "Tania Australis",
+    "bayer": "mu UMa",
+    "flamsteed": "",
     "magnitude": 3.06,
     "constellation": "UMa",
     "source": "IAU"
@@ -1024,6 +1316,8 @@
   {
     "id": "HIP 94376",
     "propername": "Altais",
+    "bayer": "delta Dra",
+    "flamsteed": "",
     "magnitude": 3.07,
     "constellation": "Dra",
     "source": "IAU"
@@ -1031,6 +1325,8 @@
   {
     "id": "HIP 84379",
     "propername": "Sarin",
+    "bayer": "delta Her",
+    "flamsteed": "",
     "magnitude": 3.12,
     "constellation": "Her",
     "source": "IAU"
@@ -1038,6 +1334,8 @@
   {
     "id": "HIP 44127",
     "propername": "Talitha",
+    "bayer": "iota UMa",
+    "flamsteed": "",
     "magnitude": 3.12,
     "constellation": "UMa",
     "source": "IAU"
@@ -1045,6 +1343,8 @@
   {
     "id": "HIP 27628",
     "propername": "Wazn",
+    "bayer": "beta Col",
+    "flamsteed": "",
     "magnitude": 3.12,
     "constellation": "Col",
     "source": "IAU"
@@ -1052,6 +1352,8 @@
   {
     "id": "HIP 83895",
     "propername": "Aldhibah",
+    "bayer": "zeta Dra",
+    "flamsteed": "",
     "magnitude": 3.17,
     "constellation": "Dra",
     "source": "IAU"
@@ -1059,6 +1361,8 @@
   {
     "id": "HIP 23767",
     "propername": "Haedus",
+    "bayer": "eta Aur",
+    "flamsteed": "",
     "magnitude": 3.18,
     "constellation": "Aur",
     "source": "IAU"
@@ -1066,6 +1370,8 @@
   {
     "id": "HIP 87261",
     "propername": "Fuyue",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 3.19,
     "constellation": "Sco",
     "source": "IAU"
@@ -1073,6 +1379,8 @@
   {
     "id": "HIP 22449",
     "propername": "Tabit",
+    "bayer": "pi3 Ori",
+    "flamsteed": "",
     "magnitude": 3.19,
     "constellation": "Ori",
     "source": "IAU"
@@ -1080,6 +1388,8 @@
   {
     "id": "HIP 116727",
     "propername": "Errai",
+    "bayer": "gamma Cep",
+    "flamsteed": "",
     "magnitude": 3.21,
     "constellation": "Cep",
     "source": "IAU"
@@ -1087,6 +1397,8 @@
   {
     "id": "HIP 106032",
     "propername": "Alfirk",
+    "bayer": "beta Cep",
+    "flamsteed": "",
     "magnitude": 3.23,
     "constellation": "Cep",
     "source": "IAU"
@@ -1094,6 +1406,8 @@
   {
     "id": "HIP 79882",
     "propername": "Yed Posterior",
+    "bayer": "epsilon Oph",
+    "flamsteed": "",
     "magnitude": 3.23,
     "constellation": "Oph",
     "source": "IAU"
@@ -1101,6 +1415,8 @@
   {
     "id": "HIP 73714",
     "propername": "Brachium",
+    "bayer": "sigma Lib",
+    "flamsteed": "",
     "magnitude": 3.25,
     "constellation": "Lib",
     "source": "IAU"
@@ -1108,6 +1424,8 @@
   {
     "id": "HIP 93194",
     "propername": "Sulafat",
+    "bayer": "gamma Lyr",
+    "flamsteed": "",
     "magnitude": 3.25,
     "constellation": "Lyr",
     "source": "IAU"
@@ -1115,6 +1433,8 @@
   {
     "id": "HIP 113136",
     "propername": "Skat",
+    "bayer": "delta Aqr",
+    "flamsteed": "",
     "magnitude": 3.27,
     "constellation": "Aqr",
     "source": "IAU"
@@ -1122,6 +1442,8 @@
   {
     "id": "HIP 75458",
     "propername": "Edasich",
+    "bayer": "iota Dra",
+    "flamsteed": "",
     "magnitude": 3.29,
     "constellation": "Dra",
     "source": "IAU"
@@ -1129,6 +1451,8 @@
   {
     "id": "HIP 59774",
     "propername": "Megrez",
+    "bayer": "delta UMa",
+    "flamsteed": "",
     "magnitude": 3.32,
     "constellation": "UMa",
     "source": "IAU"
@@ -1136,6 +1460,8 @@
   {
     "id": "HIP 29655",
     "propername": "Propus",
+    "bayer": "eta Gem",
+    "flamsteed": "",
     "magnitude": 3.32,
     "constellation": "Gem",
     "source": "IAU"
@@ -1143,6 +1469,8 @@
   {
     "id": "HIP 54879",
     "propername": "Chertan",
+    "bayer": "tet Leo",
+    "flamsteed": "",
     "magnitude": 3.33,
     "constellation": "Leo",
     "source": "IAU"
@@ -1150,6 +1478,8 @@
   {
     "id": "HIP 32362",
     "propername": "Alzirr",
+    "bayer": "xi Gem",
+    "flamsteed": "",
     "magnitude": 3.35,
     "constellation": "Gem",
     "source": "IAU"
@@ -1157,6 +1487,8 @@
   {
     "id": "HIP 41704",
     "propername": "Muscida",
+    "bayer": "omicron UMa",
+    "flamsteed": "",
     "magnitude": 3.35,
     "constellation": "UMa",
     "source": "IAU"
@@ -1164,6 +1496,8 @@
   {
     "id": "HIP 8886",
     "propername": "Segin",
+    "bayer": "epsilon Cas",
+    "flamsteed": "",
     "magnitude": 3.35,
     "constellation": "Cas",
     "source": "IAU"
@@ -1171,6 +1505,8 @@
   {
     "id": "HIP 95947",
     "propername": "Albireo",
+    "bayer": "beta Cyg",
+    "flamsteed": "",
     "magnitude": 3.37,
     "constellation": "Cyg",
     "source": "IAU"
@@ -1178,6 +1514,8 @@
   {
     "id": "HIP 84345",
     "propername": "Rasalgethi",
+    "bayer": "alpha1 Her",
+    "flamsteed": "",
     "magnitude": 3.37,
     "constellation": "Her",
     "source": "IAU"
@@ -1185,6 +1523,8 @@
   {
     "id": "HIP 66249",
     "propername": "Heze",
+    "bayer": "zeta Vir",
+    "flamsteed": "",
     "magnitude": 3.38,
     "constellation": "Vir",
     "source": "IAU"
@@ -1192,6 +1532,8 @@
   {
     "id": "HIP 26207",
     "propername": "Meissa",
+    "bayer": "lambda Ori",
+    "flamsteed": "",
     "magnitude": 3.39,
     "constellation": "Ori",
     "source": "IAU"
@@ -1199,6 +1541,8 @@
   {
     "id": "HIP 63090",
     "propername": "Minelauva",
+    "bayer": "delta Vir",
+    "flamsteed": "",
     "magnitude": 3.39,
     "constellation": "Vir",
     "source": "IAU"
@@ -1206,6 +1550,8 @@
   {
     "id": "HIP 112029",
     "propername": "Homam",
+    "bayer": "zeta Peg",
+    "flamsteed": "",
     "magnitude": 3.41,
     "constellation": "Peg",
     "source": "IAU"
@@ -1213,6 +1559,8 @@
   {
     "id": "HIP 8796",
     "propername": "Mothallah",
+    "bayer": "alpha Tri",
+    "flamsteed": "",
     "magnitude": 3.42,
     "constellation": "Tri",
     "source": "IAU"
@@ -1220,6 +1568,8 @@
   {
     "id": "HIP 50335",
     "propername": "Adhafera",
+    "bayer": "zeta Leo",
+    "flamsteed": "",
     "magnitude": 3.43,
     "constellation": "Leo",
     "source": "IAU"
@@ -1227,6 +1577,8 @@
   {
     "id": "HIP 61941",
     "propername": "Porrima",
+    "bayer": "gamma Vir",
+    "flamsteed": "",
     "magnitude": 3.44,
     "constellation": "Vir",
     "source": "IAU"
@@ -1234,6 +1586,8 @@
   {
     "id": "HIP 38170",
     "propername": "Azmidi",
+    "bayer": "xi Pup",
+    "flamsteed": "",
     "magnitude": 3.45,
     "constellation": "Pup",
     "source": "IAU"
@@ -1241,6 +1595,8 @@
   {
     "id": "HIP 50372",
     "propername": "Tania Borealis",
+    "bayer": "lambda UMa",
+    "flamsteed": "",
     "magnitude": 3.45,
     "constellation": "UMa",
     "source": "IAU"
@@ -1248,6 +1604,8 @@
   {
     "id": "HIP 3821",
     "propername": "Achird",
+    "bayer": "eta Cas",
+    "flamsteed": "",
     "magnitude": 3.46,
     "constellation": "Cas",
     "source": "IAU"
@@ -1255,6 +1613,8 @@
   {
     "id": "HIP 55219",
     "propername": "Alula Borealis",
+    "bayer": "nu UMa",
+    "flamsteed": "",
     "magnitude": 3.49,
     "constellation": "UMa",
     "source": "IAU"
@@ -1262,6 +1622,8 @@
   {
     "id": "HIP 43109",
     "propername": "Ashlesha",
+    "bayer": "epsilon Hya",
+    "flamsteed": "",
     "magnitude": 3.49,
     "constellation": "Hya",
     "source": "IAU"
@@ -1269,6 +1631,8 @@
   {
     "id": "HIP 73555",
     "propername": "Nekkar",
+    "bayer": "beta Boo",
+    "flamsteed": "",
     "magnitude": 3.49,
     "constellation": "Boo",
     "source": "IAU"
@@ -1276,6 +1640,8 @@
   {
     "id": "HIP 33856",
     "propername": "Nganurganity",
+    "bayer": "sigma CMa",
+    "flamsteed": "",
     "magnitude": 3.49,
     "constellation": "CMa",
     "source": "IAU"
@@ -1283,6 +1649,8 @@
   {
     "id": "HIP 112748",
     "propername": "Sadalbari",
+    "bayer": "mu Peg",
+    "flamsteed": "",
     "magnitude": 3.51,
     "constellation": "Peg",
     "source": "IAU"
@@ -1290,6 +1658,8 @@
   {
     "id": "HIP 109427",
     "propername": "Biham",
+    "bayer": "tet Peg",
+    "flamsteed": "",
     "magnitude": 3.52,
     "constellation": "Peg",
     "source": "IAU"
@@ -1297,6 +1667,8 @@
   {
     "id": "HIP 47508",
     "propername": "Subra",
+    "bayer": "omicron Leo",
+    "flamsteed": "",
     "magnitude": 3.52,
     "constellation": "Leo",
     "source": "IAU"
@@ -1304,6 +1676,8 @@
   {
     "id": "HIP 35550",
     "propername": "Wasat",
+    "bayer": "delta Gem",
+    "flamsteed": "",
     "magnitude": 3.52,
     "constellation": "Gem",
     "source": "IAU"
@@ -1311,6 +1685,8 @@
   {
     "id": "HIP 20889",
     "propername": "Ain",
+    "bayer": "epsilon Tau",
+    "flamsteed": "",
     "magnitude": 3.53,
     "constellation": "Tau",
     "source": "IAU"
@@ -1318,6 +1694,8 @@
   {
     "id": "HIP 17378",
     "propername": "Rana",
+    "bayer": "delta Eri",
+    "flamsteed": "",
     "magnitude": 3.53,
     "constellation": "Eri",
     "source": "IAU"
@@ -1325,6 +1703,8 @@
   {
     "id": "HIP 40526",
     "propername": "Tarf",
+    "bayer": "beta Cnc",
+    "flamsteed": "",
     "magnitude": 3.53,
     "constellation": "Cnc",
     "source": "IAU"
@@ -1332,6 +1712,8 @@
   {
     "id": "HIP 12706",
     "propername": "Kaffaljidhma",
+    "bayer": "gamma Cet",
+    "flamsteed": "",
     "magnitude": 3.56,
     "constellation": "Cet",
     "source": "IAU"
@@ -1339,6 +1721,8 @@
   {
     "id": "HIP 82545",
     "propername": "Pipirima",
+    "bayer": "mu2 Sco",
+    "flamsteed": "",
     "magnitude": 3.56,
     "constellation": "Sco",
     "source": "IAU"
@@ -1346,6 +1730,8 @@
   {
     "id": "HIP 100064",
     "propername": "Algedi",
+    "bayer": "alpha2 Cap",
+    "flamsteed": "",
     "magnitude": 3.58,
     "constellation": "Cap",
     "source": "IAU"
@@ -1353,6 +1739,8 @@
   {
     "id": "HIP 60260",
     "propername": "Ginan",
+    "bayer": "epsilon Cru",
+    "flamsteed": "",
     "magnitude": 3.59,
     "constellation": "Cru",
     "source": "IAU"
@@ -1360,6 +1748,8 @@
   {
     "id": "HIP 7607",
     "propername": "Nembus",
+    "bayer": "",
+    "flamsteed": "51 And",
     "magnitude": 3.59,
     "constellation": "And",
     "source": "IAU"
@@ -1367,6 +1757,8 @@
   {
     "id": "HIP 57757",
     "propername": "Zavijava",
+    "bayer": "beta Vir",
+    "flamsteed": "",
     "magnitude": 3.59,
     "constellation": "Vir",
     "source": "IAU"
@@ -1374,6 +1766,8 @@
   {
     "id": "HIP 92420",
     "propername": "Sheliak",
+    "bayer": "beta Lyr",
+    "flamsteed": "",
     "magnitude": 3.6,
     "constellation": "Lyr",
     "source": "IAU"
@@ -1381,6 +1775,8 @@
   {
     "id": "HIP 13209",
     "propername": "Bharani",
+    "bayer": "",
+    "flamsteed": "41 Ari",
     "magnitude": 3.61,
     "constellation": "Ari",
     "source": "IAU"
@@ -1388,6 +1784,8 @@
   {
     "id": "HIP 17847",
     "propername": "Atlas",
+    "bayer": "",
+    "flamsteed": "27 Tau",
     "magnitude": 3.62,
     "constellation": "Tau",
     "source": "IAU"
@@ -1395,6 +1793,8 @@
   {
     "id": "HIP 101769",
     "propername": "Rotanev",
+    "bayer": "beta Del",
+    "flamsteed": "",
     "magnitude": 3.64,
     "constellation": "Del",
     "source": "IAU"
@@ -1402,6 +1802,8 @@
   {
     "id": "HIP 20205",
     "propername": "Prima Hyadum",
+    "bayer": "gamma Tau",
+    "flamsteed": "",
     "magnitude": 3.65,
     "constellation": "Tau",
     "source": "IAU"
@@ -1409,6 +1811,8 @@
   {
     "id": "HIP 68756",
     "propername": "Thuban",
+    "bayer": "alpha Dra",
+    "flamsteed": "",
     "magnitude": 3.67,
     "constellation": "Dra",
     "source": "IAU"
@@ -1416,6 +1820,8 @@
   {
     "id": "HIP 2920",
     "propername": "Fulu",
+    "bayer": "zeta Cas",
+    "flamsteed": "",
     "magnitude": 3.69,
     "constellation": "Cas",
     "source": "IAU"
@@ -1423,6 +1829,8 @@
   {
     "id": "HIP 106985",
     "propername": "Nashira",
+    "bayer": "gamma Cap",
+    "flamsteed": "",
     "magnitude": 3.69,
     "constellation": "Cap",
     "source": "IAU"
@@ -1430,6 +1838,8 @@
   {
     "id": "HIP 23453",
     "propername": "Saclateni",
+    "bayer": "zeta Aur",
+    "flamsteed": "",
     "magnitude": 3.69,
     "constellation": "Aur",
     "source": "IAU"
@@ -1437,6 +1847,8 @@
   {
     "id": "HIP 57399",
     "propername": "Taiyangshou",
+    "bayer": "chi UMa",
+    "flamsteed": "",
     "magnitude": 3.69,
     "constellation": "UMa",
     "source": "IAU"
@@ -1444,6 +1856,8 @@
   {
     "id": "HIP 98036",
     "propername": "Alshain",
+    "bayer": "beta Aql",
+    "flamsteed": "",
     "magnitude": 3.71,
     "constellation": "Aql",
     "source": "IAU"
@@ -1451,6 +1865,8 @@
   {
     "id": "HIP 17499",
     "propername": "Electra",
+    "bayer": "",
+    "flamsteed": "17 Tau",
     "magnitude": 3.72,
     "constellation": "Tau",
     "source": "IAU"
@@ -1458,6 +1874,8 @@
   {
     "id": "HIP 20894",
     "propername": "Chamukuy",
+    "bayer": "tet2 Tau",
+    "flamsteed": "",
     "magnitude": 3.73,
     "constellation": "Tau",
     "source": "IAU"
@@ -1465,6 +1883,8 @@
   {
     "id": "HIP 87585",
     "propername": "Grumium",
+    "bayer": "xi Dra",
+    "flamsteed": "",
     "magnitude": 3.73,
     "constellation": "Dra",
     "source": "IAU"
@@ -1472,6 +1892,8 @@
   {
     "id": "HIP 16537",
     "propername": "Ran",
+    "bayer": "epsilon Eri",
+    "flamsteed": "",
     "magnitude": 3.73,
     "constellation": "Eri",
     "source": "IAU"
@@ -1479,6 +1901,8 @@
   {
     "id": "HIP 8645",
     "propername": "Baten Kaitos",
+    "bayer": "zeta Cet",
+    "flamsteed": "",
     "magnitude": 3.74,
     "constellation": "Cet",
     "source": "IAU"
@@ -1486,6 +1910,8 @@
   {
     "id": "HIP 13268",
     "propername": "Miram",
+    "bayer": "eta Per",
+    "flamsteed": "",
     "magnitude": 3.77,
     "constellation": "Per",
     "source": "IAU"
@@ -1493,6 +1919,8 @@
   {
     "id": "HIP 102618",
     "propername": "Albali",
+    "bayer": "epsilon Aqr",
+    "flamsteed": "",
     "magnitude": 3.78,
     "constellation": "Aqr",
     "source": "IAU"
@@ -1500,6 +1928,8 @@
   {
     "id": "HIP 20455",
     "propername": "Secunda Hyadum",
+    "bayer": "delta1 Tau",
+    "flamsteed": "",
     "magnitude": 3.78,
     "constellation": "Tau",
     "source": "IAU"
@@ -1507,6 +1937,8 @@
   {
     "id": "HIP 14668",
     "propername": "Misam",
+    "bayer": "kappa Per",
+    "flamsteed": "",
     "magnitude": 3.79,
     "constellation": "Per",
     "source": "IAU"
@@ -1514,6 +1946,8 @@
   {
     "id": "HIP 53229",
     "propername": "Praecipua",
+    "bayer": "",
+    "flamsteed": "46 LMi",
     "magnitude": 3.79,
     "constellation": "LMi",
     "source": "IAU"
@@ -1521,6 +1955,8 @@
   {
     "id": "HIP 21393",
     "propername": "Theemin",
+    "bayer": "upsilon2 Eri",
+    "flamsteed": "",
     "magnitude": 3.81,
     "constellation": "Eri",
     "source": "IAU"
@@ -1528,6 +1964,8 @@
   {
     "id": "HIP 9487",
     "propername": "Alrescha",
+    "bayer": "alpha Psc",
+    "flamsteed": "",
     "magnitude": 3.82,
     "constellation": "Psc",
     "source": "IAU"
@@ -1535,6 +1973,8 @@
   {
     "id": "HIP 56211",
     "propername": "Giausar",
+    "bayer": "lambda Dra",
+    "flamsteed": "",
     "magnitude": 3.82,
     "constellation": "Dra",
     "source": "IAU"
@@ -1542,6 +1982,8 @@
   {
     "id": "HIP 80883",
     "propername": "Marfik",
+    "bayer": "lambda Oph",
+    "flamsteed": "",
     "magnitude": 3.82,
     "constellation": "Oph",
     "source": "IAU"
@@ -1549,6 +1991,8 @@
   {
     "id": "HIP 7097",
     "propername": "Alpherg",
+    "bayer": "eta Psc",
+    "flamsteed": "",
     "magnitude": 3.83,
     "constellation": "Psc",
     "source": "IAU"
@@ -1556,6 +2000,8 @@
   {
     "id": "HIP 17448",
     "propername": "Atik",
+    "bayer": "omicron Per",
+    "flamsteed": "",
     "magnitude": 3.84,
     "constellation": "Per",
     "source": "IAU"
@@ -1563,6 +2009,8 @@
   {
     "id": "HIP 89341",
     "propername": "Polis",
+    "bayer": "mu Sgr",
+    "flamsteed": "",
     "magnitude": 3.84,
     "constellation": "Sgr",
     "source": "IAU"
@@ -1570,6 +2018,8 @@
   {
     "id": "HIP 14879",
     "propername": "Dalim",
+    "bayer": "alpha For",
+    "flamsteed": "",
     "magnitude": 3.86,
     "constellation": "For",
     "source": "IAU"
@@ -1577,6 +2027,8 @@
   {
     "id": "HIP 110395",
     "propername": "Sadachbia",
+    "bayer": "gamma Aqr",
+    "flamsteed": "",
     "magnitude": 3.86,
     "constellation": "Aqr",
     "source": "IAU"
@@ -1584,6 +2036,8 @@
   {
     "id": "HIP 101958",
     "propername": "Sualocin",
+    "bayer": "alpha Del",
+    "flamsteed": "",
     "magnitude": 3.86,
     "constellation": "Del",
     "source": "IAU"
@@ -1591,6 +2045,8 @@
   {
     "id": "HIP 78104",
     "propername": "Iklil",
+    "bayer": "rho Sco",
+    "flamsteed": "",
     "magnitude": 3.87,
     "constellation": "Sco",
     "source": "IAU"
@@ -1598,6 +2054,8 @@
   {
     "id": "HIP 17573",
     "propername": "Maia",
+    "bayer": "",
+    "flamsteed": "20 Tau",
     "magnitude": 3.87,
     "constellation": "Tau",
     "source": "IAU"
@@ -1605,6 +2063,8 @@
   {
     "id": "HIP 48455",
     "propername": "Rasalas",
+    "bayer": "mu Leo",
+    "flamsteed": "",
     "magnitude": 3.88,
     "constellation": "Leo",
     "source": "IAU"
@@ -1612,6 +2072,8 @@
   {
     "id": "HIP 13701",
     "propername": "Azha",
+    "bayer": "eta Eri",
+    "flamsteed": "",
     "magnitude": 3.89,
     "constellation": "Eri",
     "source": "IAU"
@@ -1619,6 +2081,8 @@
   {
     "id": "HIP 75695",
     "propername": "Nusakan",
+    "bayer": "beta CrB",
+    "flamsteed": "",
     "magnitude": 3.9,
     "constellation": "CrB",
     "source": "IAU"
@@ -1626,6 +2090,8 @@
   {
     "id": "HIP 47431",
     "propername": "Ukdah",
+    "bayer": "iota Hya",
+    "flamsteed": "",
     "magnitude": 3.9,
     "constellation": "Hya",
     "source": "IAU"
@@ -1633,6 +2099,8 @@
   {
     "id": "HIP 76333",
     "propername": "Zubenelhakrabi",
+    "bayer": "gamma Lib",
+    "flamsteed": "",
     "magnitude": 3.91,
     "constellation": "Lib",
     "source": "IAU"
@@ -1640,6 +2108,8 @@
   {
     "id": "HIP 104987",
     "propername": "Kitalpha",
+    "bayer": "alpha Equ",
+    "flamsteed": "",
     "magnitude": 3.92,
     "constellation": "Equ",
     "source": "IAU"
@@ -1647,6 +2117,8 @@
   {
     "id": "HIP 42911",
     "propername": "Asellus Australis",
+    "bayer": "delta Cnc",
+    "flamsteed": "",
     "magnitude": 3.94,
     "constellation": "Cnc",
     "source": "IAU"
@@ -1654,6 +2126,8 @@
   {
     "id": "HIP 95241",
     "propername": "Arkab Prior",
+    "bayer": "beta1 Sgr",
+    "flamsteed": "",
     "magnitude": 3.96,
     "constellation": "Sgr",
     "source": "IAU"
@@ -1661,6 +2135,8 @@
   {
     "id": "HIP 95347",
     "propername": "Rukbat",
+    "bayer": "alpha Sgr",
+    "flamsteed": "",
     "magnitude": 3.96,
     "constellation": "Sgr",
     "source": "IAU"
@@ -1668,6 +2144,8 @@
   {
     "id": "HIP 20535",
     "propername": "Beemim",
+    "bayer": "upsilon3 Eri",
+    "flamsteed": "",
     "magnitude": 3.97,
     "constellation": "Eri",
     "source": "IAU"
@@ -1675,6 +2153,8 @@
   {
     "id": "HIP 18614",
     "propername": "Menkib",
+    "bayer": "xi Per",
+    "flamsteed": "",
     "magnitude": 3.98,
     "constellation": "Per",
     "source": "IAU"
@@ -1682,6 +2162,8 @@
   {
     "id": "HIP 65477",
     "propername": "Alcor",
+    "bayer": "",
+    "flamsteed": "80 UMa",
     "magnitude": 3.99,
     "constellation": "UMa",
     "source": "IAU"
@@ -1689,6 +2171,8 @@
   {
     "id": "HIP 34088",
     "propername": "Mekbuda",
+    "bayer": "zeta Gem",
+    "flamsteed": "",
     "magnitude": 4.01,
     "constellation": "Gem",
     "source": "IAU"
@@ -1696,6 +2180,8 @@
   {
     "id": "HIP 59199",
     "propername": "Alchiba",
+    "bayer": "alpha Crv",
+    "flamsteed": "",
     "magnitude": 4.02,
     "constellation": "Crv",
     "source": "IAU"
@@ -1703,6 +2189,8 @@
   {
     "id": "HIP 21594",
     "propername": "Sceptrum",
+    "bayer": "",
+    "flamsteed": "53 Eri",
     "magnitude": 4.02,
     "constellation": "Eri",
     "source": "IAU"
@@ -1710,6 +2198,8 @@
   {
     "id": "HIP 5348",
     "propername": "Wurren",
+    "bayer": "zeta Phe",
+    "flamsteed": "",
     "magnitude": 4.02,
     "constellation": "Phe",
     "source": "IAU"
@@ -1717,6 +2207,8 @@
   {
     "id": "HIP 101421",
     "propername": "Aldulfin",
+    "bayer": "epsilon Del",
+    "flamsteed": "",
     "magnitude": 4.03,
     "constellation": "Del",
     "source": "IAU"
@@ -1724,6 +2216,8 @@
   {
     "id": "HIP 19587",
     "propername": "Beid",
+    "bayer": "omicron1 Eri",
+    "flamsteed": "",
     "magnitude": 4.04,
     "constellation": "Eri",
     "source": "IAU"
@@ -1731,6 +2225,8 @@
   {
     "id": "HIP 69701",
     "propername": "Syrma",
+    "bayer": "iota Vir",
+    "flamsteed": "",
     "magnitude": 4.07,
     "constellation": "Vir",
     "source": "IAU"
@@ -1738,6 +2234,8 @@
   {
     "id": "HIP 53740",
     "propername": "Alkes",
+    "bayer": "alpha Crt",
+    "flamsteed": "",
     "magnitude": 4.08,
     "constellation": "Crt",
     "source": "IAU"
@@ -1745,6 +2243,8 @@
   {
     "id": "HIP 77450",
     "propername": "Gudja",
+    "bayer": "kappa Ser",
+    "flamsteed": "",
     "magnitude": 4.09,
     "constellation": "Ser",
     "source": "IAU"
@@ -1752,6 +2252,8 @@
   {
     "id": "HIP 7513",
     "propername": "Titawin",
+    "bayer": "upsilon And",
+    "flamsteed": "",
     "magnitude": 4.09,
     "constellation": "And",
     "source": "IAU"
@@ -1759,6 +2261,8 @@
   {
     "id": "HIP 94114",
     "propername": "Meridiana",
+    "bayer": "alpha CrA",
+    "flamsteed": "",
     "magnitude": 4.11,
     "constellation": "CrA",
     "source": "IAU"
@@ -1766,6 +2270,8 @@
   {
     "id": "HIP 34045",
     "propername": "Muliphein",
+    "bayer": "gamma CMa",
+    "flamsteed": "",
     "magnitude": 4.11,
     "constellation": "CMa",
     "source": "IAU"
@@ -1773,6 +2279,8 @@
   {
     "id": "HIP 48356",
     "propername": "Zhang",
+    "bayer": "upsilon1 Hya",
+    "flamsteed": "",
     "magnitude": 4.11,
     "constellation": "Hya",
     "source": "IAU"
@@ -1780,6 +2288,8 @@
   {
     "id": "HIP 17608",
     "propername": "Merope",
+    "bayer": "",
+    "flamsteed": "23 Tau",
     "magnitude": 4.14,
     "constellation": "Tau",
     "source": "IAU"
@@ -1787,6 +2297,8 @@
   {
     "id": "HIP 44471",
     "propername": "Alkaphrah",
+    "bayer": "kappa UMa",
+    "flamsteed": "",
     "magnitude": 4.16,
     "constellation": "UMa",
     "source": "IAU"
@@ -1794,6 +2306,8 @@
   {
     "id": "HIP 110003",
     "propername": "Ancha",
+    "bayer": "tet Aqr",
+    "flamsteed": "",
     "magnitude": 4.17,
     "constellation": "Aqr",
     "source": "IAU"
@@ -1801,6 +2315,8 @@
   {
     "id": "HIP 69427",
     "propername": "Kang",
+    "bayer": "kappa Vir",
+    "flamsteed": "",
     "magnitude": 4.18,
     "constellation": "Vir",
     "source": "IAU"
@@ -1808,6 +2324,8 @@
   {
     "id": "HIP 69732",
     "propername": "Xuange",
+    "bayer": "lambda Boo",
+    "flamsteed": "",
     "magnitude": 4.18,
     "constellation": "Boo",
     "source": "IAU"
@@ -1815,6 +2333,8 @@
   {
     "id": "HIP 61317",
     "propername": "Chara",
+    "bayer": "beta CVn",
+    "flamsteed": "",
     "magnitude": 4.24,
     "constellation": "CVn",
     "source": "IAU"
@@ -1822,6 +2342,8 @@
   {
     "id": "HIP 41075",
     "propername": "Alsciaukat",
+    "bayer": "",
+    "flamsteed": "31 Lyn",
     "magnitude": 4.25,
     "constellation": "Lyn",
     "source": "IAU"
@@ -1829,6 +2351,8 @@
   {
     "id": "HIP 44066",
     "propername": "Acubens",
+    "bayer": "alpha Cnc",
+    "flamsteed": "",
     "magnitude": 4.26,
     "constellation": "Cnc",
     "source": "IAU"
@@ -1836,6 +2360,8 @@
   {
     "id": "HIP 108917",
     "propername": "Kurhah",
+    "bayer": "xi Cep",
+    "flamsteed": "",
     "magnitude": 4.26,
     "constellation": "Cep",
     "source": "IAU"
@@ -1843,6 +2369,8 @@
   {
     "id": "HIP 95294",
     "propername": "Arkab Posterior",
+    "bayer": "beta2 Sgr",
+    "flamsteed": "",
     "magnitude": 4.27,
     "constellation": "Sgr",
     "source": "IAU"
@@ -1850,6 +2378,8 @@
   {
     "id": "HIP 8198",
     "propername": "Torcular",
+    "bayer": "omicron Psc",
+    "flamsteed": "",
     "magnitude": 4.29,
     "constellation": "Psc",
     "source": "IAU"
@@ -1857,6 +2387,8 @@
   {
     "id": "HIP 17531",
     "propername": "Taygeta",
+    "bayer": "",
+    "flamsteed": "19 Tau",
     "magnitude": 4.3,
     "constellation": "Tau",
     "source": "IAU"
@@ -1864,6 +2396,8 @@
   {
     "id": "HIP 75411",
     "propername": "Alkalurops",
+    "bayer": "mu1 Boo",
+    "flamsteed": "",
     "magnitude": 4.31,
     "constellation": "Boo",
     "source": "IAU"
@@ -1871,6 +2405,8 @@
   {
     "id": "HIP 46750",
     "propername": "Alterf",
+    "bayer": "lambda Leo",
+    "flamsteed": "",
     "magnitude": 4.32,
     "constellation": "Leo",
     "source": "IAU"
@@ -1878,6 +2414,8 @@
   {
     "id": "HIP 14838",
     "propername": "Botein",
+    "bayer": "delta Ari",
+    "flamsteed": "",
     "magnitude": 4.35,
     "constellation": "Ari",
     "source": "IAU"
@@ -1885,6 +2423,8 @@
   {
     "id": "HIP 85822",
     "propername": "Yildun",
+    "bayer": "delta UMi",
+    "flamsteed": "",
     "magnitude": 4.35,
     "constellation": "UMi",
     "source": "IAU"
@@ -1892,6 +2432,8 @@
   {
     "id": "HIP 96757",
     "propername": "Sham",
+    "bayer": "alpha Sge",
+    "flamsteed": "",
     "magnitude": 4.39,
     "constellation": "Sge",
     "source": "IAU"
@@ -1899,6 +2441,8 @@
   {
     "id": "HIP 55203",
     "propername": "Alula Australis",
+    "bayer": "xi UMa",
+    "flamsteed": "",
     "magnitude": 4.41,
     "constellation": "UMa",
     "source": "IAU"
@@ -1906,6 +2450,8 @@
   {
     "id": "HIP 85693",
     "propername": "Maasym",
+    "bayer": "lambda Her",
+    "flamsteed": "",
     "magnitude": 4.41,
     "constellation": "Her",
     "source": "IAU"
@@ -1913,6 +2459,8 @@
   {
     "id": "HIP 115623",
     "propername": "Alkarab",
+    "bayer": "upsilon Peg",
+    "flamsteed": "",
     "magnitude": 4.42,
     "constellation": "Peg",
     "source": "IAU"
@@ -1920,6 +2468,8 @@
   {
     "id": "HIP 94481",
     "propername": "Aladfar",
+    "bayer": "eta Lyr",
+    "flamsteed": "",
     "magnitude": 4.43,
     "constellation": "Lyr",
     "source": "IAU"
@@ -1927,6 +2477,8 @@
   {
     "id": "HIP 19849",
     "propername": "Keid",
+    "bayer": "omicron2 Eri",
+    "flamsteed": "",
     "magnitude": 4.43,
     "constellation": "Eri",
     "source": "IAU"
@@ -1934,6 +2486,8 @@
   {
     "id": "HIP 95771",
     "propername": "Anser",
+    "bayer": "alpha Vul",
+    "flamsteed": "",
     "magnitude": 4.44,
     "constellation": "Vul",
     "source": "IAU"
@@ -1941,6 +2495,8 @@
   {
     "id": "HIP 42402",
     "propername": "Minchir",
+    "bayer": "sigma Hya",
+    "flamsteed": "",
     "magnitude": 4.45,
     "constellation": "Hya",
     "source": "IAU"
@@ -1948,6 +2504,8 @@
   {
     "id": "HIP 113889",
     "propername": "Fumalsamakah",
+    "bayer": "beta Psc",
+    "flamsteed": "",
     "magnitude": 4.48,
     "constellation": "Psc",
     "source": "IAU"
@@ -1955,6 +2513,8 @@
   {
     "id": "HIP 79374",
     "propername": "Jabbah",
+    "bayer": "nu Sco",
+    "flamsteed": "",
     "magnitude": 4.5,
     "constellation": "Sco",
     "source": "IAU"
@@ -1962,6 +2522,8 @@
   {
     "id": "HIP 69974",
     "propername": "Khambalia",
+    "bayer": "lambda Vir",
+    "flamsteed": "",
     "magnitude": 4.52,
     "constellation": "Vir",
     "source": "IAU"
@@ -1969,6 +2531,8 @@
   {
     "id": "HIP 13061",
     "propername": "Lilii Borea",
+    "bayer": "",
+    "flamsteed": "39 Ari",
     "magnitude": 4.52,
     "constellation": "Ari",
     "source": "IAU"
@@ -1976,6 +2540,8 @@
   {
     "id": "HIP 80463",
     "propername": "Cujam",
+    "bayer": "omega Her",
+    "flamsteed": "",
     "magnitude": 4.57,
     "constellation": "Her",
     "source": "IAU"
@@ -1983,6 +2549,8 @@
   {
     "id": "HIP 86614",
     "propername": "Dziban",
+    "bayer": "psi1 Dra",
+    "flamsteed": "",
     "magnitude": 4.57,
     "constellation": "Dra",
     "source": "IAU"
@@ -1990,6 +2558,8 @@
   {
     "id": "HIP 115250",
     "propername": "Salm",
+    "bayer": "tau Peg",
+    "flamsteed": "",
     "magnitude": 4.58,
     "constellation": "Peg",
     "source": "IAU"
@@ -1997,6 +2567,8 @@
   {
     "id": "HIP 60129",
     "propername": "Zaniah",
+    "bayer": "eta Vir",
+    "flamsteed": "",
     "magnitude": 4.6,
     "constellation": "Vir",
     "source": "IAU"
@@ -2004,6 +2576,8 @@
   {
     "id": "HIP 92946",
     "propername": "Alya",
+    "bayer": "tet1 Ser",
+    "flamsteed": "",
     "magnitude": 4.62,
     "constellation": "Ser",
     "source": "IAU"
@@ -2011,6 +2585,8 @@
   {
     "id": "HIP 4422",
     "propername": "Castula",
+    "bayer": "upsilon2 Cas",
+    "flamsteed": "",
     "magnitude": 4.62,
     "constellation": "Cas",
     "source": "IAU"
@@ -2018,6 +2594,8 @@
   {
     "id": "HIP 42806",
     "propername": "Asellus Borealis",
+    "bayer": "gamma Cnc",
+    "flamsteed": "",
     "magnitude": 4.66,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2025,6 +2603,8 @@
   {
     "id": "HIP 96100",
     "propername": "Alsafi",
+    "bayer": "sigma Dra",
+    "flamsteed": "",
     "magnitude": 4.67,
     "constellation": "Dra",
     "source": "IAU"
@@ -2032,6 +2612,8 @@
   {
     "id": "HIP 107136",
     "propername": "Azelfafage",
+    "bayer": "pi1 Cyg",
+    "flamsteed": "",
     "magnitude": 4.69,
     "constellation": "Cyg",
     "source": "IAU"
@@ -2039,6 +2621,8 @@
   {
     "id": "HIP 98066",
     "propername": "Terebellum",
+    "bayer": "omega Sgr",
+    "flamsteed": "",
     "magnitude": 4.7,
     "constellation": "Sgr",
     "source": "IAU"
@@ -2046,6 +2630,8 @@
   {
     "id": "HIP 97938",
     "propername": "Libertas",
+    "bayer": "xi Aql",
+    "flamsteed": "",
     "magnitude": 4.71,
     "constellation": "Aql",
     "source": "IAU"
@@ -2053,6 +2639,8 @@
   {
     "id": "HIP 8832",
     "propername": "Mesarthim",
+    "bayer": "gamma2 Ari",
+    "flamsteed": "",
     "magnitude": 4.75,
     "constellation": "Ari",
     "source": "IAU"
@@ -2060,6 +2648,8 @@
   {
     "id": "HIP 13288",
     "propername": "Angetenar",
+    "bayer": "tau2 Eri",
+    "flamsteed": "",
     "magnitude": 4.76,
     "constellation": "Eri",
     "source": "IAU"
@@ -2067,6 +2657,8 @@
   {
     "id": "HIP 100310",
     "propername": "Alshat",
+    "bayer": "nu Cap",
+    "flamsteed": "",
     "magnitude": 4.77,
     "constellation": "Cap",
     "source": "IAU"
@@ -2074,6 +2666,8 @@
   {
     "id": "HIP 106786",
     "propername": "Bunda",
+    "bayer": "xi Aqr",
+    "flamsteed": "",
     "magnitude": 4.8,
     "constellation": "Aqr",
     "source": "IAU"
@@ -2081,6 +2675,8 @@
   {
     "id": "HIP 15197",
     "propername": "Zibal",
+    "bayer": "zeta Eri",
+    "flamsteed": "",
     "magnitude": 4.8,
     "constellation": "Eri",
     "source": "IAU"
@@ -2088,6 +2684,8 @@
   {
     "id": "HIP 90344",
     "propername": "Fafnir",
+    "bayer": "",
+    "flamsteed": "42 Dra",
     "magnitude": 4.82,
     "constellation": "Dra",
     "source": "IAU"
@@ -2095,6 +2693,8 @@
   {
     "id": "HIP 70755",
     "propername": "Elgafar",
+    "bayer": "phi Vir",
+    "flamsteed": "",
     "magnitude": 4.84,
     "constellation": "Vir",
     "source": "IAU"
@@ -2102,6 +2702,8 @@
   {
     "id": "HIP 64241",
     "propername": "Diadem",
+    "bayer": "alpha Com",
+    "flamsteed": "",
     "magnitude": 4.85,
     "constellation": "Com",
     "source": "IAU"
@@ -2109,6 +2711,8 @@
   {
     "id": "HIP 92761",
     "propername": "Ainalrami",
+    "bayer": "nu1 Sgr",
+    "flamsteed": "",
     "magnitude": 4.86,
     "constellation": "Sgr",
     "source": "IAU"
@@ -2116,6 +2720,8 @@
   {
     "id": "HIP 6411",
     "propername": "Adhil",
+    "bayer": "xi And",
+    "flamsteed": "",
     "magnitude": 4.87,
     "constellation": "And",
     "source": "IAU"
@@ -2123,6 +2729,8 @@
   {
     "id": "HIP 37265",
     "propername": "Jishui",
+    "bayer": "omicron Gem",
+    "flamsteed": "",
     "magnitude": 4.89,
     "constellation": "Gem",
     "source": "IAU"
@@ -2130,6 +2738,8 @@
   {
     "id": "HIP 48615",
     "propername": "Felis",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 4.94,
     "constellation": "Hya",
     "source": "IAU"
@@ -2137,6 +2747,8 @@
   {
     "id": "HIP 29034",
     "propername": "Elkurud",
+    "bayer": "tet Col",
+    "flamsteed": "",
     "magnitude": 5.0,
     "constellation": "Col",
     "source": "IAU"
@@ -2144,6 +2756,8 @@
   {
     "id": "HIP 79043",
     "propername": "Marsic",
+    "bayer": "kappa Her",
+    "flamsteed": "",
     "magnitude": 5.0,
     "constellation": "Her",
     "source": "IAU"
@@ -2151,6 +2765,8 @@
   {
     "id": "HIP 53721",
     "propername": "Chalawan",
+    "bayer": "",
+    "flamsteed": "47 UMa",
     "magnitude": 5.03,
     "constellation": "UMa",
     "source": "IAU"
@@ -2158,6 +2774,8 @@
   {
     "id": "HIP 111710",
     "propername": "Situla",
+    "bayer": "kappa Aqr",
+    "flamsteed": "",
     "magnitude": 5.04,
     "constellation": "Aqr",
     "source": "IAU"
@@ -2165,6 +2783,8 @@
   {
     "id": "HIP 17851",
     "propername": "Pleione",
+    "bayer": "",
+    "flamsteed": "28 Tau",
     "magnitude": 5.05,
     "constellation": "Tau",
     "source": "IAU"
@@ -2172,6 +2792,8 @@
   {
     "id": "HIP 84405",
     "propername": "Guniibuu",
+    "bayer": "",
+    "flamsteed": "36 Oph",
     "magnitude": 5.07,
     "constellation": "Oph",
     "source": "IAU"
@@ -2179,6 +2801,8 @@
   {
     "id": "HIP 86796",
     "propername": "Cervantes",
+    "bayer": "mu Ara",
+    "flamsteed": "",
     "magnitude": 5.15,
     "constellation": "Ara",
     "source": "IAU"
@@ -2186,6 +2810,8 @@
   {
     "id": "HIP 5737",
     "propername": "Revati",
+    "bayer": "zeta Psc",
+    "flamsteed": "",
     "magnitude": 5.21,
     "constellation": "Psc",
     "source": "IAU"
@@ -2193,6 +2819,8 @@
   {
     "id": "HIP 116076",
     "propername": "Veritate",
+    "bayer": "",
+    "flamsteed": "14 And",
     "magnitude": 5.22,
     "constellation": "And",
     "source": "IAU"
@@ -2200,6 +2828,8 @@
   {
     "id": "HIP 63076",
     "propername": "Taiyi",
+    "bayer": "",
+    "flamsteed": "8 Dra",
     "magnitude": 5.23,
     "constellation": "Dra",
     "source": "IAU"
@@ -2207,6 +2837,8 @@
   {
     "id": "HIP 40167",
     "propername": "Tegmine",
+    "bayer": "zeta1 Cnc",
+    "flamsteed": "",
     "magnitude": 5.24,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2214,6 +2846,8 @@
   {
     "id": "HIP 46471",
     "propername": "Intercrus",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 5.41,
     "constellation": "UMa",
     "source": "IAU"
@@ -2221,6 +2855,8 @@
   {
     "id": "HIP 62223",
     "propername": "La Superba",
+    "bayer": "y CVn",
+    "flamsteed": "",
     "magnitude": 5.42,
     "constellation": "CVn",
     "source": "IAU"
@@ -2228,6 +2864,8 @@
   {
     "id": "HIP 62423",
     "propername": "Tianyi",
+    "bayer": "",
+    "flamsteed": "7 Dra",
     "magnitude": 5.43,
     "constellation": "Dra",
     "source": "IAU"
@@ -2235,6 +2873,8 @@
   {
     "id": "HIP 17489",
     "propername": "Celaeno",
+    "bayer": "",
+    "flamsteed": "16 Tau",
     "magnitude": 5.45,
     "constellation": "Tau",
     "source": "IAU"
@@ -2242,6 +2882,8 @@
   {
     "id": "HIP 104382",
     "propername": "Polaris Australis",
+    "bayer": "sigma Oct",
+    "flamsteed": "",
     "magnitude": 5.45,
     "constellation": "Oct",
     "source": "IAU"
@@ -2249,6 +2891,8 @@
   {
     "id": "HIP 103527",
     "propername": "Musica",
+    "bayer": "",
+    "flamsteed": "18 Del",
     "magnitude": 5.48,
     "constellation": "Del",
     "source": "IAU"
@@ -2256,6 +2900,8 @@
   {
     "id": "HIP 113357",
     "propername": "Helvetios",
+    "bayer": "",
+    "flamsteed": "51 Peg",
     "magnitude": 5.49,
     "constellation": "Peg",
     "source": "IAU"
@@ -2263,6 +2909,8 @@
   {
     "id": "HIP 83608",
     "propername": "Alrakis",
+    "bayer": "mu Dra",
+    "flamsteed": "",
     "magnitude": 5.55,
     "constellation": "Dra",
     "source": "IAU"
@@ -2270,6 +2918,8 @@
   {
     "id": "HIP 44946",
     "propername": "Nahn",
+    "bayer": "xi Cnc",
+    "flamsteed": "",
     "magnitude": 5.7,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2277,6 +2927,8 @@
   {
     "id": "HIP 86782",
     "propername": "Alruba",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 5.75,
     "constellation": "Dra",
     "source": "IAU"
@@ -2284,6 +2936,8 @@
   {
     "id": "HIP 17579",
     "propername": "Asterope",
+    "bayer": "",
+    "flamsteed": "21 Tau",
     "magnitude": 5.76,
     "constellation": "Tau",
     "source": "IAU"
@@ -2291,6 +2945,8 @@
   {
     "id": "HIP 72487",
     "propername": "Merga",
+    "bayer": "",
+    "flamsteed": "38 Boo",
     "magnitude": 5.76,
     "constellation": "Boo",
     "source": "IAU"
@@ -2298,6 +2954,8 @@
   {
     "id": "HIP 58952",
     "propername": "Tonatiuh",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 5.8,
     "constellation": "Cam",
     "source": "IAU"
@@ -2305,6 +2963,8 @@
   {
     "id": "HIP 40881",
     "propername": "Piautos",
+    "bayer": "lambda Cnc",
+    "flamsteed": "",
     "magnitude": 5.92,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2312,6 +2972,8 @@
   {
     "id": "HIP 43587",
     "propername": "Copernicus",
+    "bayer": "",
+    "flamsteed": "55 Cnc",
     "magnitude": 5.95,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2319,6 +2981,8 @@
   {
     "id": "HIP 91852",
     "propername": "Xihe",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.04,
     "constellation": "Lyr",
     "source": "IAU"
@@ -2326,6 +2990,8 @@
   {
     "id": "HIP 94645",
     "propername": "Gumala",
+    "bayer": "v5652 Sgr",
+    "flamsteed": "",
     "magnitude": 6.25,
     "constellation": "Sgr",
     "source": "IAU"
@@ -2333,6 +2999,8 @@
   {
     "id": "HIP 33719",
     "propername": "Citala",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.29,
     "constellation": "Mon",
     "source": "IAU"
@@ -2340,6 +3008,8 @@
   {
     "id": "HIP 42556",
     "propername": "Meleph",
+    "bayer": "epsilon Cnc",
+    "flamsteed": "",
     "magnitude": 6.29,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2347,6 +3017,8 @@
   {
     "id": "HIP 24003",
     "propername": "Mago",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.43,
     "constellation": "Cam",
     "source": "IAU"
@@ -2354,6 +3026,8 @@
   {
     "id": "HIP 99894",
     "propername": "Chechia",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.44,
     "constellation": "Aql",
     "source": "IAU"
@@ -2361,6 +3035,8 @@
   {
     "id": "HIP 56508",
     "propername": "Formosa",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.45,
     "constellation": "Leo",
     "source": "IAU"
@@ -2368,6 +3044,8 @@
   {
     "id": "HIP 10826",
     "propername": "Mira",
+    "bayer": "omicron Cet",
+    "flamsteed": "",
     "magnitude": 6.47,
     "constellation": "Cet",
     "source": "IAU"
@@ -2375,6 +3053,8 @@
   {
     "id": "HIP 79219",
     "propername": "Kamuy",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.57,
     "constellation": "CrB",
     "source": "IAU"
@@ -2382,6 +3062,8 @@
   {
     "id": "HIP 84787",
     "propername": "Inquill",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.67,
     "constellation": "Ara",
     "source": "IAU"
@@ -2389,6 +3071,8 @@
   {
     "id": "HIP 26380",
     "propername": "Bubup",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.69,
     "constellation": "Men",
     "source": "IAU"
@@ -2396,6 +3080,8 @@
   {
     "id": "HIP 73136",
     "propername": "Baekdu",
+    "bayer": "",
+    "flamsteed": "8 UMi",
     "magnitude": 6.83,
     "constellation": "UMi",
     "source": "IAU"
@@ -2403,6 +3089,8 @@
   {
     "id": "HIP 80687",
     "propername": "Timir",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.89,
     "constellation": "Oph",
     "source": "IAU"
@@ -2410,6 +3098,8 @@
   {
     "id": "HIP 60644",
     "propername": "Tupa",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 6.99,
     "constellation": "Cru",
     "source": "IAU"
@@ -2417,6 +3107,8 @@
   {
     "id": "HIP 6643",
     "propername": "Belenos",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.12,
     "constellation": "Psc",
     "source": "IAU"
@@ -2424,6 +3116,8 @@
   {
     "id": "HIP 17096",
     "propername": "Tupi",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.12,
     "constellation": "Ret",
     "source": "IAU"
@@ -2431,6 +3125,8 @@
   {
     "id": "HIP 66047",
     "propername": "Dofida",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.17,
     "constellation": "Cen",
     "source": "IAU"
@@ -2438,6 +3134,8 @@
   {
     "id": "HIP 12191",
     "propername": "Buna",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.28,
     "constellation": "And",
     "source": "IAU"
@@ -2445,6 +3143,8 @@
   {
     "id": "HIP 83547",
     "propername": "Rapeto",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.39,
     "constellation": "Sco",
     "source": "IAU"
@@ -2452,6 +3152,8 @@
   {
     "id": "HIP 108375",
     "propername": "Itonda",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.47,
     "constellation": "Gru",
     "source": "IAU"
@@ -2459,6 +3161,8 @@
   {
     "id": "HIP 57291",
     "propername": "Uklun",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.47,
     "constellation": "Cen",
     "source": "IAU"
@@ -2466,6 +3170,8 @@
   {
     "id": "HIP 95124",
     "propername": "Belel",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.55,
     "constellation": "Sgr",
     "source": "IAU"
@@ -2473,6 +3179,8 @@
   {
     "id": "HIP 110813",
     "propername": "Lionrock",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.6,
     "constellation": "Aqr",
     "source": "IAU"
@@ -2480,6 +3188,8 @@
   {
     "id": "HIP 47087",
     "propername": "Illyrian",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.62,
     "constellation": "LMi",
     "source": "IAU"
@@ -2487,6 +3197,8 @@
   {
     "id": "HIP 5054",
     "propername": "Nenque",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.72,
     "constellation": "Phe",
     "source": "IAU"
@@ -2494,6 +3206,8 @@
   {
     "id": "HIP 3479",
     "propername": "Cocibolca",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.78,
     "constellation": "Scl",
     "source": "IAU"
@@ -2501,6 +3215,8 @@
   {
     "id": "HIP 99711",
     "propername": "Phoenicia",
+    "bayer": "v1703 Aql",
+    "flamsteed": "",
     "magnitude": 7.79,
     "constellation": "Aql",
     "source": "IAU"
@@ -2508,6 +3224,8 @@
   {
     "id": "HIP 72845",
     "propername": "Arcalis",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.8,
     "constellation": "Boo",
     "source": "IAU"
@@ -2515,6 +3233,8 @@
   {
     "id": "HIP 13993",
     "propername": "Ayeyarwady",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.81,
     "constellation": "Eri",
     "source": "IAU"
@@ -2522,6 +3242,8 @@
   {
     "id": "HIP 116084",
     "propername": "Poerava",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.82,
     "constellation": "Tuc",
     "source": "IAU"
@@ -2529,6 +3251,8 @@
   {
     "id": "HIP 95262",
     "propername": "Sika",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.84,
     "constellation": "Sgr",
     "source": "IAU"
@@ -2536,6 +3260,8 @@
   {
     "id": "HIP 57820",
     "propername": "Aniara",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.86,
     "constellation": "UMa",
     "source": "IAU"
@@ -2543,6 +3269,8 @@
   {
     "id": "HIP 74961",
     "propername": "Nikawiy",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.88,
     "constellation": "Boo",
     "source": "IAU"
@@ -2550,6 +3278,8 @@
   {
     "id": "HIP 30860",
     "propername": "Lucilinburhuc",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.89,
     "constellation": "Aur",
     "source": "IAU"
@@ -2557,6 +3287,8 @@
   {
     "id": "HIP 81022",
     "propername": "Rosaliadecastro",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.89,
     "constellation": "Oph",
     "source": "IAU"
@@ -2564,6 +3296,8 @@
   {
     "id": "HIP 22491",
     "propername": "Mouhoun",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.91,
     "constellation": "Eri",
     "source": "IAU"
@@ -2571,6 +3305,8 @@
   {
     "id": "HIP 90004",
     "propername": "Alasia",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 7.95,
     "constellation": "Ser",
     "source": "IAU"
@@ -2578,6 +3314,8 @@
   {
     "id": "HIP 92895",
     "propername": "Kaveh",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.02,
     "constellation": "Ser",
     "source": "IAU"
@@ -2585,6 +3323,8 @@
   {
     "id": "HIP 43674",
     "propername": "Stribor",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.03,
     "constellation": "Lyn",
     "source": "IAU"
@@ -2592,6 +3332,8 @@
   {
     "id": "HIP 72339",
     "propername": "Monch",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.04,
     "constellation": "Vir",
     "source": "IAU"
@@ -2599,6 +3341,8 @@
   {
     "id": "HIP 55174",
     "propername": "Hunahpu",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.05,
     "constellation": "Crt",
     "source": "IAU"
@@ -2606,6 +3350,8 @@
   {
     "id": "HIP 66192",
     "propername": "Liesma",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.05,
     "constellation": "UMa",
     "source": "IAU"
@@ -2613,6 +3359,8 @@
   {
     "id": "HIP 31895",
     "propername": "Nosaxa",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.05,
     "constellation": "Pup",
     "source": "IAU"
@@ -2620,6 +3368,8 @@
   {
     "id": "HIP 5529",
     "propername": "Emiw",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.06,
     "constellation": "Tuc",
     "source": "IAU"
@@ -2627,6 +3377,8 @@
   {
     "id": "HIP 57370",
     "propername": "Flegetonte",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.07,
     "constellation": "Vir",
     "source": "IAU"
@@ -2634,6 +3386,8 @@
   {
     "id": "HIP 30905",
     "propername": "Lusitania",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.1,
     "constellation": "Mon",
     "source": "IAU"
@@ -2641,6 +3395,8 @@
   {
     "id": "HIP 32916",
     "propername": "Nervia",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.1,
     "constellation": "Aur",
     "source": "IAU"
@@ -2648,6 +3404,8 @@
   {
     "id": "HIP 38041",
     "propername": "Tapecue",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.1,
     "constellation": "Car",
     "source": "IAU"
@@ -2655,6 +3413,8 @@
   {
     "id": "HIP 80838",
     "propername": "Ogma",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.16,
     "constellation": "Her",
     "source": "IAU"
@@ -2662,6 +3422,8 @@
   {
     "id": "HIP 13192",
     "propername": "Nushagak",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.17,
     "constellation": "Cas",
     "source": "IAU"
@@ -2669,6 +3431,8 @@
   {
     "id": "HIP 40687",
     "propername": "Nasti",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.2,
     "constellation": "UMa",
     "source": "IAU"
@@ -2676,6 +3440,8 @@
   {
     "id": "HIP 54158",
     "propername": "Dingolay",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.21,
     "constellation": "Leo",
     "source": "IAU"
@@ -2683,6 +3449,8 @@
   {
     "id": "HIP 118319",
     "propername": "Axolotl",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.23,
     "constellation": "Cet",
     "source": "IAU"
@@ -2690,6 +3458,8 @@
   {
     "id": "HIP 42446",
     "propername": "Gakyid",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.23,
     "constellation": "Cnc",
     "source": "IAU"
@@ -2697,6 +3467,8 @@
   {
     "id": "HIP 47202",
     "propername": "Kalausi",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.23,
     "constellation": "Vel",
     "source": "IAU"
@@ -2704,6 +3476,8 @@
   {
     "id": "HIP 52521",
     "propername": "Macondo",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.3,
     "constellation": "Ant",
     "source": "IAU"
@@ -2711,6 +3485,8 @@
   {
     "id": "HIP 107251",
     "propername": "Bosona",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.34,
     "constellation": "Aqr",
     "source": "IAU"
@@ -2718,6 +3494,8 @@
   {
     "id": "HIP 1547",
     "propername": "Citadelle",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.36,
     "constellation": "Psc",
     "source": "IAU"
@@ -2725,6 +3503,8 @@
   {
     "id": "HIP 21109",
     "propername": "Hoggar",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.38,
     "constellation": "Tau",
     "source": "IAU"
@@ -2732,6 +3512,8 @@
   {
     "id": "HIP 82651",
     "propername": "Mahsati",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.38,
     "constellation": "Oph",
     "source": "IAU"
@@ -2739,6 +3521,8 @@
   {
     "id": "HIP 56572",
     "propername": "Sagarmatha",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.42,
     "constellation": "Leo",
     "source": "IAU"
@@ -2746,6 +3530,8 @@
   {
     "id": "HIP 48235",
     "propername": "Natasha",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.54,
     "constellation": "Vel",
     "source": "IAU"
@@ -2753,6 +3539,8 @@
   {
     "id": "HIP 106824",
     "propername": "Samaya",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.56,
     "constellation": "PsA",
     "source": "IAU"
@@ -2760,6 +3548,8 @@
   {
     "id": "HIP 114322",
     "propername": "Ebla",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.59,
     "constellation": "Psc",
     "source": "IAU"
@@ -2767,6 +3557,8 @@
   {
     "id": "HIP 76351",
     "propername": "Karaka",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.71,
     "constellation": "Aps",
     "source": "IAU"
@@ -2774,6 +3566,8 @@
   {
     "id": "HIP 80076",
     "propername": "Hunor",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.72,
     "constellation": "Her",
     "source": "IAU"
@@ -2781,6 +3575,8 @@
   {
     "id": "HIP 48711",
     "propername": "Bibha",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.73,
     "constellation": "Sex",
     "source": "IAU"
@@ -2788,6 +3584,8 @@
   {
     "id": "HIP 61177",
     "propername": "Funi",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.75,
     "constellation": "Dra",
     "source": "IAU"
@@ -2795,6 +3593,8 @@
   {
     "id": "HIP 96078",
     "propername": "Uruk",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.97,
     "constellation": "Sge",
     "source": "IAU"
@@ -2802,6 +3602,8 @@
   {
     "id": "HIP 29550",
     "propername": "Amadioha",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 8.98,
     "constellation": "CMa",
     "source": "IAU"
@@ -2809,6 +3611,8 @@
   {
     "id": "HIP 55664",
     "propername": "Shama",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 9.1,
     "constellation": "Leo",
     "source": "IAU"
@@ -2816,6 +3620,8 @@
   {
     "id": "HIP 37284",
     "propername": "Ceibo",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 9.37,
     "constellation": "Cha",
     "source": "IAU"
@@ -2823,6 +3629,8 @@
   {
     "id": "HIP 87937",
     "propername": "Barnard's Star",
+    "bayer": "v2500 Oph",
+    "flamsteed": "",
     "magnitude": 9.54,
     "constellation": "Oph",
     "source": "IAU"
@@ -2830,6 +3638,8 @@
   {
     "id": "HIP 2247",
     "propername": "Felixvarela",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 9.62,
     "constellation": "Cet",
     "source": "IAU"
@@ -2837,6 +3647,8 @@
   {
     "id": "HIP 88414",
     "propername": "Pincoya",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 9.66,
     "constellation": "Sgr",
     "source": "IAU"
@@ -2844,6 +3656,8 @@
   {
     "id": "HIP 104780",
     "propername": "Solaris",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 9.78,
     "constellation": "Peg",
     "source": "IAU"
@@ -2851,6 +3665,8 @@
   {
     "id": "HIP 15578",
     "propername": "Intan",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 9.92,
     "constellation": "For",
     "source": "IAU"
@@ -2858,6 +3674,8 @@
   {
     "id": "HIP 12961",
     "propername": "Koeia",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 10.25,
     "constellation": "Eri",
     "source": "IAU"
@@ -2865,6 +3683,8 @@
   {
     "id": "HIP 70890",
     "propername": "Proxima Centauri",
+    "bayer": "alpha Cen",
+    "flamsteed": "",
     "magnitude": 11.01,
     "constellation": "Cen",
     "source": "IAU"
@@ -2872,6 +3692,8 @@
   {
     "id": "HIP 79431",
     "propername": "Sharjah",
+    "bayer": "",
+    "flamsteed": "",
     "magnitude": 11.34,
     "constellation": "Sco",
     "source": "IAU"

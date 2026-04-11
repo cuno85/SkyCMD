@@ -34,6 +34,11 @@ let selectedStandortLabel = 'Halle (Saale)';
 let selectedLocationInfoOpen = false;
 let selectedLocationInfoRequestId = 0;
 const selectedLocationTimeZoneCache = new Map();
+let weatherRequestId = 0;
+let weatherPayload = null;
+let daylightRequestId = 0;
+let daylightPayload = null;
+let lastDaylightRequestKey = '';
 
 // Beobachter-Standardwerte (Halle/Saale)
 const DEFAULT_LAT = 51.48;
@@ -41,6 +46,7 @@ const DEFAULT_LON = 11.97;
 const RECENT_SEARCHES_KEY = 'skycmd.recentSearches';
 const DISPLAY_SETTINGS_KEY = 'skycmd.displaySettings';
 const DATA_SOURCE_SETTINGS_KEY = 'skycmd.dataSourceSettings';
+const PROFILES_KEY = 'skycmd.userProfiles';
 const DISPLAY_OPTION_KEYS = [
   'showPlanets',
   'showComets',
@@ -51,6 +57,7 @@ const DISPLAY_OPTION_KEYS = [
   'showConstellationBoundaries',
   'showConstellationLabels',
   'showCelestialEquator',
+  'showGalacticEquator',
   'showEquatorialGrid',
   'showMeridian',
   'showEcliptic',
@@ -61,6 +68,7 @@ const DISPLAY_OPTION_KEYS = [
   'showCardinalDirections',
   'showStarNames',
   'showDSOLabels',
+  'showMilkyWay',
 ];
 const TLE_PROVIDER_PRESETS = {
   'celestrak-active': 'https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle',
@@ -112,6 +120,13 @@ async function init() {
   });
   document.getElementById('standort-gps-btn')?.addEventListener('click', locateByGps);
   document.getElementById('standort-network-btn')?.addEventListener('click', locateByNetwork);
+
+  // Nutzerprofile
+  refreshProfileSelect();
+  document.getElementById('profile-save-btn')?.addEventListener('click', onProfileSave);
+  document.getElementById('profile-load-btn')?.addEventListener('click', onProfileLoad);
+  document.getElementById('profile-delete-btn')?.addEventListener('click', onProfileDelete);
+
   document.getElementById('selected-location-info-btn')?.addEventListener('click', toggleSelectedLocationInfo);
   document.getElementById('selected-location-info-btn')?.addEventListener('focus', openSelectedLocationInfo);
   document.getElementById('selected-location-info-btn')?.addEventListener('blur', closeSelectedLocationInfo);
@@ -145,6 +160,9 @@ async function init() {
   document.getElementById('search-modal-close')?.addEventListener('click', closeSearchModal);
   document.getElementById('search-include-satellites')?.addEventListener('change', refreshSearchSuggestions);
   document.getElementById('catalog-apply-btn')?.addEventListener('click', applyCatalogSelection);
+  document.getElementById('catalog-constellations-select')?.addEventListener('change', (e) => {
+    updateConstellationCatalogInfo(e?.target?.value);
+  });
   document.getElementById('sync-tle-btn')?.addEventListener('click', () => triggerFeedSync('satellites_tle', 'TLE'));
   document.getElementById('sync-comets-btn')?.addEventListener('click', () => triggerFeedSync('comets', 'Kometen'));
   document.getElementById('sync-asteroids-btn')?.addEventListener('click', () => triggerFeedSync('asteroids_daily', 'Asteroiden'));
@@ -185,6 +203,8 @@ async function init() {
 
   // Standortanzeige links initialisieren.
   updateSelectedLocationDisplay(DEFAULT_LAT, DEFAULT_LON, selectedStandortLabel);
+  refreshWeatherForCurrentLocation();
+  refreshDaylightForCurrentLocation();
 
   // Checkboxen
   DISPLAY_OPTION_KEYS.forEach((key) => {
@@ -211,14 +231,24 @@ async function init() {
   bindSmallBodyToggle('showAsteroids', 'showAsteroids');
 
   // Magnitude Slider - debounced reload from SQL API with mag_max
+  const resolveProfileMagLimit = (magLimit, profile) => {
+    const base = Number.isFinite(magLimit) ? Number(magLimit) : 6.5;
+    const raw = String(profile || 'planetarium');
+    const mode = raw === 'enhanced' ? 'planetarium' : raw;
+    if (mode === 'conservative') return Math.max(1, Math.min(25, base - 1.5));
+    if (mode === 'planetarium') return Math.max(1, Math.min(25, base + 0.8));
+    return Math.max(1, Math.min(25, base));
+  };
+
   let _magLimitDebounce = null;
   document.getElementById('mag-limit')?.addEventListener('input', (e) => {
     const newMagLimit = parseFloat(e.target.value);
     renderer.options.magLimit = newMagLimit;
+    const profileMagLimit = resolveProfileMagLimit(newMagLimit, renderer.options.starVisualProfile);
     saveDisplaySettings();
     clearTimeout(_magLimitDebounce);
     _magLimitDebounce = setTimeout(() => {
-      renderer.catalog.loadStars(newMagLimit).then(() => {
+      renderer.catalog.loadStars(profileMagLimit).then(() => {
         renderer.stats.totalStars = renderer.catalog.getStars().length;
         renderer.render();
       }).catch(err => {
@@ -226,6 +256,67 @@ async function init() {
         renderer.render();
       });
     }, 400);
+  });
+
+  document.getElementById('star-name-mag-limit')?.addEventListener('input', (e) => {
+    const newNameLimit = parseFloat(e.target.value);
+    renderer.options.starNameMagLimit = Math.max(-2, Math.min(25, Number.isFinite(newNameLimit) ? newNameLimit : 6.5));
+    saveDisplaySettings();
+    renderer.requestDraw();
+  });
+
+  document.getElementById('star-visual-profile')?.addEventListener('change', (e) => {
+    const selected = String(e?.target?.value || 'planetarium');
+    const allowed = new Set(['planetarium', 'realistic', 'conservative', 'enhanced']);
+    const normalized = selected === 'enhanced' ? 'planetarium' : selected;
+    renderer.options.starVisualProfile = allowed.has(normalized) ? normalized : 'planetarium';
+    console.info('Star visual profile:', renderer.options.starVisualProfile);
+    saveDisplaySettings();
+    const profileMagLimit = resolveProfileMagLimit(renderer.options.magLimit, renderer.options.starVisualProfile);
+    renderer.catalog.loadStars(profileMagLimit).then(() => {
+      renderer.stats.totalStars = renderer.catalog.getStars().length;
+      renderer.requestDraw();
+    }).catch((err) => {
+      console.error('Failed to reload stars with profile mag limit:', err);
+      renderer.requestDraw();
+    });
+  });
+
+  document.getElementById('milky-way-mode')?.addEventListener('change', (e) => {
+    const selected = String(e?.target?.value || 'nasa-texture');
+    const allowed = new Set(['nasa-texture', 'isophotes']);
+    renderer.options.milkyWayMode = allowed.has(selected) ? selected : 'nasa-texture';
+    saveDisplaySettings();
+    renderer.requestDraw();
+  });
+
+  document.getElementById('constellation-label-language')?.addEventListener('change', (e) => {
+    const selected = String(e?.target?.value || 'de');
+    const allowed = new Set(['de', 'latin']);
+    renderer.options.constellationLabelLanguage = allowed.has(selected) ? selected : 'de';
+    saveDisplaySettings();
+    renderer.requestDraw();
+  });
+
+  document.getElementById('milky-way-iso-smoothness')?.addEventListener('input', (e) => {
+    const value = parseFloat(e?.target?.value);
+    renderer.options.milkyWayIsoSmoothness = Math.max(0, Math.min(4, Number.isFinite(value) ? value : 1.5));
+    saveDisplaySettings();
+    renderer.requestDraw();
+  });
+
+  document.getElementById('milky-way-iso-brightness')?.addEventListener('input', (e) => {
+    const value = parseFloat(e?.target?.value);
+    renderer.options.milkyWayIsoBrightness = Math.max(0.2, Math.min(2.5, Number.isFinite(value) ? value : 1.0));
+    saveDisplaySettings();
+    renderer.requestDraw();
+  });
+
+  document.getElementById('milky-way-iso-contrast')?.addEventListener('input', (e) => {
+    const value = parseFloat(e?.target?.value);
+    renderer.options.milkyWayIsoContrast = Math.max(0.4, Math.min(3.0, Number.isFinite(value) ? value : 1.0));
+    saveDisplaySettings();
+    renderer.requestDraw();
   });
 
   // Resize
@@ -268,6 +359,7 @@ function updateObserver() {
   const date = parseObserverDateTime(dtVal);
   renderer.setObserver(lat, lon, date);
   updateGermanTimeFormat(date);
+  refreshDaylightForCurrentLocation();
 }
 
 function setStandortSearchStatus(message) {
@@ -278,6 +370,270 @@ function setStandortSearchStatus(message) {
 function setStandortAutoStatus(message) {
   const status = document.getElementById('standort-auto-status');
   if (status) status.textContent = message;
+}
+
+function setWeatherStatus(message) {
+  const el = document.getElementById('weather-status');
+  if (el) el.textContent = message;
+}
+
+function setDaylightStatus(message) {
+  const el = document.getElementById('daylight-status');
+  if (el) el.textContent = message;
+}
+
+function applyAtmosphereFromWeather(current) {
+  if (!renderer?.projection || !current) return;
+  renderer.projection.setAtmosphere({
+    temperatureC: Number(current?.tempC),
+    pressureHpa: Number(current?.pressureHpa),
+    transparencyIndex: Number(current?.transparencyIndex),
+    enableRefraction: true,
+  });
+}
+
+function humiditySeverityClass(humidityPercent) {
+  const humidity = Number(humidityPercent);
+  if (!Number.isFinite(humidity)) return '';
+  if (humidity > 75) return 'is-alert';
+  if (humidity >= 60) return 'is-warn';
+  return '';
+}
+
+function windDirectionLabel(directionDeg) {
+  const direction = Number(directionDeg);
+  if (!Number.isFinite(direction)) return '';
+  const labels = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'];
+  const normalized = ((direction % 360) + 360) % 360;
+  const index = Math.round(normalized / 45) % labels.length;
+  return labels[index];
+}
+
+function formatDateKeyInTimeZone(date, timeZone) {
+  const d = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(d.getTime()) || !timeZone) return '';
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(d);
+  const map = Object.fromEntries(parts.map((x) => [x.type, x.value]));
+  return `${map.year}-${map.month}-${map.day}`;
+}
+
+function normalizeTimeZone(timeZone) {
+  const candidate = String(timeZone || '').trim();
+  if (!candidate) return 'UTC';
+  try {
+    return new Intl.DateTimeFormat('de-DE', { timeZone: candidate }).resolvedOptions().timeZone || candidate;
+  } catch {
+    return 'UTC';
+  }
+}
+
+function getTimeZoneOffsetMinutes(date, timeZone) {
+  const d = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(d.getTime()) || !timeZone) return 0;
+  try {
+    const tzMs = new Date(d.toLocaleString('en-US', { timeZone })).getTime();
+    const utcMs = new Date(d.toLocaleString('en-US', { timeZone: 'UTC' })).getTime();
+    return Math.round((tzMs - utcMs) / 60000);
+  } catch {
+    return 0;
+  }
+}
+
+function formatClockInTimeZone(isoValue, timeZone) {
+  if (!isoValue || !timeZone) return '-';
+  const d = new Date(isoValue);
+  if (Number.isNaN(d.getTime())) return '-';
+  return new Intl.DateTimeFormat('de-DE', {
+    timeZone,
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(d);
+}
+
+function formatDurationShort(totalSeconds) {
+  if (!Number.isFinite(Number(totalSeconds))) return '-';
+  const totalMinutes = Math.max(0, Math.round(Number(totalSeconds) / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h ${String(minutes).padStart(2, '0')}m`;
+}
+
+function renderDaylightWidget(payload) {
+  daylightPayload = payload;
+  const events = payload?.events || {};
+  const timeZone = String(payload?.timezone || '').trim() || Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  const datePill = document.getElementById('daylight-date-pill');
+  const sourceEl = document.getElementById('daylight-source');
+  const solarNoonEl = document.getElementById('daylight-solar-noon');
+
+  const setValue = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = value;
+  };
+
+  setValue('daylight-end-astro', formatClockInTimeZone(events.endAstronomicalDawn, timeZone));
+  setValue('daylight-end-nautical', formatClockInTimeZone(events.endNauticalDawn, timeZone));
+  setValue('daylight-end-civil', formatClockInTimeZone(events.endCivilDawn, timeZone));
+  setValue('daylight-sunrise', formatClockInTimeZone(events.sunrise, timeZone));
+  setValue('daylight-sunset', formatClockInTimeZone(events.sunset, timeZone));
+  setValue('daylight-start-civil', formatClockInTimeZone(events.startCivilDusk, timeZone));
+  setValue('daylight-start-nautical', formatClockInTimeZone(events.startNauticalDusk, timeZone));
+  setValue('daylight-start-astro', formatClockInTimeZone(events.startAstronomicalDusk, timeZone));
+  setValue('daylight-night-length', formatDurationShort(payload?.nightLengthSeconds));
+  setValue('daylight-day-length', formatDurationShort(payload?.dayLengthSeconds));
+
+  if (solarNoonEl) {
+    const noonTime = formatClockInTimeZone(events.solarNoon, timeZone);
+    const noonAlt = Number(payload?.solarNoonAltitudeDeg);
+    solarNoonEl.textContent = Number.isFinite(noonAlt) ? `${noonAlt.toFixed(1)}° · ${noonTime}` : noonTime;
+  }
+  if (datePill) datePill.textContent = String(payload?.localDate || '-');
+  if (sourceEl) sourceEl.textContent = `Zeitzone: ${timeZone}`;
+}
+
+async function refreshDaylightForCurrentLocation() {
+  const coords = parseAndValidateCoordinates(
+    document.getElementById('lat-input')?.value,
+    document.getElementById('lon-input')?.value,
+  );
+  if (!coords) {
+    setDaylightStatus('Zeitdaten: ungültige Koordinaten.');
+    return;
+  }
+
+  const observerDate = parseObserverDateTime(document.getElementById('datetime-input')?.value);
+  const reqId = ++daylightRequestId;
+  setDaylightStatus('Zeitdaten werden aktualisiert...');
+
+  try {
+    const timeZone = normalizeTimeZone(await resolveSelectedLocationTimeZone(coords.lat, coords.lon));
+    if (reqId !== daylightRequestId) return;
+    const localDate = formatDateKeyInTimeZone(observerDate, timeZone);
+    const timeZoneOffsetMinutes = getTimeZoneOffsetMinutes(observerDate, timeZone);
+    const requestKey = `${coords.lat.toFixed(4)},${coords.lon.toFixed(4)},${localDate},${timeZone}`;
+    if (requestKey === lastDaylightRequestKey && daylightPayload) {
+      renderDaylightWidget(daylightPayload);
+      setDaylightStatus('Zeitdaten aktuell.');
+      return;
+    }
+
+    const url = `/api/time/daylight?lat=${encodeURIComponent(coords.lat)}&lon=${encodeURIComponent(coords.lon)}&date_local=${encodeURIComponent(localDate)}&timezone_name=${encodeURIComponent(timeZone)}&timezone_offset_minutes=${encodeURIComponent(timeZoneOffsetMinutes)}`;
+    const res = await fetch(url);
+    if (!res.ok) {
+      let detail = `HTTP ${res.status}`;
+      try {
+        const errorPayload = await res.json();
+        if (errorPayload?.detail) detail = String(errorPayload.detail);
+      } catch {
+        // ignore JSON parsing errors and keep HTTP status
+      }
+      throw new Error(detail);
+    }
+    const payload = await res.json();
+    if (reqId !== daylightRequestId) return;
+    lastDaylightRequestKey = requestKey;
+    renderDaylightWidget(payload);
+    setDaylightStatus('Zeitdaten aktuell.');
+  } catch (error) {
+    if (reqId !== daylightRequestId) return;
+    setDaylightStatus(`Zeitdaten nicht verfügbar (${error?.message || 'Fehler'}).`);
+  }
+}
+
+function renderWeatherWidget(payload) {
+  weatherPayload = payload;
+  const current = payload?.current || {};
+  const temp = Number.isFinite(Number(current?.tempC)) ? `${Number(current.tempC).toFixed(1)} °C` : '-';
+  const dewPoint = Number.isFinite(Number(current?.dewPointC)) ? `${Number(current.dewPointC).toFixed(1)} °C` : '-';
+  const humidity = Number.isFinite(Number(current?.humidityPercent)) ? `${Number(current.humidityPercent).toFixed(0)} %` : '-';
+  const pressure = Number.isFinite(Number(current?.pressureHpa)) ? `${Number(current.pressureHpa).toFixed(0)} hPa` : '-';
+  const windDir = windDirectionLabel(current?.windDirectionDeg);
+  const windDeg = Number.isFinite(Number(current?.windDirectionDeg)) ? ` (${Math.round(Number(current.windDirectionDeg))}°)` : '';
+  const wind = Number.isFinite(Number(current?.windSpeedKmh))
+    ? `${Number(current.windSpeedKmh).toFixed(1)} km/h${windDir ? ` ${windDir}` : ''}${windDeg}`
+    : '-';
+  const seeing = Number.isFinite(Number(current?.seeingArcsec)) ? `${Number(current.seeingArcsec).toFixed(2)} "/s` : '-';
+  const transparency = Number.isFinite(Number(current?.transparencyIndex))
+    ? `${current.transparencyText || ''} (${Number(current.transparencyIndex)}/8)`
+    : '-';
+  const humidityClass = humiditySeverityClass(current?.humidityPercent);
+
+  const tempEl = document.getElementById('weather-temp');
+  const dewPointEl = document.getElementById('weather-dew-point');
+  const humidityEl = document.getElementById('weather-humidity');
+  const pressureEl = document.getElementById('weather-pressure');
+  const windEl = document.getElementById('weather-wind');
+  const seeingEl = document.getElementById('weather-seeing');
+  const transparencyEl = document.getElementById('weather-transparency');
+  const sourceEl = document.getElementById('weather-source');
+  const nightEl = document.getElementById('weather-night-pill');
+
+  if (tempEl) tempEl.textContent = temp;
+  if (dewPointEl) dewPointEl.textContent = dewPoint;
+  if (humidityEl) {
+    humidityEl.textContent = humidity;
+    humidityEl.classList.remove('is-warn', 'is-alert');
+    if (humidityClass) humidityEl.classList.add(humidityClass);
+  }
+  if (pressureEl) pressureEl.textContent = pressure;
+  if (windEl) windEl.textContent = wind;
+  if (seeingEl) seeingEl.textContent = seeing;
+  if (transparencyEl) transparencyEl.textContent = transparency;
+  if (sourceEl) sourceEl.textContent = 'von: 7Timer! ASTRO + Open-Meteo';
+  if (nightEl) {
+    const isNight = current?.isAstronomicalNight === true;
+    nightEl.classList.toggle('is-on', isNight);
+    nightEl.textContent = isNight ? 'Astronomische Nacht' : 'Tag / Dämmerung';
+  }
+
+  applyAtmosphereFromWeather(current);
+  renderer?.requestDraw();
+}
+
+async function refreshWeatherForCurrentLocation() {
+  const coords = parseAndValidateCoordinates(
+    document.getElementById('lat-input')?.value,
+    document.getElementById('lon-input')?.value,
+  );
+  if (!coords) {
+    setWeatherStatus('Wetter: ungültige Koordinaten.');
+    return;
+  }
+
+  const reqId = ++weatherRequestId;
+  setWeatherStatus('Wetterdaten werden aktualisiert...');
+  try {
+    const url = `/api/weather/astro?lat=${encodeURIComponent(coords.lat)}&lon=${encodeURIComponent(coords.lon)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const payload = await res.json();
+    if (reqId !== weatherRequestId) return;
+    renderWeatherWidget(payload);
+    setWeatherStatus('Wetterdaten aktuell.');
+  } catch (error) {
+    if (reqId !== weatherRequestId) return;
+    setWeatherStatus(`Wetterdaten nicht verfügbar (${error?.message || 'Fehler'}).`);
+  }
+}
+
+function updateCursorAirmassFromEvent(event) {
+  if (!renderer?.projection) return;
+  const target = document.getElementById('weather-airmass');
+  if (!target) return;
+  const pos = canvasRelativePosition(event);
+  const h = renderer.projection.horizontalFromScreenPoint(pos.x, pos.y);
+  if (!h || !Number.isFinite(h.altDeg)) {
+    target.textContent = '-';
+    return;
+  }
+  const x = renderer.projection.airmassFromAltDeg(h.altDeg);
+  target.textContent = Number.isFinite(x) ? x.toFixed(2) : '∞';
 }
 
 function updateSelectedLocationDisplay(lat, lon, label) {
@@ -436,6 +792,7 @@ function applyCoordinates(lat, lon, message, label) {
   selectedStandortLabel = String(label || '').trim();
   updateSelectedLocationDisplay(coord.lat, coord.lon, selectedStandortLabel);
   updateObserver();
+  refreshWeatherForCurrentLocation();
   if (message) setStandortAutoStatus(message);
 }
 
@@ -1018,6 +1375,14 @@ function canvasRelativePosition(event) {
   return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 }
 
+function getObjectAirmass(obj) {
+  if (!renderer?.projection || !obj) return null;
+  const projected = renderer.projection.projectObject(obj);
+  if (!projected || !Number.isFinite(projected.alt) || projected.alt <= -1) return null;
+  const airmass = renderer.projection.airmassFromAltDeg(projected.alt);
+  return Number.isFinite(airmass) ? airmass : null;
+}
+
 function formatObjectTooltip(obj) {
   const kind = obj.kind === 'star'
     ? 'Stern'
@@ -1033,7 +1398,18 @@ function formatObjectTooltip(obj) {
     : (Number.isFinite(obj.distanceAu) ? `${obj.distanceAu.toFixed(3)} AU` : null);
   const distanceLine = distance ? `<br>Dist ${distance}` : '';
   const id = obj.id ? `(${obj.id})` : '';
-  return `${kind} ${id}<br>${symbol}${obj.label}<br>${mag}${distanceLine}`;
+  const airmass = getObjectAirmass(obj);
+  const airmassLine = airmass ? `<br>Airmass ${airmass.toFixed(2)}` : '';
+  let aliasLine = '';
+  if (obj.kind === 'star') {
+    const aliases = Array.isArray(obj.aliases)
+      ? obj.aliases.map((x) => String(x || '').trim()).filter(Boolean)
+      : [];
+    if (aliases.length > 0) {
+      aliasLine = `<br>Aliasse: ${aliases.slice(0, 8).join(', ')}`;
+    }
+  }
+  return `${kind} ${id}<br>${symbol}${obj.label}<br>${mag}${airmassLine}${distanceLine}${aliasLine}`;
 }
 
 function showTooltip(clientX, clientY, html) {
@@ -1053,6 +1429,7 @@ function hideTooltip() {
 
 function onCanvasMouseMove(event) {
   if (!renderer) return;
+  updateCursorAirmassFromEvent(event);
 
   if (isDragging) {
     const dx = event.clientX - lastDragX;
@@ -1105,6 +1482,9 @@ function onCanvasDoubleClick(event) {
 
 function onCanvasMouseDown(event) {
   if (event.button !== 0) return;
+  // Jede Interaktion mit der Karte schliesst offene Header-Panels und Suche.
+  if (searchModalOpen) closeSearchModal();
+  if (activeHeaderPanel) toggleHeaderPanel(activeHeaderPanel);
   isDragging = true;
   dragMoved = false;
   lastDragX = event.clientX;
@@ -1489,6 +1869,137 @@ function applySearchResult(result) {
   closeSearchModal();
 }
 
+// ── Nutzerprofile ─────────────────────────────────────────────────────────────
+
+function loadProfiles() {
+  try {
+    const raw = window.localStorage.getItem(PROFILES_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveProfiles(profiles) {
+  try {
+    window.localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+  } catch {
+    // localStorage optional
+  }
+}
+
+function collectCurrentSnapshot() {
+  const lat = renderer ? renderer.projection.lat * 180 / Math.PI : DEFAULT_LAT;
+  const lon = renderer ? renderer.projection.lon : DEFAULT_LON;
+  const latInputVal = document.getElementById('lat-input')?.value || '';
+  const lonInputVal = document.getElementById('lon-input')?.value || '';
+  return {
+    lat,
+    lon,
+    latInput: latInputVal,
+    lonInput: lonInputVal,
+    locationLabel: selectedStandortLabel,
+    display: loadDisplaySettings(),
+  };
+}
+
+function applySnapshot(snapshot) {
+  if (!snapshot || typeof snapshot !== 'object') return;
+  if (snapshot.display && typeof snapshot.display === 'object') {
+    try {
+      window.localStorage.setItem(DISPLAY_SETTINGS_KEY, JSON.stringify(snapshot.display));
+    } catch { /* optional */ }
+    applyDisplaySettings();
+  }
+  if (Number.isFinite(snapshot.lat) && Number.isFinite(snapshot.lon)) {
+    applyCoordinates(snapshot.lat, snapshot.lon, null, snapshot.locationLabel || '');
+    // Restore formatted inputs after applyCoordinates may have overwritten them with DMS.
+    if (snapshot.latInput) {
+      const el = document.getElementById('lat-input');
+      if (el) el.value = snapshot.latInput;
+    }
+    if (snapshot.lonInput) {
+      const el = document.getElementById('lon-input');
+      if (el) el.value = snapshot.lonInput;
+    }
+  }
+}
+
+function refreshProfileSelect() {
+  const select = document.getElementById('profile-select');
+  if (!select) return;
+  const profiles = loadProfiles();
+  const names = Object.keys(profiles).sort((a, b) => a.localeCompare(b, 'de'));
+  const current = select.value;
+  select.innerHTML = '<option value="__default__">Standard</option>';
+  for (const name of names) {
+    const opt = document.createElement('option');
+    opt.value = name;
+    opt.textContent = name;
+    select.appendChild(opt);
+  }
+  if (current && [...select.options].some((o) => o.value === current)) {
+    select.value = current;
+  }
+}
+
+function setProfileStatus(msg) {
+  const el = document.getElementById('profile-status');
+  if (el) el.textContent = msg;
+}
+
+function onProfileSave() {
+  const nameInput = document.getElementById('profile-name-input');
+  const select = document.getElementById('profile-select');
+  const rawName = (nameInput?.value || '').trim()
+    || (select?.value !== '__default__' ? select?.value : '');
+  if (!rawName || rawName === '__default__') {
+    setProfileStatus('Bitte einen Profilnamen eingeben.');
+    return;
+  }
+  // Sanitize name
+  const name = rawName.replace(/[<>"'`\\]/g, '').slice(0, 48);
+  if (!name) { setProfileStatus('Ungültiger Profilname.'); return; }
+  const profiles = loadProfiles();
+  profiles[name] = collectCurrentSnapshot();
+  saveProfiles(profiles);
+  refreshProfileSelect();
+  if (select) select.value = name;
+  if (nameInput) nameInput.value = '';
+  setProfileStatus(`Profil "${name}" gespeichert.`);
+}
+
+function onProfileLoad() {
+  const select = document.getElementById('profile-select');
+  const name = select?.value;
+  if (!name || name === '__default__') {
+    setProfileStatus('Kein Benutzerprofil ausgewählt.');
+    return;
+  }
+  const profiles = loadProfiles();
+  const snapshot = profiles[name];
+  if (!snapshot) { setProfileStatus(`Profil "${name}" nicht gefunden.`); return; }
+  applySnapshot(snapshot);
+  setProfileStatus(`Profil "${name}" geladen.`);
+}
+
+function onProfileDelete() {
+  const select = document.getElementById('profile-select');
+  const name = select?.value;
+  if (!name || name === '__default__') {
+    setProfileStatus('Standard-Profil kann nicht gelöscht werden.');
+    return;
+  }
+  const profiles = loadProfiles();
+  delete profiles[name];
+  saveProfiles(profiles);
+  refreshProfileSelect();
+  setProfileStatus(`Profil "${name}" gelöscht.`);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 function loadRecentSearches() {
   try {
     const raw = window.localStorage.getItem(RECENT_SEARCHES_KEY);
@@ -1513,6 +2024,13 @@ function saveDisplaySettings() {
   if (!renderer) return;
   const payload = {
     magLimit: renderer.options.magLimit,
+    starNameMagLimit: renderer.options.starNameMagLimit,
+    starVisualProfile: String(renderer.options.starVisualProfile || 'planetarium'),
+    constellationLabelLanguage: String(renderer.options.constellationLabelLanguage || 'de'),
+    milkyWayMode: String(renderer.options.milkyWayMode || 'nasa-texture'),
+    milkyWayIsoSmoothness: Number(renderer.options.milkyWayIsoSmoothness ?? 1.5),
+    milkyWayIsoBrightness: Number(renderer.options.milkyWayIsoBrightness ?? 1.0),
+    milkyWayIsoContrast: Number(renderer.options.milkyWayIsoContrast ?? 1.0),
   };
   DISPLAY_OPTION_KEYS.forEach((key) => {
     payload[key] = Boolean(renderer.options[key]);
@@ -1541,10 +2059,83 @@ function applyDisplaySettings() {
     // Sync magMax into CatalogManager so subsequent loadAll() calls respect it
     renderer.catalog.currentMagMax = renderer.options.magLimit;
   }
+
+  if (Number.isFinite(settings.starNameMagLimit)) {
+    renderer.options.starNameMagLimit = Math.max(-2, Math.min(25, Number(settings.starNameMagLimit)));
+  }
+
+  const allowedStarProfiles = new Set(['planetarium', 'realistic', 'conservative', 'enhanced']);
+  if (typeof settings.starVisualProfile === 'string' && allowedStarProfiles.has(settings.starVisualProfile)) {
+    renderer.options.starVisualProfile = settings.starVisualProfile === 'enhanced'
+      ? 'planetarium'
+      : settings.starVisualProfile;
+  } else {
+    renderer.options.starVisualProfile = 'planetarium';
+  }
+
+  const allowedConstellationLabelLanguages = new Set(['de', 'latin']);
+  if (typeof settings.constellationLabelLanguage === 'string'
+    && allowedConstellationLabelLanguages.has(settings.constellationLabelLanguage)) {
+    renderer.options.constellationLabelLanguage = settings.constellationLabelLanguage;
+  } else {
+    renderer.options.constellationLabelLanguage = 'de';
+  }
+
+  const allowedMilkyWayModes = new Set(['nasa-texture', 'isophotes']);
+  if (typeof settings.milkyWayMode === 'string' && allowedMilkyWayModes.has(settings.milkyWayMode)) {
+    renderer.options.milkyWayMode = settings.milkyWayMode;
+  } else {
+    renderer.options.milkyWayMode = 'nasa-texture';
+  }
+
+  if (Number.isFinite(settings.milkyWayIsoSmoothness)) {
+    renderer.options.milkyWayIsoSmoothness = Math.max(0, Math.min(4, Number(settings.milkyWayIsoSmoothness)));
+  } else {
+    renderer.options.milkyWayIsoSmoothness = 1.5;
+  }
+  if (Number.isFinite(settings.milkyWayIsoBrightness)) {
+    renderer.options.milkyWayIsoBrightness = Math.max(0.2, Math.min(2.5, Number(settings.milkyWayIsoBrightness)));
+  } else {
+    renderer.options.milkyWayIsoBrightness = 1.0;
+  }
+  if (Number.isFinite(settings.milkyWayIsoContrast)) {
+    renderer.options.milkyWayIsoContrast = Math.max(0.4, Math.min(3.0, Number(settings.milkyWayIsoContrast)));
+  } else {
+    renderer.options.milkyWayIsoContrast = 1.0;
+  }
+
   const magInput = document.getElementById('mag-limit');
   if (magInput) magInput.value = String(renderer.options.magLimit);
   const magLabel = document.getElementById('mag-label');
   if (magLabel) magLabel.textContent = String(renderer.options.magLimit);
+  const starNameMagInput = document.getElementById('star-name-mag-limit');
+  if (starNameMagInput) starNameMagInput.value = String(renderer.options.starNameMagLimit);
+  const starNameMagLabel = document.getElementById('star-name-mag-label');
+  if (starNameMagLabel) starNameMagLabel.textContent = String(renderer.options.starNameMagLimit);
+  const starProfileInput = document.getElementById('star-visual-profile');
+  if (starProfileInput) {
+    starProfileInput.value = String(renderer.options.starVisualProfile || 'planetarium');
+  }
+  const milkyWayModeInput = document.getElementById('milky-way-mode');
+  if (milkyWayModeInput) {
+    milkyWayModeInput.value = String(renderer.options.milkyWayMode || 'nasa-texture');
+  }
+  const constellationLabelLanguageInput = document.getElementById('constellation-label-language');
+  if (constellationLabelLanguageInput) {
+    constellationLabelLanguageInput.value = String(renderer.options.constellationLabelLanguage || 'de');
+  }
+  const milkyWayIsoSmoothnessInput = document.getElementById('milky-way-iso-smoothness');
+  if (milkyWayIsoSmoothnessInput) milkyWayIsoSmoothnessInput.value = String(renderer.options.milkyWayIsoSmoothness);
+  const milkyWayIsoSmoothnessLabel = document.getElementById('milky-way-iso-smoothness-label');
+  if (milkyWayIsoSmoothnessLabel) milkyWayIsoSmoothnessLabel.textContent = String(renderer.options.milkyWayIsoSmoothness);
+  const milkyWayIsoBrightnessInput = document.getElementById('milky-way-iso-brightness');
+  if (milkyWayIsoBrightnessInput) milkyWayIsoBrightnessInput.value = String(renderer.options.milkyWayIsoBrightness);
+  const milkyWayIsoBrightnessLabel = document.getElementById('milky-way-iso-brightness-label');
+  if (milkyWayIsoBrightnessLabel) milkyWayIsoBrightnessLabel.textContent = String(renderer.options.milkyWayIsoBrightness);
+  const milkyWayIsoContrastInput = document.getElementById('milky-way-iso-contrast');
+  if (milkyWayIsoContrastInput) milkyWayIsoContrastInput.value = String(renderer.options.milkyWayIsoContrast);
+  const milkyWayIsoContrastLabel = document.getElementById('milky-way-iso-contrast-label');
+  if (milkyWayIsoContrastLabel) milkyWayIsoContrastLabel.textContent = String(renderer.options.milkyWayIsoContrast);
 
   renderer.projection?.setProjectionMode('auto');
   renderer.requestDraw();
@@ -1555,8 +2146,8 @@ function applyDisplaySettings() {
 function loadDataSourceSettings() {
   const defaults = {
     starCatalog: 'mag4',
-    dsoCatalog: 'dso_base.json',
-    constellationsCatalog: 'constellations.json',
+    dsoCatalog: 'all',
+    constellationsCatalog: 'constellations_modern_stellarium_v25_1.json',
     planetMagnitudeAlgorithm: 'mallama-hilton-2018',
     useBackendSmallBodies: true,
     defaultIncludeSatellites: false,
@@ -1770,8 +2361,8 @@ async function triggerSyncAll() {
 
 async function applyCatalogSelection() {
   const starCatalog = document.getElementById('catalog-stars-select')?.value || 'mag4';
-  const dsoCatalog = document.getElementById('catalog-dso-select')?.value || 'dso_base.json';
-  const constellationsCatalog = document.getElementById('catalog-constellations-select')?.value || 'constellations.json';
+  const dsoCatalog = document.getElementById('catalog-dso-select')?.value || 'all';
+  const constellationsCatalog = document.getElementById('catalog-constellations-select')?.value || 'constellations_modern_stellarium_v25_1.json';
   const planetMagnitudeAlgorithm = document.getElementById('planet-mag-algorithm')?.value || 'mallama-hilton-2018';
   const useBackendSmallBodies = Boolean(document.getElementById('use-backend-smallbodies')?.checked);
   const defaultIncludeSatellites = Boolean(document.getElementById('default-include-satellites')?.checked);
@@ -1851,7 +2442,10 @@ async function initDataSourceControls() {
 
   if (starsSelect) starsSelect.value = settings.starCatalog;
   if (dsoSelect) dsoSelect.value = settings.dsoCatalog;
-  if (constellationsSelect) constellationsSelect.value = settings.constellationsCatalog;
+  if (constellationsSelect) {
+    constellationsSelect.value = 'constellations_modern_stellarium_v25_1.json';
+    updateConstellationCatalogInfo(constellationsSelect.value);
+  }
   if (useSmallBodies) useSmallBodies.checked = Boolean(settings.useBackendSmallBodies);
   if (defaultIncludeSat) defaultIncludeSat.checked = Boolean(settings.defaultIncludeSatellites);
   if (searchIncludeSat) searchIncludeSat.checked = Boolean(settings.defaultIncludeSatellites);
@@ -1881,18 +2475,35 @@ async function initDataSourceControls() {
   }
 
   renderer.setDataSourceOptions({ useBackendSmallBodies: Boolean(settings.useBackendSmallBodies) });
-  // Catalog already loaded by renderer.init() – only apply star catalog setting here.
-  if (settings.starCatalog && settings.starCatalog !== renderer.catalog.getActiveStarCatalog()) {
-    try {
-      await renderer.catalog.setStarCatalog(settings.starCatalog);
-      renderer.stats.totalStars = renderer.catalog.getStars().length;
-      renderer.render();
-    } catch {
-      // swallow
+  // Catalog already loaded by renderer.init(). Apply persisted source changes if needed.
+  try {
+    const desiredStarCatalog = starsSelect?.value || settings.starCatalog || 'mag4';
+    const desiredDsoCatalog = dsoSelect?.value || settings.dsoCatalog || 'all';
+    const desiredConstellationCatalog = constellationsSelect?.value || settings.constellationsCatalog || 'constellations_modern_stellarium_v25_1.json';
+    const currentSources = renderer.catalog.getSources();
+    const needsCatalogReconfigure = (
+      renderer.catalog.getActiveStarCatalog() !== desiredStarCatalog
+      || currentSources.dso !== desiredDsoCatalog
+      || currentSources.constellations !== desiredConstellationCatalog
+    );
+    if (needsCatalogReconfigure) {
+      await renderer.reconfigureCatalogSources({
+        stars: desiredStarCatalog,
+        dso: desiredDsoCatalog,
+        constellations: desiredConstellationCatalog,
+      });
     }
+  } catch {
+    // swallow
   }
   setCatalogApplyStatus('Kataloge bereit.');
   refreshBackendSyncStatus();
+}
+
+function updateConstellationCatalogInfo(catalogFileName) {
+  const target = document.getElementById('catalog-constellations-info');
+  if (!target) return;
+  target.textContent = 'Modern: Sternbildlinien der modernen Himmelskultur aus Stellarium 25.1.';
 }
 
 function rememberRecentSearch(query) {

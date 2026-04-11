@@ -12,7 +12,9 @@ import asyncio
 import json
 import os
 import math
-from datetime import datetime, timezone
+import urllib.parse
+import urllib.request
+from datetime import date, datetime, timezone, timedelta
 from typing import Any
 
 from .catalog_repo import CatalogRepository
@@ -325,6 +327,416 @@ def _to_cartesian(lon_deg: float, lat_deg: float, radius: float) -> tuple[float,
     )
 
 
+def _http_get_json(url: str, timeout: float = 8.0) -> dict[str, Any] | list[Any] | None:
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "SkyCMD/0.1.0"})
+        with urllib.request.urlopen(req, timeout=timeout) as res:
+            data = res.read().decode("utf-8", errors="replace")
+        return json.loads(data)
+    except Exception:
+        return None
+
+
+def _parse_7timer_init(value: Any) -> datetime | None:
+    raw = str(value or "").strip()
+    if len(raw) != 10 or not raw.isdigit():
+        return None
+    try:
+        dt = datetime.strptime(raw, "%Y%m%d%H")
+        return dt.replace(tzinfo=timezone.utc)
+    except Exception:
+        return None
+
+
+def _gmst_hours(dt: datetime) -> float:
+    jd = _jd_from_datetime(dt)
+    t = (jd - 2451545.0) / 36525.0
+    gmst_deg = (
+        280.46061837
+        + 360.98564736629 * (jd - 2451545.0)
+        + 0.000387933 * t * t
+        - (t * t * t) / 38710000.0
+    )
+    return ((gmst_deg % 360.0) + 360.0) % 360.0 / 15.0
+
+
+def _sun_altitude_deg(dt: datetime, lat_deg: float, lon_deg: float) -> float:
+    epoch = _epoch_from_datetime(dt)
+    sun_ra, sun_dec, _ = Sun.apparent_rightascension_declination_coarse(epoch)
+    ra_hours = float(sun_ra()) / 15.0
+    dec_deg = float(sun_dec())
+
+    lst_hours = (_gmst_hours(dt) + lon_deg / 15.0) % 24.0
+    ha_rad = math.radians((lst_hours - ra_hours) * 15.0)
+    dec_rad = math.radians(dec_deg)
+    lat_rad = math.radians(lat_deg)
+
+    sin_alt = (
+        math.sin(dec_rad) * math.sin(lat_rad)
+        + math.cos(dec_rad) * math.cos(lat_rad) * math.cos(ha_rad)
+    )
+    return math.degrees(math.asin(max(-1.0, min(1.0, sin_alt))))
+
+
+def _parse_local_date(value: str | None) -> date:
+    raw = str(value or "").strip()
+    if raw:
+        try:
+            return date.fromisoformat(raw)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail="Ungültiges Datum. Erwartet: YYYY-MM-DD") from exc
+    return datetime.now(timezone.utc).date()
+
+
+def _iso_utc(dt: datetime | None) -> str | None:
+    if not isinstance(dt, datetime):
+        return None
+    return dt.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
+def _refine_altitude_crossing(
+    start_dt: datetime,
+    end_dt: datetime,
+    lat_deg: float,
+    lon_deg: float,
+    target_alt_deg: float,
+) -> datetime:
+    left = start_dt
+    right = end_dt
+    alt_left = _sun_altitude_deg(left, lat_deg, lon_deg) - target_alt_deg
+    alt_right = _sun_altitude_deg(right, lat_deg, lon_deg) - target_alt_deg
+    if abs(alt_left) < 1e-9:
+        return left
+    if abs(alt_right) < 1e-9:
+        return right
+    for _ in range(28):
+        mid = left + (right - left) / 2
+        alt_mid = _sun_altitude_deg(mid, lat_deg, lon_deg) - target_alt_deg
+        if abs(alt_mid) < 1e-9:
+            return mid
+        if alt_left * alt_mid <= 0:
+            right = mid
+            alt_right = alt_mid
+        else:
+            left = mid
+            alt_left = alt_mid
+    return left + (right - left) / 2
+
+
+def _find_altitude_crossings(
+    start_dt: datetime,
+    end_dt: datetime,
+    lat_deg: float,
+    lon_deg: float,
+    target_alt_deg: float,
+    step_minutes: int = 10,
+) -> list[dict[str, Any]]:
+    crossings: list[dict[str, Any]] = []
+    step = timedelta(minutes=max(1, step_minutes))
+    prev_dt = start_dt
+    prev_delta = _sun_altitude_deg(prev_dt, lat_deg, lon_deg) - target_alt_deg
+
+    while prev_dt < end_dt:
+        next_dt = min(prev_dt + step, end_dt)
+        next_delta = _sun_altitude_deg(next_dt, lat_deg, lon_deg) - target_alt_deg
+        has_crossing = prev_delta == 0 or next_delta == 0 or (prev_delta < 0 < next_delta) or (prev_delta > 0 > next_delta)
+        if has_crossing:
+            cross_dt = _refine_altitude_crossing(prev_dt, next_dt, lat_deg, lon_deg, target_alt_deg)
+            before_dt = max(start_dt, cross_dt - timedelta(minutes=1))
+            after_dt = min(end_dt, cross_dt + timedelta(minutes=1))
+            before_alt = _sun_altitude_deg(before_dt, lat_deg, lon_deg)
+            after_alt = _sun_altitude_deg(after_dt, lat_deg, lon_deg)
+            direction = "rising" if after_alt >= before_alt else "setting"
+            if not crossings or abs((cross_dt - crossings[-1]["dt"]).total_seconds()) > 120:
+                crossings.append({"dt": cross_dt, "direction": direction})
+        prev_dt = next_dt
+        prev_delta = next_delta
+
+    return crossings
+
+
+def _pick_crossing(crossings: list[dict[str, Any]], direction: str) -> datetime | None:
+    for item in crossings:
+        if item.get("direction") == direction:
+            dt = item.get("dt")
+            if isinstance(dt, datetime):
+                return dt
+    return None
+
+
+def _find_solar_noon(start_dt: datetime, end_dt: datetime, lat_deg: float, lon_deg: float) -> tuple[datetime, float]:
+    coarse_step = timedelta(minutes=5)
+    best_dt = start_dt
+    best_alt = _sun_altitude_deg(start_dt, lat_deg, lon_deg)
+    probe = start_dt
+    while probe <= end_dt:
+        alt = _sun_altitude_deg(probe, lat_deg, lon_deg)
+        if alt > best_alt:
+            best_alt = alt
+            best_dt = probe
+        probe += coarse_step
+
+    fine_start = max(start_dt, best_dt - coarse_step)
+    fine_end = min(end_dt, best_dt + coarse_step)
+    fine_step = timedelta(seconds=30)
+    probe = fine_start
+    while probe <= fine_end:
+        alt = _sun_altitude_deg(probe, lat_deg, lon_deg)
+        if alt > best_alt:
+            best_alt = alt
+            best_dt = probe
+        probe += fine_step
+    return best_dt, best_alt
+
+
+def _day_segment_length_seconds(
+    start_dt: datetime,
+    end_dt: datetime,
+    lat_deg: float,
+    lon_deg: float,
+    target_alt_deg: float,
+) -> float:
+    crossings = _find_altitude_crossings(start_dt, end_dt, lat_deg, lon_deg, target_alt_deg)
+    rising = _pick_crossing(crossings, "rising")
+    setting = _pick_crossing(crossings, "setting")
+    if rising and setting and setting > rising:
+        return (setting - rising).total_seconds()
+
+    start_above = _sun_altitude_deg(start_dt, lat_deg, lon_deg) > target_alt_deg
+    mid_dt = start_dt + (end_dt - start_dt) / 2
+    mid_above = _sun_altitude_deg(mid_dt, lat_deg, lon_deg) > target_alt_deg
+    end_above = _sun_altitude_deg(end_dt, lat_deg, lon_deg) > target_alt_deg
+    if start_above and mid_above and end_above:
+        return (end_dt - start_dt).total_seconds()
+    return 0.0
+
+
+def _seeing_index_to_arcsec(index: int | float | None) -> float | None:
+    if not isinstance(index, (int, float)):
+        return None
+    mapping = {
+        1: 0.4,
+        2: 0.63,
+        3: 0.88,
+        4: 1.25,
+        5: 1.75,
+        6: 2.25,
+        7: 2.75,
+        8: 3.5,
+    }
+    return mapping.get(int(index))
+
+
+def _transparency_to_text(index: int | float | None) -> str:
+    if not isinstance(index, (int, float)):
+        return "unbekannt"
+    i = int(index)
+    if i <= 2:
+        return "sehr gut"
+    if i <= 4:
+        return "gut"
+    if i <= 6:
+        return "mittel"
+    return "schwach"
+
+
+@app.get("/api/weather/astro")
+async def get_weather_astro(lat: float, lon: float):
+    lat_f = float(lat)
+    lon_f = float(lon)
+    if lat_f < -90 or lat_f > 90 or lon_f < -180 or lon_f > 180:
+        raise HTTPException(status_code=400, detail="Ungültige Koordinaten")
+
+    astro_url = (
+        "http://www.7timer.info/bin/astro.php?"
+        + urllib.parse.urlencode(
+            {
+                "lon": f"{lon_f:.5f}",
+                "lat": f"{lat_f:.5f}",
+                "ac": "0",
+                "unit": "metric",
+                "output": "json",
+                "tzshift": "0",
+            }
+        )
+    )
+    astro_payload = _http_get_json(astro_url)
+    if not isinstance(astro_payload, dict):
+        raise HTTPException(status_code=502, detail="7Timer nicht erreichbar")
+
+    init_dt = _parse_7timer_init(astro_payload.get("init"))
+    if init_dt is None:
+        init_dt = datetime.now(timezone.utc)
+
+    series = astro_payload.get("dataseries")
+    rows = series if isinstance(series, list) else []
+    now = datetime.now(timezone.utc)
+
+    timeline: list[dict[str, Any]] = []
+    best_row: dict[str, Any] | None = None
+    best_dt: datetime | None = None
+    best_abs_seconds = float("inf")
+
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        tp = row.get("timepoint")
+        if not isinstance(tp, (int, float)):
+            continue
+        dt = init_dt + timedelta(hours=float(tp))
+        seeing_idx = row.get("seeing")
+        transparency_idx = row.get("transparency")
+        temp2m = row.get("temp2m")
+        entry = {
+            "timeUtc": dt.isoformat().replace("+00:00", "Z"),
+            "timepointHours": float(tp),
+            "tempC": float(temp2m) if isinstance(temp2m, (int, float)) else None,
+            "seeingIndex": int(seeing_idx) if isinstance(seeing_idx, (int, float)) else None,
+            "seeingArcsec": _seeing_index_to_arcsec(seeing_idx),
+            "transparencyIndex": int(transparency_idx) if isinstance(transparency_idx, (int, float)) else None,
+            "transparencyText": _transparency_to_text(transparency_idx),
+            "isAstronomicalNight": _sun_altitude_deg(dt, lat_f, lon_f) <= -18.0,
+        }
+        timeline.append(entry)
+
+        delta = abs((dt - now).total_seconds())
+        if delta < best_abs_seconds:
+            best_abs_seconds = delta
+            best_row = row
+            best_dt = dt
+
+    # 7Timer astro focuses on observing metrics; augment with Open-Meteo current surface weather.
+    pressure_hpa = None
+    dew_point_c = None
+    wind_speed_kmh = None
+    wind_direction_deg = None
+    humidity_percent = None
+    meteo_url = (
+        "https://api.open-meteo.com/v1/forecast?"
+        + urllib.parse.urlencode(
+            {
+                "latitude": f"{lat_f:.5f}",
+                "longitude": f"{lon_f:.5f}",
+                "current": "surface_pressure,dew_point_2m,wind_speed_10m,wind_direction_10m,relative_humidity_2m",
+                "timezone": "UTC",
+            }
+        )
+    )
+    meteo_payload = _http_get_json(meteo_url)
+    if isinstance(meteo_payload, dict):
+        current = meteo_payload.get("current")
+        if isinstance(current, dict):
+            sp = current.get("surface_pressure")
+            if isinstance(sp, (int, float)):
+                pressure_hpa = float(sp)
+            dew = current.get("dew_point_2m")
+            if isinstance(dew, (int, float)):
+                dew_point_c = float(dew)
+            wind = current.get("wind_speed_10m")
+            if isinstance(wind, (int, float)):
+                wind_speed_kmh = float(wind)
+            wind_dir = current.get("wind_direction_10m")
+            if isinstance(wind_dir, (int, float)):
+                wind_direction_deg = float(wind_dir)
+            rh = current.get("relative_humidity_2m")
+            if isinstance(rh, (int, float)):
+                humidity_percent = float(rh)
+
+    if best_row is None or best_dt is None:
+        raise HTTPException(status_code=502, detail="Keine verwertbaren 7Timer-Daten")
+
+    seeing_idx = best_row.get("seeing")
+    transparency_idx = best_row.get("transparency")
+    temp2m = best_row.get("temp2m")
+    current_temp = float(temp2m) if isinstance(temp2m, (int, float)) else None
+    if current_temp is None and timeline:
+        current_temp = timeline[0].get("tempC")
+
+    # Keep timeline compact for UI and highlight astronomical night windows.
+    timeline_compact = timeline[:16]
+
+    return {
+        "source": "7Timer ASTRO",
+        "location": {"lat": lat_f, "lon": lon_f},
+        "current": {
+            "timeUtc": best_dt.isoformat().replace("+00:00", "Z"),
+            "tempC": current_temp,
+            "pressureHpa": pressure_hpa,
+            "dewPointC": dew_point_c,
+            "windSpeedKmh": wind_speed_kmh,
+            "windDirectionDeg": wind_direction_deg,
+            "humidityPercent": humidity_percent,
+            "seeingArcsec": _seeing_index_to_arcsec(seeing_idx),
+            "seeingIndex": int(seeing_idx) if isinstance(seeing_idx, (int, float)) else None,
+            "transparencyIndex": int(transparency_idx) if isinstance(transparency_idx, (int, float)) else None,
+            "transparencyText": _transparency_to_text(transparency_idx),
+            "isAstronomicalNight": _sun_altitude_deg(best_dt, lat_f, lon_f) <= -18.0,
+        },
+        "timeline": timeline_compact,
+    }
+
+
+@app.get("/api/time/daylight")
+async def get_daylight_times(
+    lat: float,
+    lon: float,
+    date_local: str | None = None,
+    timezone_name: str = "UTC",
+    timezone_offset_minutes: int = 0,
+):
+    lat_f = float(lat)
+    lon_f = float(lon)
+    if lat_f < -90 or lat_f > 90 or lon_f < -180 or lon_f > 180:
+        raise HTTPException(status_code=400, detail="Ungültige Koordinaten")
+
+    tz_name = str(timezone_name or "UTC").strip() or "UTC"
+    offset_minutes = int(timezone_offset_minutes) if isinstance(timezone_offset_minutes, int) else 0
+    offset_minutes = max(-14 * 60, min(14 * 60, offset_minutes))
+    local_day = _parse_local_date(date_local)
+    offset = timedelta(minutes=offset_minutes)
+    start_utc = datetime.combine(local_day, datetime.min.time(), tzinfo=timezone.utc) - offset
+    end_utc = start_utc + timedelta(days=1)
+
+    horizon_crossings = _find_altitude_crossings(start_utc, end_utc, lat_f, lon_f, -0.833)
+    civil_crossings = _find_altitude_crossings(start_utc, end_utc, lat_f, lon_f, -6.0)
+    nautical_crossings = _find_altitude_crossings(start_utc, end_utc, lat_f, lon_f, -12.0)
+    astro_crossings = _find_altitude_crossings(start_utc, end_utc, lat_f, lon_f, -18.0)
+
+    sunrise_dt = _pick_crossing(horizon_crossings, "rising")
+    sunset_dt = _pick_crossing(horizon_crossings, "setting")
+    civil_morning_dt = _pick_crossing(civil_crossings, "rising")
+    civil_evening_dt = _pick_crossing(civil_crossings, "setting")
+    nautical_morning_dt = _pick_crossing(nautical_crossings, "rising")
+    nautical_evening_dt = _pick_crossing(nautical_crossings, "setting")
+    astro_morning_dt = _pick_crossing(astro_crossings, "rising")
+    astro_evening_dt = _pick_crossing(astro_crossings, "setting")
+
+    solar_noon_dt, solar_noon_alt = _find_solar_noon(start_utc, end_utc, lat_f, lon_f)
+    day_length_seconds = _day_segment_length_seconds(start_utc, end_utc, lat_f, lon_f, -0.833)
+    night_length_seconds = max(0.0, (end_utc - start_utc).total_seconds() - day_length_seconds)
+
+    return {
+        "location": {"lat": lat_f, "lon": lon_f},
+        "timezone": tz_name,
+        "timezoneOffsetMinutes": offset_minutes,
+        "localDate": local_day.isoformat(),
+        "events": {
+            "endAstronomicalDawn": _iso_utc(astro_morning_dt),
+            "endNauticalDawn": _iso_utc(nautical_morning_dt),
+            "endCivilDawn": _iso_utc(civil_morning_dt),
+            "sunrise": _iso_utc(sunrise_dt),
+            "solarNoon": _iso_utc(solar_noon_dt),
+            "sunset": _iso_utc(sunset_dt),
+            "startCivilDusk": _iso_utc(civil_evening_dt),
+            "startNauticalDusk": _iso_utc(nautical_evening_dt),
+            "startAstronomicalDusk": _iso_utc(astro_evening_dt),
+        },
+        "solarNoonAltitudeDeg": round(solar_noon_alt, 2),
+        "dayLengthSeconds": round(day_length_seconds),
+        "nightLengthSeconds": round(night_length_seconds),
+    }
+
+
 @app.get("/api/catalog/status")
 async def get_catalog_status():
     return {
@@ -334,6 +746,58 @@ async def get_catalog_status():
             "mag4": catalog_repo.count_stars("mag4"),
             "tycho2": catalog_repo.count_stars("tycho2"),
         },
+    }
+
+
+_DSO_CATALOG_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../data/catalogs/dso_base.json")
+)
+_dso_cache: list[dict] | None = None
+
+
+def _load_dso_raw() -> list[dict]:
+    """Load and cache the DSO base catalog from disk (singleton)."""
+    global _dso_cache
+    if _dso_cache is not None:
+        return _dso_cache
+    with open(_DSO_CATALOG_PATH, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    if not isinstance(data, list):
+        raise ValueError("DSO catalog must be a JSON array")
+    _dso_cache = data
+    return _dso_cache
+
+
+@app.get("/api/catalog/dso")
+async def get_catalog_dso(catalog: str = "all"):
+    """
+    Deep-Sky-Objekte aus dem internen Katalog abrufen.
+
+    catalog: 'all' | 'messier' | 'ngc'  (Standard: 'all')
+    """
+    allowed = {"all", "messier", "ngc"}
+    catalog_norm = str(catalog or "all").strip().lower()
+    if catalog_norm not in allowed:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Ungültiger Katalog '{catalog}'. Erlaubt: {sorted(allowed)}",
+        )
+    try:
+        raw = _load_dso_raw()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"DSO-Katalog konnte nicht geladen werden: {exc}") from exc
+
+    items = (
+        raw
+        if catalog_norm == "all"
+        else [obj for obj in raw if str(obj.get("catalog", "")).lower() == catalog_norm]
+    )
+    return {
+        "source": "dso_base.json",
+        "catalog": catalog_norm,
+        "availableCatalogs": sorted(allowed),
+        "count": len(items),
+        "items": items,
     }
 
 

@@ -56,6 +56,83 @@ TAIL_RE = re.compile(
     r"\s+(\d{4}-\d{2}-\d{2})" # Date
 )
 
+GREEK_ABBR_TO_NAME = {
+    "alf": "alpha",
+    "bet": "beta",
+    "gam": "gamma",
+    "del": "delta",
+    "eps": "epsilon",
+    "zet": "zeta",
+    "eta": "eta",
+    "the": "theta",
+    "iot": "iota",
+    "kap": "kappa",
+    "lam": "lambda",
+    "mu": "mu",
+    "nu": "nu",
+    "ksi": "xi",
+    "omi": "omicron",
+    "pi": "pi",
+    "rho": "rho",
+    "sig": "sigma",
+    "tau": "tau",
+    "ups": "upsilon",
+    "phi": "phi",
+    "chi": "chi",
+    "psi": "psi",
+    "ome": "omega",
+}
+
+
+def _normalize_bayer_token(token: str) -> str:
+    value = str(token or "").strip().lower()
+    if not value or value == "_":
+        return ""
+
+    # Preserve suffixes like pi03, but normalize canonical abbreviation prefix.
+    m = re.match(r"^([a-z]{2,3})(\d{0,2})$", value)
+    if not m:
+        return value
+
+    prefix, suffix = m.groups()
+    greek = GREEK_ABBR_TO_NAME.get(prefix, prefix)
+    if suffix:
+        suffix = str(int(suffix))
+    return f"{greek}{suffix}"
+
+
+def _extract_designations(prefix: str, constellation: str) -> tuple[str, str]:
+    if not constellation:
+        return "", ""
+
+    parts = prefix.split()
+    try:
+        ci = parts.index(constellation)
+    except ValueError:
+        return "", ""
+
+    if ci < 2:
+        return "", ""
+
+    latin_token = parts[ci - 2]
+    utf_token = parts[ci - 1]
+
+    flamsteed_num = ""
+    for tok in (utf_token, latin_token):
+        cleaned = str(tok or "").strip()
+        if cleaned.isdigit():
+            flamsteed_num = str(int(cleaned))
+            break
+
+    flamsteed = f"{flamsteed_num} {constellation}" if flamsteed_num else ""
+
+    bayer_token = _normalize_bayer_token(latin_token)
+    bayer = ""
+    if bayer_token and not bayer_token.isdigit():
+        bayer = f"{bayer_token} {constellation}"
+
+    return bayer, flamsteed
+
 
 def download_iau_csn() -> list[str]:
     print(f"Downloading IAU-CSN from {IAU_CSN_URL} …")
@@ -119,6 +196,7 @@ def parse_lines(lines: list[str]) -> list[dict]:
         prefix = line[: m.start()]
         con_match = CON_RE.search(prefix)
         constellation = con_match.group(1) if con_match else ""
+        bayer, flamsteed = _extract_designations(prefix, constellation)
 
         try:
             magnitude = round(float(mag_str), 2)
@@ -128,6 +206,8 @@ def parse_lines(lines: list[str]) -> list[dict]:
         candidate = {
             "id": star_id,
             "propername": name_ascii,
+            "bayer": bayer,
+            "flamsteed": flamsteed,
             "magnitude": magnitude,
             "constellation": constellation,
             "source": "IAU",
@@ -142,7 +222,14 @@ def parse_lines(lines: list[str]) -> list[dict]:
             c_mag = current.get("magnitude")
             n_mag = candidate.get("magnitude")
             if c_mag is None or (n_mag is not None and n_mag < c_mag):
-                by_id[star_id] = candidate
+                merged = {**current, **candidate}
+            else:
+                merged = {**candidate, **current}
+
+            # Keep designation metadata if present on either duplicate row.
+            merged["bayer"] = current.get("bayer") or candidate.get("bayer") or ""
+            merged["flamsteed"] = current.get("flamsteed") or candidate.get("flamsteed") or ""
+            by_id[star_id] = merged
 
     entries = list(by_id.values())
     print(

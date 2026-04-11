@@ -3,6 +3,9 @@
  */
 import { Projection } from './projection.js';
 import { CatalogManager } from './catalog.js';
+import { ConstellationResolver } from './constellationResolver.js';
+
+const OBJECT_LABEL_FONT_STACK = '"Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif';
 
 export class WebGLRenderer {
   constructor(canvas) {
@@ -23,6 +26,7 @@ export class WebGLRenderer {
       showConstellationBoundaries: false,
       showConstellationLabels: false,
       showCelestialEquator: true,
+      showGalacticEquator: false,
       showEquatorialGrid: false,
       showMeridian: true,
       showEcliptic: true,
@@ -34,8 +38,17 @@ export class WebGLRenderer {
       showStarNames: true,
       showDSOLabels: true,
       showPlanetLabels: true,
+      showMilkyWay: true,
       magLimit: 6.5,
+      starNameMagLimit: 6.5,
+      constellationLabelLanguage: 'de',
+      milkyWayMode: 'nasa-texture',
+      milkyWayIsoSmoothness: 1.5,
+      milkyWayIsoBrightness: 1.0,
+      milkyWayIsoContrast: 1.0,
       starHeuristicMode: 'ultra',
+      starVisualProfile: 'planetarium',
+      bindConstellationLinesToStars: true,
     };
 
     this.stats = {
@@ -58,13 +71,15 @@ export class WebGLRenderer {
       useBackendSmallBodies: true,
     };
 
-    this._constellationNameById = new Map();
-    this._constellationCenters = [];
-    this._constellationIndexReady = false;
+    this.constellationResolver = new ConstellationResolver();
 
     this.ready = false;
     this._rafPending = false;
     this._renderErrorLogged = false;
+
+    // Caches the last successfully placed screen position per constellation abbr.
+    // Keeps labels from jumping when the camera pans.
+    this._constellationLabelCache = new Map();
 
     this._initWebGL();
   }
@@ -80,22 +95,32 @@ export class WebGLRenderer {
       in vec2 aPos;
       in float aSize;
       in vec3 aColor;
+      in float aIntensity;
       out vec3 vColor;
+      out float vIntensity;
       void main() {
         gl_Position = vec4(aPos, 0.0, 1.0);
         gl_PointSize = aSize;
         vColor = aColor;
+        vIntensity = aIntensity;
       }`,
       `#version 300 es
       precision mediump float;
       in vec3 vColor;
+      in float vIntensity;
       out vec4 outColor;
       void main() {
         vec2 uv = gl_PointCoord - vec2(0.5);
-        float d = dot(uv, uv);
-        if (d > 0.25) discard;
-        float alpha = 1.0 - smoothstep(0.0, 0.25, d);
-        outColor = vec4(vColor, alpha);
+        float r = length(uv) * 2.0;
+        if (r > 1.0) discard;
+
+        float core = exp(-16.0 * r * r);
+        float halo = exp(-3.2 * r * r) * 0.55;
+        float alpha = clamp((core + halo) * vIntensity, 0.0, 1.0);
+
+        float colorBlend = clamp(0.22 + core * 0.92, 0.0, 1.0);
+        vec3 color = mix(vec3(1.0), vColor, colorBlend);
+        outColor = vec4(color, alpha);
       }`
     );
 
@@ -203,6 +228,7 @@ export class WebGLRenderer {
     this.pointPosBuffer = gl.createBuffer();
     this.pointSizeBuffer = gl.createBuffer();
     this.pointColorBuffer = gl.createBuffer();
+    this.pointIntensityBuffer = gl.createBuffer();
 
     this.lineVao = gl.createVertexArray();
     this.linePosBuffer = gl.createBuffer();
@@ -210,6 +236,126 @@ export class WebGLRenderer {
 
     this.fillVao = gl.createVertexArray();
     this.fillPosBuffer = gl.createBuffer();
+
+    // NASA Deep Star Map texture program (full-screen quad + equatorial UV lookup in FS)
+    this.mwTexProgram = this._createProgram(
+      `#version 300 es
+      in vec2 aPos;
+      void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`,
+      `#version 300 es
+      precision highp float;
+      uniform sampler2D uMwTex;
+      // Combined camera-to-equatorial rotation matrix (column-major):
+      // transforms a camera-space unit vector to an equatorial unit vector.
+      uniform mat3 uCamToEqu;
+      // dot(uCamZenithRow, camDir) gives sin(altitude) for horizon clipping.
+      uniform vec3 uCamZenithRow;
+      uniform vec2 uCanvasSize;
+      uniform vec2 uCenter;
+      uniform vec2 uScale;
+      uniform float uDistance;
+      uniform int uHideHorizon;
+      uniform float uBrightness;
+      uniform float uContrast;
+      uniform int uIsoMode;
+      uniform float uIsoLevels;
+      uniform float uIsoBlurPx;
+      out vec4 outColor;
+      const float PI = 3.14159265358979323846;
+
+      float luma(vec3 c) {
+        return dot(c, vec3(0.2126, 0.7152, 0.0722));
+      }
+
+      float blurredLuma(vec2 uv) {
+        vec2 texel = 1.0 / vec2(textureSize(uMwTex, 0));
+        float lod = clamp(log2(max(uIsoBlurPx * 2.0, 1.0)), 0.0, 7.0);
+        vec2 r = texel * (1.2 + uIsoBlurPx * 0.45);
+
+        // 9-tap weighted blur (4/2/1 kernel) to suppress star-like speckle noise.
+        float w = 0.0;
+        float s = 0.0;
+
+        float c = luma(textureLod(uMwTex, uv, lod).rgb);
+        s += c * 4.0; w += 4.0;
+
+        float ax = luma(textureLod(uMwTex, uv + vec2( r.x, 0.0), lod).rgb);
+        float bx = luma(textureLod(uMwTex, uv + vec2(-r.x, 0.0), lod).rgb);
+        float ay = luma(textureLod(uMwTex, uv + vec2(0.0,  r.y), lod).rgb);
+        float by = luma(textureLod(uMwTex, uv + vec2(0.0, -r.y), lod).rgb);
+        s += (ax + bx + ay + by) * 2.0; w += 8.0;
+
+        float d1 = luma(textureLod(uMwTex, uv + vec2( r.x,  r.y), lod).rgb);
+        float d2 = luma(textureLod(uMwTex, uv + vec2(-r.x,  r.y), lod).rgb);
+        float d3 = luma(textureLod(uMwTex, uv + vec2( r.x, -r.y), lod).rgb);
+        float d4 = luma(textureLod(uMwTex, uv + vec2(-r.x, -r.y), lod).rgb);
+        s += (d1 + d2 + d3 + d4); w += 4.0;
+
+        float lum = clamp(s / max(w, 1e-6), 0.0, 1.0);
+        // Keep slider behavior: brightness/contrast still shape the final bands.
+        lum = pow(clamp(lum * uBrightness, 0.0, 1.0), max(0.35, uContrast * 0.85));
+        // Remove tiny low-luminance islands and keep only meaningful MW structure.
+        lum = smoothstep(0.08, 0.96, lum);
+        return lum;
+      }
+
+      void main() {
+        float sx = gl_FragCoord.x - uCenter.x;
+        float sy = (uCanvasSize.y - gl_FragCoord.y) - uCenter.y;
+        float scaleX = max(uScale.x, 1e-6);
+        float scaleY = max(uScale.y, 1e-6);
+        float X = -sx / scaleX;
+        float Y = -sy / scaleY;
+        float factor = max(uDistance + 1.0, 1e-6);
+        float u = X / factor;
+        float v = Y / factor;
+        float q = u * u + v * v;
+        float disc = max(0.0, 1.0 + q * (1.0 - uDistance * uDistance));
+        float zc = (-q * uDistance + sqrt(disc)) / (q + 1.0);
+        float k = uDistance + zc;
+        vec3 camDir = normalize(vec3(u * k, v * k, zc));
+        if (uHideHorizon != 0 && dot(uCamZenithRow, camDir) < 0.0) { discard; }
+        vec3 eqDir = normalize(uCamToEqu * camDir);
+        float ra_rad = atan(eqDir.y, eqDir.x);
+        float dec_rad = asin(clamp(eqDir.z, -1.0, 1.0));
+        // Plate carree: RA=0h at u=0.5, RA increases to the left (canonical NASA SVS 4851)
+        float texU = fract(0.5 - ra_rad / (2.0 * PI));
+        // Source image uses top-left image origin; invert V so north stays north on sky.
+        float texV = 1.0 - ((dec_rad + PI * 0.5) / PI);
+        vec3 rgb = texture(uMwTex, vec2(texU, texV)).rgb;
+        // Optional gamma/contrast and brightness
+        rgb = pow(max(rgb, vec3(0.0)), vec3(uContrast));
+        rgb *= uBrightness;
+
+        if (uIsoMode != 0) {
+          float lum = blurredLuma(vec2(texU, texV));
+          float levels = max(3.0, uIsoLevels);
+
+          float idx = floor(lum * levels);
+          float band = idx / max(levels - 1.0, 1.0);
+
+          // Atlas-like cool palette with gentle inner brightening.
+          vec3 low = vec3(0.05, 0.09, 0.17);
+          vec3 mid = vec3(0.21, 0.30, 0.44);
+          vec3 high = vec3(0.70, 0.77, 0.88);
+          vec3 bandColor = mix(low, mid, smoothstep(0.0, 0.65, band));
+          bandColor = mix(bandColor, high, smoothstep(0.52, 1.0, band));
+          bandColor *= (0.50 + 0.75 * lum);
+
+          float fracL = fract(lum * levels);
+          float distToBorder = min(fracL, 1.0 - fracL);
+          float contour = 1.0 - smoothstep(0.0, 0.15, distToBorder);
+
+          // Keep contours subtle (atlas style, not neon outlines).
+          rgb = mix(bandColor, vec3(0.84, 0.89, 0.96), contour * 0.22);
+        }
+        outColor = vec4(rgb, 1.0);
+      }`,
+    );
+    this.mwTexVao = gl.createVertexArray();
+    this.mwTexPosBuffer = gl.createBuffer();
+    this.mwNasaTex = null;      // loaded lazily
+    this.mwNasaTexLoading = false;
 
     this.textVao = gl.createVertexArray();
     this.textPosBuffer = gl.createBuffer();
@@ -223,6 +369,11 @@ export class WebGLRenderer {
     const gl = this.gl;
     const chars = [];
     for (let code = 32; code <= 126; code += 1) chars.push(String.fromCharCode(code));
+    // Extend atlas with domain symbols (DSO classes, German labels, misc astronomy).
+    const extraChars = ['ä', 'ö', 'ü', 'Ä', 'Ö', 'Ü', 'ß', '°', 'Δ', '●', '◌', '⊗', '⬭', '□', '■', '◇', '◉', '✶', '⊕', '⋈', '✦'];
+    for (const ch of extraChars) {
+      if (!chars.includes(ch)) chars.push(ch);
+    }
 
     const cols = 16;
     const rows = Math.ceil(chars.length / cols);
@@ -245,7 +396,7 @@ export class WebGLRenderer {
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'top';
-    ctx.font = '700 15px sans-serif';
+    ctx.font = `500 15px ${OBJECT_LABEL_FONT_STACK}`;
 
     this.glyphMap = {};
     chars.forEach((ch, idx) => {
@@ -314,6 +465,7 @@ export class WebGLRenderer {
 
     this.stats.totalStars = this.catalog.getStars().length;
     this.stats.totalDSO = this.catalog.getDSO().length;
+    this._rebuildConstellationResolver();
 
     try {
       await this._refreshPlanets(new Date());
@@ -348,7 +500,7 @@ export class WebGLRenderer {
     this.catalog.setSources(sources);
     await this.catalog.loadAll();
     await this.catalog.loadConstellationBoundaries();
-    this._constellationIndexReady = false;
+    this._rebuildConstellationResolver();
     this.stats.totalStars = this.catalog.getStars().length;
     this.stats.totalDSO = this.catalog.getDSO().length;
     this.requestDraw();
@@ -503,17 +655,22 @@ export class WebGLRenderer {
       const pointPos = [];
       const pointSize = [];
       const pointColor = [];
+      const pointIntensity = [];
       const labels = [];
 
-      const pushPoint = (obj, size, color, kind, label) => {
+      const pushPoint = (obj, size, color, kind, label, intensity = 0.9) => {
         const p = this.projection.project(obj.ra, obj.dec);
         if (!p.visible) return;
         if (this.options.showHorizonFill && p.alt < 0) return;
+
+        const transmission = this.projection.extinctionTransmission(p.alt);
+        const attenuatedIntensity = intensity * (0.32 + transmission * 0.68);
 
         const ndc = this._toNdc(p.x, p.y);
         pointPos.push(ndc.x, ndc.y);
         pointSize.push(size);
         pointColor.push(color[0], color[1], color[2]);
+        pointIntensity.push(attenuatedIntensity);
         this.pickables.push({
           kind,
           id: obj.id,
@@ -529,22 +686,66 @@ export class WebGLRenderer {
         });
 
         if (kind === 'planet' && this.options.showPlanetLabels && label) {
-          labels.push({ x: p.x + 8, y: p.y - 10, text: String(label).slice(0, 24), color: [1.0, 0.88, 0.58] });
+          labels.push({ x: p.x + 8, y: p.y - 10, text: String(label).slice(0, 24), color: [1.0, 0.88, 0.58], kind: 'planet' });
         }
         if (kind === 'dso' && this.options.showDSOLabels && label) {
-          labels.push({ x: p.x + 7, y: p.y - 8, text: String(label).slice(0, 24), color: [0.62, 0.84, 1.0] });
+          const dsoStyle = this._dsoStyle(obj.type);
+          const dsoLabel = String(label).slice(0, 24);
+          labels.push({ x: p.x + 7, y: p.y - 8, text: dsoLabel, color: dsoStyle.labelColor, kind: 'dso' });
         }
-        if (kind === 'star' && this.options.showStarNames && obj.mag <= 2.5 && label) {
-          labels.push({ x: p.x + 6, y: p.y - 6, text: String(label).slice(0, 18), color: [0.9, 0.93, 1.0] });
+        if (kind === 'star' && this.options.showStarNames && label) {
+          labels.push({ x: p.x + 6, y: p.y - 6, text: String(label).slice(0, 26), color: [0.9, 0.93, 1.0], kind: 'star' });
         }
+      };
+
+      const pushDsoMarker = (obj, style, label) => {
+        const p = this.projection.project(obj.ra, obj.dec);
+        if (!p.visible) return false;
+        if (this.options.showHorizonFill && p.alt < 0) return false;
+
+        const transmission = this.projection.extinctionTransmission(p.alt);
+        const markerColor = style.color.map((c) => c * (0.25 + transmission * 0.75));
+
+        // Draw as explicit glyph marker to keep DSO symbols clearly visible at all zoom levels.
+        const symbol = (this.glyphMap && this.glyphMap[style.symbol]) ? style.symbol : '*';
+        labels.push({
+          x: p.x - 6,
+          y: p.y - 10,
+          text: symbol,
+          color: markerColor,
+          scale: 1.35,
+          kind: 'dso-marker',
+        });
+
+        this.pickables.push({
+          kind: 'dso',
+          id: obj.id,
+          label,
+          ra: obj.ra,
+          dec: obj.dec,
+          mag: obj.mag,
+          x: p.x,
+          y: p.y,
+          radius: 11,
+          name: obj.name,
+          type: obj.type,
+        });
+
+        if (this.options.showDSOLabels && label) {
+          labels.push({ x: p.x + 8, y: p.y - 8, text: String(label).slice(0, 24), color: style.labelColor, kind: 'dso' });
+        }
+        return true;
       };
 
       if (this.options.showStars) {
         const stars = this.catalog.getStars();
+        const rawProfile = String(this.options?.starVisualProfile || 'planetarium');
+        const profile = rawProfile === 'enhanced' ? 'planetarium' : rawProfile;
         const heuristic = this._computeStarHeuristic(view.fovDeg, this.canvas.width, this.canvas.height, stars.length);
         const magLimit = Number.isFinite(this.options?.magLimit)
           ? Number(this.options.magLimit)
           : 6.5;
+        const effectiveMagLimit = this._effectiveMagLimit(magLimit, profile);
         const gridCols = Math.max(1, Math.ceil(this.canvas.width / heuristic.cellPx));
         const gridRows = Math.max(1, Math.ceil(this.canvas.height / heuristic.cellPx));
         const occupancy = new Uint8Array(gridCols * gridRows);
@@ -556,7 +757,7 @@ export class WebGLRenderer {
 
         const tryRenderStar = (star, allowDense = false, ignoreDensity = false) => {
           if (!Number.isFinite(star?.mag)) return false;
-          if (star.mag > magLimit) return false;
+          if (star.mag > effectiveMagLimit) return false;
           const p = this.projection.project(star.ra, star.dec);
           if (!p.visible) return false;
           if (this.options.showHorizonFill && p.alt < 0) return false;
@@ -569,19 +770,29 @@ export class WebGLRenderer {
 
           const ndc = this._toNdc(p.x, p.y);
           const bv = Number.isFinite(star?.bv) ? star.bv : 0.3;
-          const color = this._bvColor(bv);
-          const size = Math.max(0.9, Math.min(5.2, (7.0 - star.mag) * 0.9));
+          const baseColor = this._bvColor(bv);
+          const visual = this._starVisual(star.mag, p.alt, profile);
+          const transmission = this.projection.extinctionTransmission(p.alt);
+          const color = this._mixColor([1.0, 1.0, 1.0], baseColor, visual.colorSaturation);
+          const size = visual.size;
           const starId = String(star.id || star.name || 'star');
-          const propername = this.catalog.starNames?.[starId]?.propername;
-          const displayName = this._formatStarDisplayName(starId, propername);
+          const nameData = this.catalog.getStarNameForStar(star) || {};
+          const displayName = this._formatStarDisplayName(starId, nameData);
+          const commonName = this._commonStarName(nameData);
 
           pointPos.push(ndc.x, ndc.y);
           pointSize.push(size);
           pointColor.push(color[0], color[1], color[2]);
+          pointIntensity.push(visual.intensity * (0.3 + transmission * 0.7));
           this.pickables.push({
             kind: 'star',
             id: starId,
             label: displayName,
+            propername: nameData?.propername,
+            propernameDe: nameData?.propername_de,
+            aliases: Array.isArray(nameData?.aliases) ? [...nameData.aliases] : [],
+            bayer: nameData?.bayer,
+            flamsteed: nameData?.flamsteed,
             ra: star.ra,
             dec: star.dec,
             mag: star.mag,
@@ -591,8 +802,11 @@ export class WebGLRenderer {
             name: displayName,
           });
 
-          if (this.options.showStarNames && star.mag <= 2.5 && (propername || starId)) {
-            labels.push({ x: p.x + 6, y: p.y - 6, text: String(propername || starId).slice(0, 18), color: [0.9, 0.93, 1.0] });
+          const starNameMagLimit = Number.isFinite(this.options?.starNameMagLimit)
+            ? Number(this.options.starNameMagLimit)
+            : 6.5;
+          if (this.options.showStarNames && displayName && Number.isFinite(star?.mag) && star.mag <= starNameMagLimit) {
+            labels.push({ x: p.x + 6, y: p.y - 6, text: String(displayName).slice(0, 26), color: [0.9, 0.93, 1.0], kind: 'star' });
           }
 
           return true;
@@ -615,6 +829,8 @@ export class WebGLRenderer {
         this.stats.starFaintRendered = faintRendered;
         this.stats.starMaxPerCell = heuristic.maxPerCell;
         this.stats.starHeuristicMode = heuristic.mode;
+        this.stats.starVisualProfile = profile;
+        this.stats.starEffectiveMagLimit = effectiveMagLimit;
       } else {
         this.stats.visibleStars = 0;
       }
@@ -622,8 +838,11 @@ export class WebGLRenderer {
       if (this.options.showDSO) {
         let visibleDso = 0;
         for (const obj of this.catalog.getDSO()) {
-          pushPoint(obj, 4.0, [0.5, 0.8, 1.0], 'dso', obj.name || obj.id);
-          visibleDso += 1;
+          const dsoStyle = this._dsoStyle(obj.type);
+          const dsoLabel = this._formatDsoDisplayLabel(obj);
+          if (pushDsoMarker(obj, dsoStyle, dsoLabel)) {
+            visibleDso += 1;
+          }
         }
         this.stats.visibleDSO = visibleDso;
       } else {
@@ -633,7 +852,7 @@ export class WebGLRenderer {
       if (this.options.showPlanets) {
         let visiblePlanets = 0;
         for (const planet of this.planets) {
-          pushPoint(planet, 6.0, [1.0, 0.85, 0.35], 'planet', planet.name || planet.id);
+          pushPoint(planet, 6.0, [1.0, 0.85, 0.35], 'planet', planet.name || planet.id, 0.95);
           visiblePlanets += 1;
         }
         this.stats.visiblePlanets = visiblePlanets;
@@ -648,19 +867,22 @@ export class WebGLRenderer {
         if (kind === 'comet' && !showComets) continue;
         if (kind === 'asteroid' && !showAsteroids) continue;
         const color = kind === 'comet' ? [0.55, 1.0, 0.75] : [0.9, 0.9, 0.95];
-        pushPoint(body, 3.0, color, kind || 'smallbody', body.name || body.id);
+        pushPoint(body, 3.0, color, kind || 'smallbody', body.name || body.id, 0.76);
+      }
+
+      if (this.options.showConstellationLabels) {
+        this._appendConstellationLabels(labels);
       }
 
       if (this.options.showCardinalDirections) {
         this._appendCardinalLabels(labels);
       }
 
+      // Draw the NASA Deep Star Map texture first (under all vector overlays and stars).
+      this._drawMwNasaTexture();
       this._drawLines();
-      this._drawPoints(pointPos, pointSize, pointColor);
+      this._drawPoints(pointPos, pointSize, pointColor, pointIntensity);
       this._drawSelectionLines();
-      if (this.options.showHorizonFill) {
-        this._drawHorizonFillMask();
-      }
       this._drawLabels(labels);
 
       this._renderErrorLogged = false;
@@ -766,13 +988,14 @@ export class WebGLRenderer {
       if (!entry || !entry.text) continue;
       let penX = entry.x;
       const penY = entry.y;
+      const scale = Math.max(0.75, Math.min(2.2, Number(entry.scale) || 1));
       const text = String(entry.text).slice(0, maxChars);
       const col = Array.isArray(entry.color) ? entry.color : [0.9, 0.95, 1.0];
       for (const ch of text) {
-        const glyph = this.glyphMap[ch] || this.glyphMap['?'];
+        const glyph = this.glyphMap[ch];
         if (!glyph) continue;
-        addGlyphQuad(penX, penY, glyph.w - 5, this.textCellH - 8, glyph, col);
-        penX += glyph.w - 7;
+        addGlyphQuad(penX, penY, (glyph.w - 5) * scale, (this.textCellH - 8) * scale, glyph, col);
+        penX += (glyph.w - 7) * scale;
       }
     }
 
@@ -807,7 +1030,7 @@ export class WebGLRenderer {
     gl.drawArrays(gl.TRIANGLES, 0, pos.length / 2);
   }
 
-  _drawPoints(pointPos, pointSize, pointColor) {
+  _drawPoints(pointPos, pointSize, pointColor, pointIntensity) {
     if (pointSize.length === 0) return;
     const gl = this.gl;
     gl.useProgram(this.pointProgram);
@@ -831,17 +1054,161 @@ export class WebGLRenderer {
     gl.enableVertexAttribArray(colorLoc);
     gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, 0, 0);
 
+    const intensityLoc = gl.getAttribLocation(this.pointProgram, 'aIntensity');
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.pointIntensityBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pointIntensity), gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(intensityLoc);
+    gl.vertexAttribPointer(intensityLoc, 1, gl.FLOAT, false, 0, 0);
+
     gl.drawArrays(gl.POINTS, 0, pointSize.length);
+  }
+
+  // ── NASA Deep Star Map texture ────────────────────────────────────────────
+
+  async _loadNasaMwTex(url) {
+    if (this.mwNasaTexLoading || this.mwNasaTex) return;
+    this.mwNasaTexLoading = true;
+    try {
+      const img = await new Promise((resolve, reject) => {
+        const el = new Image();
+        el.onload = () => resolve(el);
+        el.onerror = (err) => reject(err);
+        el.src = url;
+      });
+      const gl = this.gl;
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      // Wrap RA (s) cyclically; clamp Dec (t) at poles.
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      this.mwNasaTex = tex;
+      this.requestDraw();
+    } catch (e) {
+      console.warn('NASA MW texture failed to load:', e);
+    }
+    this.mwNasaTexLoading = false;
+  }
+
+  _drawMwNasaTexture() {
+    if (!this.options.showMilkyWay) return;
+    const mode = String(this.options?.milkyWayMode || 'nasa-texture');
+    const drawNasaTexture = mode === 'nasa-texture' || mode === 'isophotes';
+    if (!drawNasaTexture) return;
+    if (!this.mwNasaTex) {
+      // Kick off async load; next frame will draw once ready.
+      this._loadNasaMwTex('data/milkyway_4k.jpg');
+      return;
+    }
+    const gl = this.gl;
+    const view = this.projection.getViewState();
+    const blend = Math.max(0, Math.min(1, Number(view?.blendToPlanar ?? 0)));
+    const distance = 1 - blend;
+    const scaleX = this.projection.stereoScale * (1 - blend) + this.projection.gnomonicScaleX * blend;
+    const scaleY = this.projection.stereoScale * (1 - blend) + this.projection.gnomonicScaleY * blend;
+
+    // Camera basis vectors (in horizontal/Alt-Az frame: x=East, y=North, z=Zenith).
+    const ri = this.projection.right;
+    const up = this.projection.up;
+    const fw = this.projection.forward;
+
+    // Horizontal → equatorial rotation matrix.
+    // Derivation: express each horizontal basis vector in equatorial coordinates.
+    //   East  → equatorial: (sin(LST), -cos(LST), 0)
+    //   North → equatorial: (-sin(φ)·cos(LST), -sin(φ)·sin(LST), cos(φ))
+    //   Zenith→ equatorial: (cos(φ)·cos(LST),  cos(φ)·sin(LST),  sin(φ))
+    // where LST_rad = lst * π/12;  φ = this.projection.lat (radians).
+    const lstRad = (this.projection.lst ?? 0) * Math.PI / 12;
+    const lat = this.projection.lat ?? 0;
+    const sinL = Math.sin(lstRad), cosL = Math.cos(lstRad);
+    const sinP = Math.sin(lat),  cosP = Math.cos(lat);
+
+    // Apply M_h2e to a horizontal vector v = {x:East, y:North, z:Zenith}.
+    // This is the transpose (inverse) of the standard equatorial->horizontal ENU matrix.
+    const h2e = (v) => ({
+      x: -sinL * v.x - sinP * cosL * v.y + cosP * cosL * v.z,
+      y:  cosL * v.x - sinP * sinL * v.y + cosP * sinL * v.z,
+      z:               cosP        * v.y +        sinP  * v.z,
+    });
+
+    const c0 = h2e(ri);
+    const c1 = h2e(up);
+    const c2 = h2e(fw);
+    // Column-major mat3 for WebGL uniformMatrix3fv (transpose=false).
+    const camToEqu = [c0.x, c0.y, c0.z, c1.x, c1.y, c1.z, c2.x, c2.y, c2.z];
+
+    const brightness = Math.max(0.1, Math.min(4.0, Number(this.options?.milkyWayIsoBrightness ?? 1.0)));
+    const contrast = Math.max(0.3, Math.min(3.0, Number(this.options?.milkyWayIsoContrast ?? 1.0)));
+    const smoothness = Math.max(0, Math.min(4, Number(this.options?.milkyWayIsoSmoothness ?? 1.5)));
+    const isophoteMode = mode === 'isophotes';
+    const isophoteLevels = Math.max(3, Math.round(4 + (smoothness / 4) * 7));
+    const isophoteBlurPx = Math.max(2.0, 4.6 - smoothness * 0.75);
+
+    const quad = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]);
+    gl.useProgram(this.mwTexProgram);
+    gl.bindVertexArray(this.mwTexVao);
+
+    const posLoc = gl.getAttribLocation(this.mwTexProgram, 'aPos');
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.mwTexPosBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, quad, gl.DYNAMIC_DRAW);
+    gl.enableVertexAttribArray(posLoc);
+    gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const loc = (name) => gl.getUniformLocation(this.mwTexProgram, name);
+    gl.uniform2f(loc('uCanvasSize'), this.canvas.width, this.canvas.height);
+    gl.uniform2f(loc('uCenter'), this.projection.cx, this.projection.cy);
+    gl.uniform2f(loc('uScale'), scaleX, scaleY);
+    gl.uniform1f(loc('uDistance'), distance);
+    gl.uniformMatrix3fv(loc('uCamToEqu'), false, camToEqu);
+    gl.uniform3f(loc('uCamZenithRow'), ri.z, up.z, fw.z);
+    gl.uniform1i(loc('uHideHorizon'), this.options.showHorizonFill ? 1 : 0);
+    gl.uniform1f(loc('uBrightness'), brightness);
+    gl.uniform1f(loc('uContrast'), contrast);
+    gl.uniform1i(loc('uIsoMode'), isophoteMode ? 1 : 0);
+    gl.uniform1f(loc('uIsoLevels'), isophoteLevels);
+    gl.uniform1f(loc('uIsoBlurPx'), isophoteBlurPx);
+
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.mwNasaTex);
+    gl.uniform1i(loc('uMwTex'), 0);
+
+    // Additive blending: dark sky pixels (0,0,0) add nothing; bright MW adds color.
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
   }
 
   _drawLines() {
     const gl = this.gl;
     const linePos = [];
     const lineColor = [];
+    const maxProjectedJumpX = this.canvas.width * 1.8;
+    const maxProjectedJumpY = this.canvas.height * 1.8;
+    const starSnapper = this.options.showConstellationLines && this.options.bindConstellationLinesToStars
+      ? this._createConstellationStarSnapper()
+      : null;
+
+    const hasAcceptableProjectedJump = (a, b) => {
+      if (!a || !b) return false;
+      if (!Number.isFinite(a.x) || !Number.isFinite(a.y) || !Number.isFinite(b.x) || !Number.isFinite(b.y)) {
+        return false;
+      }
+      const dx = Math.abs(b.x - a.x);
+      const dy = Math.abs(b.y - a.y);
+      return dx <= maxProjectedJumpX && dy <= maxProjectedJumpY;
+    };
 
     const pushProjectedSegment = (p1, p2, color, hideBelowHorizon = false) => {
       let a = p1;
       let b = p2;
+
+      if (!Number.isFinite(a?.x) || !Number.isFinite(a?.y) || !Number.isFinite(a?.alt)
+        || !Number.isFinite(b?.x) || !Number.isFinite(b?.y) || !Number.isFinite(b?.alt)) {
+        return;
+      }
 
       if (hideBelowHorizon) {
         if (a.alt < 0 && b.alt < 0) return;
@@ -870,29 +1237,32 @@ export class WebGLRenderer {
 
     const pushProjectedPolyline = (points, color, hideBelowHorizon = false) => {
       if (!points || points.length < 2) return;
-      // Only drop truly discontinuous jumps (projection branch cuts),
-      // not legitimate long edge segments near the viewport border.
-      const maxJumpX = this.canvas.width * 1.8;
-      const maxJumpY = this.canvas.height * 1.8;
       for (let i = 1; i < points.length; i += 1) {
         const a = points[i - 1];
         const b = points[i];
-        const dx = Math.abs(b.x - a.x);
-        const dy = Math.abs(b.y - a.y);
-        if (dx > maxJumpX || dy > maxJumpY) continue;
+        if (!hasAcceptableProjectedJump(a, b)) continue;
         pushProjectedSegment(a, b, color, hideBelowHorizon);
       }
     };
 
     const pushSegment = (a, b, color, hideBelowHorizon = false) => {
-      const p1 = this.projection.project(a.ra, a.dec);
-      const p2 = this.projection.project(b.ra, b.dec);
+      let p1 = this.projection.project(a.ra, a.dec);
+      let p2 = this.projection.project(b.ra, b.dec);
+      if (starSnapper && color[2] > 0.65 && color[0] < 0.4) {
+        p1 = starSnapper(p1);
+        p2 = starSnapper(p2);
+      }
+      if (!hasAcceptableProjectedJump(p1, p2)) return;
       pushProjectedSegment(p1, p2, color, hideBelowHorizon);
     };
 
     // Reference lines
     if (this.options.showCelestialEquator) {
       pushProjectedPolyline(this._buildEquatorProjectedPoints(), [0.47, 0.86, 0.98], this.options.showHorizonFill);
+    }
+
+    if (this.options.showGalacticEquator) {
+      pushProjectedPolyline(this._buildGalacticEquatorProjectedPoints(), [0.82, 0.62, 1.0], this.options.showHorizonFill);
     }
 
     if (this.options.showEquatorialGrid) {
@@ -941,16 +1311,26 @@ export class WebGLRenderer {
 
     if (this.options.showConstellationBoundaries) {
       const hideBoundariesBelowHorizon = this.options.showHorizonFill;
-      for (const poly of this.catalog.getConstellationBoundaries() || []) {
-        for (let i = 1; i < poly.length; i++) {
-          const prev = poly[i - 1];
-          const curr = poly[i];
-          pushSegment(
-            { ra: prev.ra / 15, dec: prev.dec },
-            { ra: curr.ra / 15, dec: curr.dec },
-            [0.45, 0.55, 0.75],
-            hideBoundariesBelowHorizon,
-          );
+      for (const boundary of this.catalog.getConstellationBoundaries() || []) {
+        const lines = Array.isArray(boundary)
+          ? [boundary]
+          : Array.isArray(boundary?.rings)
+            ? boundary.rings
+            : [];
+
+        for (const line of lines) {
+          if (!Array.isArray(line) || line.length < 2) continue;
+          for (let i = 1; i < line.length; i++) {
+            const prev = line[i - 1];
+            const curr = line[i];
+            // Catalog boundary loader already converts lon->RA in hours.
+            pushSegment(
+              { ra: prev.ra, dec: prev.dec },
+              { ra: curr.ra, dec: curr.dec },
+              [0.45, 0.55, 0.75],
+              hideBoundariesBelowHorizon,
+            );
+          }
         }
       }
     }
@@ -975,10 +1355,93 @@ export class WebGLRenderer {
     gl.drawArrays(gl.LINES, 0, linePos.length / 2);
   }
 
+  _createConstellationStarSnapper() {
+    const stars = (this.pickables || []).filter((p) => (
+      p && p.kind === 'star' && Number.isFinite(p.x) && Number.isFinite(p.y)
+    ));
+    if (!stars.length) return null;
+
+    const cellSize = 24;
+    const maxSnapPx = 14;
+    const maxSnapSq = maxSnapPx * maxSnapPx;
+    const grid = new Map();
+
+    const keyOf = (x, y) => `${Math.floor(x / cellSize)},${Math.floor(y / cellSize)}`;
+    for (const s of stars) {
+      const key = keyOf(s.x, s.y);
+      if (!grid.has(key)) grid.set(key, []);
+      grid.get(key).push(s);
+    }
+
+    return (projected) => {
+      if (!projected || !Number.isFinite(projected.x) || !Number.isFinite(projected.y) || !projected.visible) {
+        return projected;
+      }
+
+      const cx = Math.floor(projected.x / cellSize);
+      const cy = Math.floor(projected.y / cellSize);
+      let best = null;
+      let bestSq = maxSnapSq;
+
+      for (let oy = -1; oy <= 1; oy += 1) {
+        for (let ox = -1; ox <= 1; ox += 1) {
+          const bucket = grid.get(`${cx + ox},${cy + oy}`);
+          if (!bucket) continue;
+          for (const s of bucket) {
+            const dx = s.x - projected.x;
+            const dy = s.y - projected.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < bestSq) {
+              bestSq = d2;
+              best = s;
+            }
+          }
+        }
+      }
+
+      if (!best) return projected;
+      return {
+        ...projected,
+        x: best.x,
+        y: best.y,
+      };
+    };
+  }
+
   _buildEquatorProjectedPoints() {
     const points = [];
     for (let ra = 0; ra <= 24.0001; ra += 0.25) {
       points.push(this.projection.project(ra, 0));
+    }
+    return points;
+  }
+
+  _galacticToEquatorial(lDeg, bDeg) {
+    const l = (lDeg * Math.PI) / 180;
+    const b = (bDeg * Math.PI) / 180;
+
+    const cosB = Math.cos(b);
+    const xg = cosB * Math.cos(l);
+    const yg = cosB * Math.sin(l);
+    const zg = Math.sin(b);
+
+    // IAU 1958/1984 (J2000) rotation matrix transpose: galactic -> equatorial.
+    const xe = -0.0548755604 * xg + 0.4941094279 * yg - 0.8676661490 * zg;
+    const ye = -0.8734370902 * xg - 0.4448296300 * yg - 0.1980763734 * zg;
+    const ze = -0.4838350155 * xg + 0.7469822445 * yg + 0.4559837762 * zg;
+
+    let raHours = (Math.atan2(ye, xe) * 12) / Math.PI;
+    if (raHours < 0) raHours += 24;
+    const decDeg = (Math.asin(Math.max(-1, Math.min(1, ze))) * 180) / Math.PI;
+
+    return { ra: raHours, dec: decDeg };
+  }
+
+  _buildGalacticEquatorProjectedPoints() {
+    const points = [];
+    for (let lDeg = 0; lDeg <= 360.0001; lDeg += 2) {
+      const eq = this._galacticToEquatorial(lDeg, 0);
+      points.push(this.projection.project(eq.ra, eq.dec));
     }
     return points;
   }
@@ -1026,7 +1489,301 @@ export class WebGLRenderer {
         y: p.y + (vy / len) * inset - 8,
         text: c.text,
         color: [1.0, 0.26, 0.26],
+        kind: 'cardinal',
       });
+    }
+  }
+
+  _appendConstellationLabels(labels) {
+    if (!Array.isArray(labels)) return;
+
+    const constellations = this.catalog.getConstellations() || [];
+    const maxLabels = 96;
+    let addedCount = 0;
+    const language = String(this.options?.constellationLabelLanguage || 'de').toLowerCase() === 'latin'
+      ? 'latin'
+      : 'de';
+    const occupied = [];
+    const starBoxes = [];
+
+    const estimateLabelBox = (entry) => {
+      if (!entry || !entry.text) return null;
+      const scale = Math.max(0.75, Math.min(2.2, Number(entry.scale) || 1));
+      const text = String(entry.text);
+      const charW = 10 * scale;
+      const w = Math.max(10, text.length * charW);
+      const h = Math.max(10, (this.textCellH || 24) * scale * 0.75);
+      return {
+        x0: Number(entry.x) - 2,
+        y0: Number(entry.y) - 2,
+        x1: Number(entry.x) + w + 2,
+        y1: Number(entry.y) + h + 2,
+      };
+    };
+
+    const intersects = (a, b, pad = 0) => {
+      if (!a || !b) return false;
+      return !(a.x1 + pad < b.x0 || a.x0 - pad > b.x1 || a.y1 + pad < b.y0 || a.y0 - pad > b.y1);
+    };
+
+    for (let i = 0; i < labels.length; i += 1) {
+      const existing = labels[i];
+      const box = estimateLabelBox(existing);
+      if (!box) continue;
+      if (String(existing?.kind || '') === 'star') {
+        starBoxes.push({ idx: i, box });
+      } else if (String(existing?.kind || '') !== 'dso-marker') {
+        occupied.push(box);
+      }
+    }
+
+    for (let ci = 0; ci < constellations.length && addedCount < maxLabels; ci += 1) {
+      const c = constellations[ci];
+      const abbr = String(c?.id || '').trim().toUpperCase();
+      const preferred = String(this.catalog.getConstellationNameById(abbr, language) || '').trim();
+      const text = (preferred && preferred.length <= 20) ? preferred : (abbr || preferred);
+      if (!text) continue;
+
+      const projectedPoints = [];
+      const projectedSegments = [];
+
+      for (const line of c?.lines || []) {
+        if (!Array.isArray(line)) continue;
+        let prev = null;
+        for (const p of line) {
+          const ra = Number(p?.ra);
+          const dec = Number(p?.dec);
+          if (!Number.isFinite(ra) || !Number.isFinite(dec)) continue;
+
+          const pr = this.projection.project(ra, dec);
+          if (!pr.visible) {
+            prev = null;
+            continue;
+          }
+          if (this.options.showHorizonFill && pr.alt < 0) {
+            prev = null;
+            continue;
+          }
+
+          const prTagged = Object.assign({}, pr, { srcRa: ra, srcDec: dec });
+          projectedPoints.push(prTagged);
+          if (prev) {
+            projectedSegments.push({ a: prev, b: prTagged });
+          }
+          prev = prTagged;
+        }
+      }
+
+      if (projectedPoints.length < 2) continue;
+
+      // Screen-space centroid as the global target for candidate ranking.
+      let mx = 0;
+      let my = 0;
+      for (const p of projectedPoints) {
+        mx += p.x;
+        my += p.y;
+      }
+      mx /= projectedPoints.length;
+      my /= projectedPoints.length;
+
+      // ── Sky-anchored position cache ────────────────────────────────────────
+      // Stores RA/Dec of the chosen anchor + pixel offset so that the label
+      // re-projects correctly every frame as the camera rotates/pans.
+      const cached = this._constellationLabelCache.get(abbr);
+      if (cached && cached.srcRa !== null && cached.srcDec !== null) {
+        const cacheProj = this.projection.project(cached.srcRa, cached.srcDec);
+        if (cacheProj.visible && !(this.options.showHorizonFill && cacheProj.alt < 0)) {
+          const cx = cacheProj.x + cached.dx;
+          const cy = cacheProj.y + cached.dy;
+          const cacheMargin = 20;
+          const onScreen = cx > cacheMargin && cy > cacheMargin
+            && cx < this.canvas.width - cacheMargin
+            && cy < this.canvas.height - cacheMargin;
+          if (onScreen) {
+            const cachedEntry = {
+              x: cx, y: cy, text: text.slice(0, 24),
+              color: [0.72, 0.8, 0.95], scale: 1.28, kind: 'constellation',
+            };
+            const cachedBox = estimateLabelBox(cachedEntry);
+            let cachedOverlaps = false;
+            for (const existing of occupied) {
+              if (intersects(cachedBox, existing, 3)) { cachedOverlaps = true; break; }
+            }
+            if (!cachedOverlaps) {
+              const removeStar = [];
+              for (const s of starBoxes) {
+                if (intersects(cachedBox, s.box, 1)) removeStar.push(s.idx);
+              }
+              if (removeStar.length > 0) {
+                removeStar.sort((a, b) => b - a);
+                for (const idx of removeStar) {
+                  if (idx >= 0 && idx < labels.length && String(labels[idx]?.kind || '') === 'star') {
+                    labels.splice(idx, 1);
+                  }
+                }
+                starBoxes.length = 0;
+                for (let si = 0; si < labels.length; si += 1) {
+                  const l = labels[si];
+                  if (String(l?.kind || '') !== 'star') continue;
+                  const sb = estimateLabelBox(l);
+                  if (sb) starBoxes.push({ idx: si, box: sb });
+                }
+              }
+              labels.push(cachedEntry);
+              occupied.push(cachedBox);
+              addedCount += 1;
+              continue; // tracked the sky correctly – skip full heuristic
+            }
+          }
+        }
+      }
+      // ──────────────────────────────────────────────────────────────────────
+
+      const anchors = [];
+      const pushAnchor = (x, y, len = 0, srcRa = null, srcDec = null) => {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+        const margin = Math.min(x, y, this.canvas.width - x, this.canvas.height - y);
+        if (margin < 12) return;
+        anchors.push({ x, y, len, srcRa, srcDec });
+      };
+
+      pushAnchor(mx, my, 0); // centroid has no single sky coord
+
+      // Fallback anchor near centroid from actual points.
+      let nearest = projectedPoints[0];
+      let nearestD2 = Number.POSITIVE_INFINITY;
+      for (const p of projectedPoints) {
+        const dx = p.x - mx;
+        const dy = p.y - my;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < nearestD2) {
+          nearest = p;
+          nearestD2 = d2;
+        }
+      }
+      pushAnchor(nearest.x, nearest.y, 0, nearest.srcRa, nearest.srcDec);
+
+      // Prefer middle points of longer visible segments.
+      for (const seg of projectedSegments) {
+        const dx = seg.b.x - seg.a.x;
+        const dy = seg.b.y - seg.a.y;
+        const len = Math.hypot(dx, dy);
+        if (len < 6) continue;
+        // Average RA with wrap-around guard (24h boundary).
+        const raDiff = Math.abs(seg.a.srcRa - seg.b.srcRa);
+        const midRa = raDiff > 12
+          ? ((seg.a.srcRa + seg.b.srcRa + 24) * 0.5) % 24
+          : (seg.a.srcRa + seg.b.srcRa) * 0.5;
+        const midDec = (seg.a.srcDec + seg.b.srcDec) * 0.5;
+        pushAnchor((seg.a.x + seg.b.x) * 0.5, (seg.a.y + seg.b.y) * 0.5, len, midRa, midDec);
+      }
+
+      if (anchors.length === 0) continue;
+
+      // Deduplicate nearby anchors and rank by center proximity, edge safety and segment support.
+      const deduped = [];
+      const minSep = 10;
+      for (const a of anchors) {
+        let exists = false;
+        for (const b of deduped) {
+          const ddx = a.x - b.x;
+          const ddy = a.y - b.y;
+          if ((ddx * ddx + ddy * ddy) < (minSep * minSep)) {
+            exists = true;
+            if (a.len > b.len) {
+              b.x = a.x;
+              b.y = a.y;
+              b.len = a.len;
+              b.srcRa = a.srcRa;
+              b.srcDec = a.srcDec;
+            }
+            break;
+          }
+        }
+        if (!exists) deduped.push({ ...a });
+      }
+
+      deduped.sort((a, b) => {
+        const da = Math.hypot(a.x - mx, a.y - my);
+        const db = Math.hypot(b.x - mx, b.y - my);
+        const ma = Math.min(a.x, a.y, this.canvas.width - a.x, this.canvas.height - a.y);
+        const mb = Math.min(b.x, b.y, this.canvas.width - b.x, this.canvas.height - b.y);
+        const sa = (-da * 1.0) + (ma * 0.7) + Math.min(80, a.len) * 0.6;
+        const sb = (-db * 1.0) + (mb * 0.7) + Math.min(80, b.len) * 0.6;
+        return sb - sa;
+      });
+
+      const offsets = [
+        { dx: 6, dy: -6 },
+        { dx: 12, dy: -10 },
+        { dx: -10, dy: -10 },
+        { dx: 8, dy: 8 },
+        { dx: -12, dy: 8 },
+        { dx: 0, dy: -12 },
+      ];
+
+      let placed = false;
+      for (const anchor of deduped.slice(0, 16)) {
+        for (const o of offsets) {
+          const candidate = {
+            x: anchor.x + o.dx,
+            y: anchor.y + o.dy,
+            text: text.slice(0, 24),
+            color: [0.72, 0.8, 0.95],
+            scale: 1.28,
+            kind: 'constellation',
+          };
+          const candidateBox = estimateLabelBox(candidate);
+          if (!candidateBox) continue;
+
+          let overlaps = false;
+          for (const existing of occupied) {
+            if (intersects(candidateBox, existing, 3)) {
+              overlaps = true;
+              break;
+            }
+          }
+          if (overlaps) continue;
+
+          // Prefer constellation labels over star labels: remove colliding star names locally.
+          const removeStarIdx = [];
+          for (const s of starBoxes) {
+            if (intersects(candidateBox, s.box, 1)) {
+              removeStarIdx.push(s.idx);
+            }
+          }
+          if (removeStarIdx.length > 0) {
+            removeStarIdx.sort((a, b) => b - a);
+            for (const idx of removeStarIdx) {
+              if (idx >= 0 && idx < labels.length && String(labels[idx]?.kind || '') === 'star') {
+                labels.splice(idx, 1);
+              }
+            }
+
+            // Rebuild star box index after deletions to keep indices valid.
+            starBoxes.length = 0;
+            for (let si = 0; si < labels.length; si += 1) {
+              const l = labels[si];
+              if (String(l?.kind || '') !== 'star') continue;
+              const sb = estimateLabelBox(l);
+              if (sb) starBoxes.push({ idx: si, box: sb });
+            }
+          }
+
+          // Cache sky coords + offset so the label tracks rotation correctly.
+          if (anchor.srcRa !== null && anchor.srcDec !== null) {
+            this._constellationLabelCache.set(abbr, { srcRa: anchor.srcRa, srcDec: anchor.srcDec, dx: o.dx, dy: o.dy });
+          }
+          labels.push(candidate);
+          occupied.push(candidateBox);
+          addedCount += 1;
+          placed = true;
+          break;
+        }
+        if (placed) break;
+      }
+
+      if (!placed) continue;
     }
   }
 
@@ -1185,95 +1942,111 @@ export class WebGLRenderer {
     return [1.0, 0.68, 0.4];
   }
 
-  _toSkyVector(raHours, decDeg) {
-    const raRad = ((Number(raHours) % 24) + 24) % 24 * 15 * Math.PI / 180;
-    const decRad = Number(decDeg) * Math.PI / 180;
-    const cosDec = Math.cos(decRad);
-    return { x: cosDec * Math.cos(raRad), y: cosDec * Math.sin(raRad), z: Math.sin(decRad) };
+  _starVisual(mag, altDeg = 45, profile = 'planetarium') {
+    const m = Number.isFinite(mag) ? Number(mag) : 6.5;
+    const alt = Number.isFinite(altDeg) ? Number(altDeg) : 45;
+    const modeRaw = String(profile || 'planetarium');
+    const mode = modeRaw === 'enhanced' ? 'planetarium' : modeRaw;
+    const normalized = ['planetarium', 'realistic', 'conservative'].includes(mode)
+      ? mode
+      : 'planetarium';
+
+    const sinAlt = Math.max(0.06, Math.sin((Math.max(-5, alt) * Math.PI) / 180));
+    const airMass = Math.min(10, 1 / sinAlt);
+    const extinctionCoeff = normalized === 'planetarium' ? 0.14 : normalized === 'conservative' ? 0.34 : 0.22;
+    const extinctionMag = extinctionCoeff * Math.max(0, airMass - 1);
+    const apparentMag = m + extinctionMag;
+
+    const rel = Math.max(0, Math.min(1, (6.5 - apparentMag) / 8));
+    const sizeScale = normalized === 'planetarium' ? 1.65 : normalized === 'conservative' ? 0.58 : 1.0;
+    const intensityScale = normalized === 'planetarium' ? 1.55 : normalized === 'conservative' ? 0.56 : 1.0;
+    const satBase = normalized === 'conservative' ? 0.04 : normalized === 'planetarium' ? 0.14 : 0.1;
+    const size = (1.3 + Math.pow(rel, 0.62) * 8.1) * sizeScale;
+    const intensity = Math.max(0.2, Math.min(1.25, (0.22 + Math.pow(rel, 0.85) * 1.05) * intensityScale));
+    const colorSaturation = Math.max(0.06, Math.min(1.0, satBase + Math.pow(rel, 1.15) * 0.9));
+    return { size, intensity, colorSaturation };
   }
 
-  _angularSeparationDeg(ra1Hours, dec1Deg, ra2Hours, dec2Deg) {
-    const a = this._toSkyVector(ra1Hours, dec1Deg);
-    const b = this._toSkyVector(ra2Hours, dec2Deg);
-    const dot = Math.max(-1, Math.min(1, a.x * b.x + a.y * b.y + a.z * b.z));
-    return Math.acos(dot) * 180 / Math.PI;
+  _effectiveMagLimit(magLimit, profile = 'planetarium') {
+    const modeRaw = String(profile || 'planetarium');
+    const mode = modeRaw === 'enhanced' ? 'planetarium' : modeRaw;
+    const normalized = ['planetarium', 'realistic', 'conservative'].includes(mode)
+      ? mode
+      : 'planetarium';
+    if (mode === 'conservative') return Math.max(2.5, Math.min(25, magLimit - 1.5));
+    if (normalized === 'planetarium') return Math.max(2.5, Math.min(25, magLimit + 0.8));
+    return Math.max(2.5, Math.min(25, magLimit));
   }
 
-  _ensureConstellationIndex() {
-    if (this._constellationIndexReady) return;
-    this._constellationNameById = new Map();
-    this._constellationCenters = [];
-    for (const c of this.catalog.getConstellations() || []) {
-      const id = String(c?.id || '').trim();
-      const name = String(c?.name || '').trim();
-      if (!id) continue;
-      this._constellationNameById.set(id, name || id);
+  _dsoStyle(typeRaw) {
+    const type = String(typeRaw || '').trim().toLowerCase();
+    const map = {
+      // Requested palette: marker colors and legend colors are intentionally identical.
+      open_cluster: { symbol: '◌', color: [1.0, 0.9, 0.15], labelColor: [1.0, 0.92, 0.28], size: 8.0, intensity: 1.05 },
+      globular_cluster: { symbol: '⊗', color: [1.0, 0.9, 0.15], labelColor: [1.0, 0.92, 0.28], size: 8.8, intensity: 1.1 },
+      galaxy: { symbol: '⬭', color: [1.0, 0.28, 0.28], labelColor: [1.0, 0.42, 0.42], size: 9.2, intensity: 1.12 },
+      emission_nebula: { symbol: '□', color: [1.0, 0.55, 0.75], labelColor: [1.0, 0.65, 0.8], size: 8.6, intensity: 1.08 },
+      dark_nebula: { symbol: '■', color: [0.62, 0.44, 0.28], labelColor: [0.72, 0.54, 0.38], size: 8.2, intensity: 1.0 },
+      reflection_nebula: { symbol: '◇', color: [0.35, 0.6, 1.0], labelColor: [0.46, 0.68, 1.0], size: 8.6, intensity: 1.08 },
+      planetary_nebula: { symbol: '◉', color: [0.28, 0.9, 0.34], labelColor: [0.42, 0.94, 0.48], size: 8.8, intensity: 1.1 },
+      supernova_remnant: { symbol: '✶', color: [0.72, 0.45, 0.95], labelColor: [0.78, 0.55, 0.97], size: 8.8, intensity: 1.1 },
+      exoplanet: { symbol: '⊕', color: [0.22, 0.86, 0.82], labelColor: [0.34, 0.9, 0.86], size: 8.0, intensity: 1.04 },
+      double_star: { symbol: '⋈', color: [0.78, 0.8, 0.84], labelColor: [0.86, 0.88, 0.92], size: 8.0, intensity: 1.02 },
+      quasar: { symbol: '✦', color: [1.0, 1.0, 1.0], labelColor: [0.97, 0.98, 1.0], size: 8.2, intensity: 1.14 },
+    };
 
-      let sumX = 0;
-      let sumY = 0;
-      let sumZ = 0;
-      let count = 0;
-      for (const line of c.lines || []) {
-        for (const p of line || []) {
-          if (!Number.isFinite(p?.ra) || !Number.isFinite(p?.dec)) continue;
-          const v = this._toSkyVector(p.ra, p.dec);
-          sumX += v.x;
-          sumY += v.y;
-          sumZ += v.z;
-          count += 1;
-        }
-      }
-      if (count <= 0) continue;
-      const len = Math.hypot(sumX, sumY, sumZ) || 1;
-      const x = sumX / len;
-      const y = sumY / len;
-      const z = sumZ / len;
-      let raRad = Math.atan2(y, x);
-      if (raRad < 0) raRad += 2 * Math.PI;
-      const decRad = Math.asin(Math.max(-1, Math.min(1, z)));
-      this._constellationCenters.push({ id, name: name || id, ra: (raRad * 180 / Math.PI) / 15, dec: decRad * 180 / Math.PI });
+    // Accept frequent aliases and misspellings.
+    const aliases = {
+      cluster_open: 'open_cluster',
+      glob_cluster: 'globular_cluster',
+      emission: 'emission_nebula',
+      dark: 'dark_nebula',
+      reflection: 'reflection_nebula',
+      reflexion_nebula: 'reflection_nebula',
+      relexionsnebel: 'reflection_nebula',
+      planetary: 'planetary_nebula',
+      snr: 'supernova_remnant',
+      supernova: 'supernova_remnant',
+      exoplanets: 'exoplanet',
+      binary_star: 'double_star',
+      double: 'double_star',
+    };
+    const key = aliases[type] || type;
+    return map[key] || { symbol: '•', color: [0.5, 0.8, 1.0], labelColor: [0.62, 0.84, 1.0], size: 8.0, intensity: 1.04 };
+  }
+
+  _formatDsoDisplayLabel(obj) {
+    const id = String(obj?.id || '').trim();
+    const name = String(obj?.name || '').trim();
+    if (id && name && id.toLowerCase() !== name.toLowerCase()) {
+      return `${id} (${name})`;
     }
-    this._constellationIndexReady = true;
+    return id || name || 'DSO';
+  }
+
+  _mixColor(a, b, t) {
+    const mixT = Math.max(0, Math.min(1, t));
+    return [
+      a[0] + (b[0] - a[0]) * mixT,
+      a[1] + (b[1] - a[1]) * mixT,
+      a[2] + (b[2] - a[2]) * mixT,
+    ];
+  }
+
+  _rebuildConstellationResolver() {
+    this.constellationResolver.rebuild(
+      this.catalog.getConstellations(),
+      this.catalog.getConstellationBoundaries(),
+      this.catalog.starNames,
+    );
   }
 
   getConstellationInfo(target, decDegOverride = null) {
-    let ra = null;
-    let dec = null;
-    let starId = '';
-    if (typeof target === 'object' && target !== null) {
-      ra = target.ra;
-      dec = target.dec;
-      starId = String(target.id || '').trim();
-    } else {
-      ra = target;
-      dec = decDegOverride;
-    }
-    if (!Number.isFinite(ra) || !Number.isFinite(dec)) return null;
-    this._ensureConstellationIndex();
-
-    const byStarName = this.catalog.starNames?.[starId]?.constellation;
-    if (byStarName && this._constellationNameById.has(byStarName)) {
-      return { abbr: byStarName, name: this._constellationNameById.get(byStarName) };
-    }
-
-    let best = null;
-    let bestSep = Infinity;
-    for (const c of this._constellationCenters) {
-      const sep = this._angularSeparationDeg(ra, dec, c.ra, c.dec);
-      if (sep < bestSep) {
-        bestSep = sep;
-        best = c;
-      }
-    }
-    if (!best) return null;
-    return { abbr: best.id, name: best.name };
+    return this.constellationResolver.getInfo(target, decDegOverride);
   }
 
   getConstellationNameById(abbr) {
-    const key = String(abbr || '').trim();
-    if (!key) return '';
-    this._ensureConstellationIndex();
-    return this._constellationNameById.get(key) || '';
+    return this.constellationResolver.getNameById(abbr);
   }
 
   getStats() {
@@ -1345,16 +2118,61 @@ export class WebGLRenderer {
 
   _normalizeDsoResult(obj) { return { kind: 'dso', id: obj.id, label: obj.name || obj.id, name: obj.name, type: obj.type, mag: obj.mag, ra: obj.ra, dec: obj.dec }; }
 
-  _formatStarDisplayName(starId, propername) {
-    if (propername) return `${propername} (${starId})`;
-    return starId;
+  _commonStarName(nameData = {}) {
+    const properDe = String(nameData?.propername_de || '').trim();
+    const proper = String(nameData?.propername || '').trim();
+    if (properDe) return properDe;
+    if (proper) return proper;
+    const aliases = Array.isArray(nameData?.aliases) ? nameData.aliases : [];
+    for (const alias of aliases) {
+      const cleaned = String(alias || '').trim();
+      if (cleaned) return cleaned;
+    }
+    return '';
+  }
+
+  _formatStarShortName(starId, nameData = {}) {
+    const common = this._commonStarName(nameData);
+    if (common) return common;
+
+    const starIdSafe = String(starId || '').trim();
+    const idFromNameData = String(nameData?.id || '').trim();
+    const matchedId = String(nameData?.matchedId || '').trim();
+
+    const hipCandidate = [starIdSafe, matchedId, idFromNameData].find((value) => /^HIP\s*\d+/i.test(value));
+    if (hipCandidate) return hipCandidate;
+
+    const flamsteed = String(nameData?.flamsteed || '').trim();
+    if (flamsteed) return flamsteed;
+
+    const bayer = String(nameData?.bayer || '').trim();
+    if (bayer) return bayer;
+
+    return starIdSafe;
+  }
+
+  _formatStarDisplayName(starId, nameData = {}) {
+    return this._formatStarShortName(starId, nameData);
   }
 
   _normalizeStarResult(star, names) {
     const starId = String(star.id || star.name || 'star');
-    const propername = names[starId]?.propername;
-    const displayName = this._formatStarDisplayName(starId, propername);
-    return { kind: 'star', id: starId, label: displayName, name: displayName, propername, mag: star.mag, ra: star.ra, dec: star.dec };
+    const nameData = this.catalog.getStarNameForStar(star) || names[starId] || {};
+    const displayName = this._formatStarDisplayName(starId, nameData);
+    return {
+      kind: 'star',
+      id: starId,
+      label: displayName,
+      name: displayName,
+      propername: nameData?.propername,
+      propernameDe: nameData?.propername_de,
+      aliases: Array.isArray(nameData?.aliases) ? [...nameData.aliases] : [],
+      bayer: nameData?.bayer,
+      flamsteed: nameData?.flamsteed,
+      mag: star.mag,
+      ra: star.ra,
+      dec: star.dec,
+    };
   }
 
   _normalizePlanetResult(planet) {
@@ -1403,9 +2221,14 @@ export class WebGLRenderer {
     const names = this.catalog.starNames;
     for (const star of stars) {
       const starId = String(star.id || star.name || '');
-      const propername = names[starId]?.propername;
-      if (!propername && !starId.toLowerCase().includes(q)) continue;
-      pushResult(this._normalizeStarResult(star, names), [starId, propername]);
+      const nameData = this.catalog.getStarNameForStar(star) || names[starId] || {};
+      const propername = this._commonStarName(nameData);
+      const bayer = String(nameData?.bayer || '');
+      const flamsteed = String(nameData?.flamsteed || '');
+      const aliases = Array.isArray(nameData?.aliases) ? nameData.aliases : [];
+      const haystacks = [starId, propername, bayer, flamsteed, ...aliases];
+      if (!haystacks.some((entry) => String(entry || '').toLowerCase().includes(q))) continue;
+      pushResult(this._normalizeStarResult(star, names), haystacks);
     }
 
     results.sort((a, b) => b.score - a.score || (a.mag ?? 99) - (b.mag ?? 99) || a.label.localeCompare(b.label));

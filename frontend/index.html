@@ -20,7 +20,7 @@
     </div>
     <nav class="site-header__actions" aria-label="Hauptaktionen">
       <button id="header-search-btn" class="header-btn" type="button" aria-expanded="false">Suche</button>
-      <button id="header-standort-btn" class="header-btn" type="button" aria-expanded="false">Standort</button>
+      <button id="header-standort-btn" class="header-btn" type="button" aria-expanded="false">Standort und Nutzer</button>
       <button id="header-atlas-btn" class="header-btn" type="button" aria-expanded="false">Himmelsatlas</button>
       <button id="header-layout-btn" class="header-btn" type="button" aria-expanded="false">Layout und Anzeige</button>
       <button id="header-manual-btn" class="header-btn" type="button" aria-expanded="false">Handbuch</button>
@@ -64,7 +64,7 @@
       </div>
     </section>
     <div id="standort-panel" class="header-panel header-panel--standort" hidden>
-      <div class="header-panel__title">Standort</div>
+      <div class="header-panel__title">Standort und Nutzer</div>
       <div class="header-panel__grid standort-panel__grid">
         <div class="form-row">
           <label class="form-label" for="lat-input">Breite</label>
@@ -96,6 +96,23 @@
             <button id="standort-network-btn" class="action-btn action-btn--secondary" type="button">Über Netzwerk</button>
           </div>
           <div id="standort-auto-status" class="search-status">Keine Ortung gestartet.</div>
+        </div>
+        <div class="layout-panel__section standort-panel__section">
+          <div class="layout-panel__section-title">Nutzerprofile</div>
+          <div class="form-row">
+            <label class="form-label" for="profile-select">Aktives Profil</label>
+            <select id="profile-select"><option value="__default__">Standard</option></select>
+          </div>
+          <div class="form-row form-row--stack">
+            <label class="form-label" for="profile-name-input">Neuer Profilname</label>
+            <input type="text" id="profile-name-input" placeholder="z. B. Beobachtungsplatz 1" maxlength="48">
+          </div>
+          <div class="form-row standort-panel__actions">
+            <button id="profile-save-btn" class="action-btn" type="button">Speichern</button>
+            <button id="profile-load-btn" class="action-btn action-btn--secondary" type="button">Laden</button>
+            <button id="profile-delete-btn" class="action-btn action-btn--secondary" type="button">Löschen</button>
+          </div>
+          <div id="profile-status" class="search-status">Bereit.</div>
         </div>
       </div>
     </div>
@@ -143,8 +160,20 @@
           <input type="checkbox" id="showStarNames" checked>
         </div>
         <div class="form-row">
+          <label class="form-label" for="star-name-mag-limit">Bezeichnungen bis Mag: <span id="star-name-mag-label">6.5</span></label>
+          <input type="range" id="star-name-mag-limit" min="-2" max="25" step="0.5" value="6.5" oninput="document.getElementById('star-name-mag-label').textContent=this.value">
+        </div>
+        <div class="form-row">
           <label class="form-label" for="mag-limit">Mag-Limit: <span id="mag-label">6.5</span></label>
           <input type="range" id="mag-limit" min="1" max="25" step="0.5" value="6.5" oninput="document.getElementById('mag-label').textContent=this.value">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="star-visual-profile">Sternwirkung</label>
+          <select id="star-visual-profile">
+            <option value="planetarium" selected>Planetarium (Referenz)</option>
+            <option value="realistic">Realistisch (freies Auge)</option>
+            <option value="conservative">Konservativ (Stadthimmel)</option>
+          </select>
         </div>
       </div>
       <div class="layout-panel__section">
@@ -156,6 +185,32 @@
         <div class="form-row">
           <label class="form-label" for="showDSOLabels">DSO-Bezeichnungen</label>
           <input type="checkbox" id="showDSOLabels" checked>
+        </div>
+      </div>
+      <div class="layout-panel__section">
+        <div class="layout-panel__section-title">Milchstraße</div>
+        <div class="form-row">
+          <label class="form-label" for="showMilkyWay">Milchstraße anzeigen</label>
+          <input type="checkbox" id="showMilkyWay" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="milky-way-mode">Darstellung</label>
+          <select id="milky-way-mode">
+            <option value="nasa-texture" selected>Textur (NASA Deep Star Maps 4K)</option>
+            <option value="isophotes">Isophoten (aus NASA MK4K)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="milky-way-iso-smoothness">Milchstraße Detailgrad: <span id="milky-way-iso-smoothness-label">1.5</span></label>
+          <input type="range" id="milky-way-iso-smoothness" min="0" max="4" step="0.5" value="1.5" oninput="document.getElementById('milky-way-iso-smoothness-label').textContent=this.value">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="milky-way-iso-brightness">Milchstraße Helligkeit: <span id="milky-way-iso-brightness-label">1.0</span></label>
+          <input type="range" id="milky-way-iso-brightness" min="0.2" max="2.5" step="0.1" value="1.0" oninput="document.getElementById('milky-way-iso-brightness-label').textContent=this.value">
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="milky-way-iso-contrast">Milchstraße Kontrast: <span id="milky-way-iso-contrast-label">1.0</span></label>
+          <input type="range" id="milky-way-iso-contrast" min="0.4" max="3.0" step="0.1" value="1.0" oninput="document.getElementById('milky-way-iso-contrast-label').textContent=this.value">
         </div>
       </div>
       <div class="layout-panel__section">
@@ -172,12 +227,23 @@
           <label class="form-label" for="showConstellationLabels">Sternbild-Labels</label>
           <input type="checkbox" id="showConstellationLabels">
         </div>
+        <div class="form-row">
+          <label class="form-label" for="constellation-label-language">Sternbildnamen</label>
+          <select id="constellation-label-language">
+            <option value="de" selected>Deutsch</option>
+            <option value="latin">Lateinisch</option>
+          </select>
+        </div>
       </div>
       <div class="layout-panel__section">
         <div class="layout-panel__section-title">Linien und Koordinatennetze</div>
         <div class="form-row">
           <label class="form-label" for="showCelestialEquator">Himmelsäquator</label>
           <input type="checkbox" id="showCelestialEquator" checked>
+        </div>
+        <div class="form-row">
+          <label class="form-label" for="showGalacticEquator">Galaktischer Äquator</label>
+          <input type="checkbox" id="showGalacticEquator">
         </div>
         <div class="form-row">
           <label class="form-label" for="showEquatorialGrid">Äquatoriales Koordinatennetz</label>
@@ -252,14 +318,19 @@
           <div class="form-row">
             <label class="form-label" for="catalog-dso-select">Deep-Sky Katalog</label>
             <select id="catalog-dso-select">
-              <option value="dso_base.json">dso_base.json</option>
+              <option value="all">Messier + NGC (Alle)</option>
+              <option value="messier">Messier</option>
+              <option value="ngc">NGC</option>
             </select>
           </div>
           <div class="form-row">
             <label class="form-label" for="catalog-constellations-select">Sternbilder</label>
             <select id="catalog-constellations-select">
-              <option value="constellations.json">constellations.json</option>
+              <option value="constellations_modern_stellarium_v25_1.json">Modern</option>
             </select>
+          </div>
+          <div id="catalog-constellations-info" class="search-status">
+            Modern: Sternbildlinien der modernen Himmelskultur aus Stellarium 25.1.
           </div>
           <div class="form-row console-panel__actions">
             <button id="catalog-apply-btn" class="action-btn" type="button">Kataloge neu laden</button>
@@ -367,6 +438,47 @@
             <p>Diese Lösung wurde abgeleitet aus F. Espenak und J. Meeus, auf Grundlage von Morrison &amp; Stephenson (2004) und einer polynomischen Angleichung durch tabellierte Werte für 1600-2000. Werte für 2015-2033 werden aus Beobachtungen und Vorhersagen des IERS Rapid Service/Prediction Center interpoliert. Gültigkeitsbereich: Jahre -1999 bis 3000. Als Vorgabe verwendet. Der vorgegebene Wert von -25.8580"/cy2 für ṅ (säkulare Beschleunigung des Mondes) erfordert eine Anpassung.</p>
           </div>
         </div>
+
+        <div class="weather-card" aria-live="polite">
+          <div class="weather-card__title-row">
+            <span class="weather-card__title">Wetter (ASTRO)</span>
+            <span id="weather-night-pill" class="weather-night-pill">Astronomische Nacht</span>
+          </div>
+          <div class="weather-grid">
+            <div class="weather-row"><span>Temperatur</span><strong id="weather-temp">-</strong></div>
+            <div class="weather-row"><span>Taupunkt</span><strong id="weather-dew-point">-</strong></div>
+            <div class="weather-row"><span>Luftfeuchte</span><strong id="weather-humidity">-</strong></div>
+            <div class="weather-row"><span>Druck</span><strong id="weather-pressure">-</strong></div>
+            <div class="weather-row"><span>Wind</span><strong id="weather-wind">-</strong></div>
+            <div class="weather-row"><span>Seeing</span><strong id="weather-seeing">-</strong></div>
+            <div class="weather-row"><span>Transparenz</span><strong id="weather-transparency">-</strong></div>
+            <div class="weather-row"><span>Airmass (Cursor)</span><strong id="weather-airmass">-</strong></div>
+          </div>
+          <div id="weather-source" class="weather-source">von: 7Timer! ASTRO + Open-Meteo</div>
+          <div id="weather-status" class="search-status">Wetterdaten werden geladen...</div>
+        </div>
+
+        <div class="weather-card" aria-live="polite">
+          <div class="weather-card__title-row">
+            <span class="weather-card__title">Zeit</span>
+            <span id="daylight-date-pill" class="weather-night-pill">-</span>
+          </div>
+          <div class="weather-grid">
+            <div class="weather-row"><span>Ende Astronomischer Dämmerung</span><strong id="daylight-end-astro">-</strong></div>
+            <div class="weather-row"><span>Ende Nautischer Dämmerung</span><strong id="daylight-end-nautical">-</strong></div>
+            <div class="weather-row"><span>Ende Bürgerlicher Dämmerung</span><strong id="daylight-end-civil">-</strong></div>
+            <div class="weather-row"><span>Sonnenaufgang</span><strong id="daylight-sunrise">-</strong></div>
+            <div class="weather-row"><span>Sonnenhöchststand</span><strong id="daylight-solar-noon">-</strong></div>
+            <div class="weather-row"><span>Sonnenuntergang</span><strong id="daylight-sunset">-</strong></div>
+            <div class="weather-row"><span>Anfang Bürgerlicher Dämmerung</span><strong id="daylight-start-civil">-</strong></div>
+            <div class="weather-row"><span>Anfang Nautischer Dämmerung</span><strong id="daylight-start-nautical">-</strong></div>
+            <div class="weather-row"><span>Anfang Astronomischer Dämmerung</span><strong id="daylight-start-astro">-</strong></div>
+            <div class="weather-row"><span>Nachtlänge</span><strong id="daylight-night-length">-</strong></div>
+            <div class="weather-row"><span>Tageslänge</span><strong id="daylight-day-length">-</strong></div>
+          </div>
+          <div id="daylight-source" class="weather-source">für Standortdatum</div>
+          <div id="daylight-status" class="search-status">Zeitdaten werden geladen...</div>
+        </div>
       </section>
 
     </aside>
@@ -386,14 +498,20 @@
       <div id="object-tooltip" class="object-tooltip"></div>
     </section>
 
-    <!-- Legende rechts (Platzhalter) -->
+    <!-- Legende rechts -->
     <aside id="legend-panel" class="legend-panel">
-      <div class="legend-title">Legende</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ffff88"></span> Offener Haufen</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ffaa44"></span> Kugelhaufen</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#88ff88"></span> Emissionsnebel</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#ffaaff"></span> Galaxie</div>
-      <div class="legend-item"><span class="legend-dot" style="background:#44ffff"></span> Planet. Nebel</div>
+      <div class="legend-title">DSO Label-Symbole</div>
+      <div class="legend-item legend-item--open"><span class="legend-symbol">◌</span><span class="legend-label">Offene Sternhaufen</span></div>
+      <div class="legend-item legend-item--globular"><span class="legend-symbol">⊗</span><span class="legend-label">Kugelsternhaufen</span></div>
+      <div class="legend-item legend-item--galaxy"><span class="legend-symbol">⬭</span><span class="legend-label">Galaxien</span></div>
+      <div class="legend-item legend-item--emission"><span class="legend-symbol">□</span><span class="legend-label">Emissionsnebel</span></div>
+      <div class="legend-item legend-item--dark"><span class="legend-symbol">■</span><span class="legend-label">Dunkelnebel</span></div>
+      <div class="legend-item legend-item--reflection"><span class="legend-symbol">◇</span><span class="legend-label">Relexionsnebel</span></div>
+      <div class="legend-item legend-item--planetary"><span class="legend-symbol">◉</span><span class="legend-label">Planetarische Nebel</span></div>
+      <div class="legend-item legend-item--snr"><span class="legend-symbol">✶</span><span class="legend-label">Supernovareste</span></div>
+      <div class="legend-item legend-item--exo"><span class="legend-symbol">⊕</span><span class="legend-label">Exoplaneten</span></div>
+      <div class="legend-item legend-item--double"><span class="legend-symbol">⋈</span><span class="legend-label">Doppelsterne</span></div>
+      <div class="legend-item legend-item--quasar"><span class="legend-symbol">✦</span><span class="legend-label">Quasare</span></div>
     </aside>
   </main>
 

@@ -22,7 +22,7 @@ export class Projection {
     this.fovDeg = this.maxFov;
     this.projectionMode = 'auto';
     this.stereographicOnlyAtOrAboveDeg = 202.3;
-    this.gnomonicFullAtOrBelowDeg = 130;
+    this.gnomonicFullAtOrBelowDeg = 45.1;
     this.stellariumLikeBlendCenterDeg = 50;
     this.stellariumLikeBlendSteepness = 0.17;
 
@@ -33,6 +33,13 @@ export class Projection {
     this.date = new Date();
     this.timeState = buildTimeState(this.date);
     this.lst = 0;
+    this.atmosphere = {
+      temperatureC: 10,
+      pressureHpa: 1013.25,
+      transparencyIndex: 4,
+      extinctionK: 0.24,
+      enableRefraction: true,
+    };
 
     this._updateCameraBasis();
     this._recomputeScales();
@@ -94,23 +101,8 @@ export class Projection {
   }
 
   _projectionBlend() {
-    const start = this.stereographicOnlyAtOrAboveDeg;
-    const end = this.gnomonicFullAtOrBelowDeg;
-    if (this.fovDeg >= start - 1e-6) return 0;
-    if (this.fovDeg <= end + 1e-6) return 1;
-
-    // Stellarium-aehnlich: lange stereographisch bleiben und erst bei kleinen FOV
-    // deutlich in Richtung gnomonisch uebergehen.
-    const center = this.stellariumLikeBlendCenterDeg;
-    const steepness = Math.max(this.stellariumLikeBlendSteepness, 1e-4);
-    const x = steepness * (center - this.fovDeg);
-    const logistic = 1 / (1 + Math.exp(-x));
-
-    // Im definierten Arbeitsfenster [end..start] auf [0..1] normieren.
-    const minRaw = 1 / (1 + Math.exp(-steepness * (center - start)));
-    const maxRaw = 1 / (1 + Math.exp(-steepness * (center - end)));
-    const denom = Math.max(maxRaw - minRaw, this.eps);
-    return this._clamp((logistic - minRaw) / denom, 0, 1);
+    const threshold = this.gnomonicFullAtOrBelowDeg;
+    return this.fovDeg > threshold ? 0 : 1;
   }
 
   _perspectiveDistanceFromBlend(blend) {
@@ -221,15 +213,9 @@ export class Projection {
     const r = Math.hypot(sx, sy);
 
     const theta = Math.acos(this._clamp(normed.z, -1, 1));
-    const halfFov = this._toRad(this.fovDeg * 0.5);
-    const insideFov = theta <= halfFov;
     const insideRect = screenX >= -2 && screenX <= this.width + 2 && screenY >= -2 && screenY <= this.height + 2;
-    const useRectClip = resolvedMode === 'gnomonic' || resolvedMode === 'transition';
-    // In gnomonisch/transition muss das Viewport-Rechteck gelten, sonst entsteht
-    // ein ungewollter kreisfoermiger Ausschnitt.
-    const visible = useRectClip
-      ? insideRect
-      : (insideFov && r <= this.viewRadius);
+    // Immer rechteckig clippen: kein kreisfoermiger Himmelsausschnitt.
+    const visible = insideRect;
 
     return {
       x: screenX,
@@ -301,6 +287,54 @@ export class Projection {
     this.date = date;
     this.timeState = buildTimeState(date);
     this.lst = gmstHoursFromUt(date, lon);
+  }
+
+  setAtmosphere(partial = {}) {
+    if (!partial || typeof partial !== 'object') return;
+    const next = { ...this.atmosphere };
+    if (Number.isFinite(partial.temperatureC)) {
+      next.temperatureC = Math.max(-50, Math.min(50, Number(partial.temperatureC)));
+    }
+    if (Number.isFinite(partial.pressureHpa)) {
+      next.pressureHpa = Math.max(300, Math.min(1100, Number(partial.pressureHpa)));
+    }
+    if (Number.isFinite(partial.transparencyIndex)) {
+      next.transparencyIndex = Math.max(1, Math.min(8, Number(partial.transparencyIndex)));
+    }
+    if (typeof partial.enableRefraction === 'boolean') {
+      next.enableRefraction = partial.enableRefraction;
+    }
+    const t = Number.isFinite(next.transparencyIndex) ? Number(next.transparencyIndex) : 4;
+    next.extinctionK = Math.max(0.08, Math.min(0.9, 0.08 + (t - 1) * 0.09));
+    this.atmosphere = next;
+  }
+
+  airmassFromAltDeg(altDeg) {
+    if (!Number.isFinite(altDeg)) return Number.POSITIVE_INFINITY;
+    if (altDeg <= -1) return Number.POSITIVE_INFINITY;
+    const z = 90 - altDeg;
+    if (z <= 0) return 1;
+    if (z >= 90) return Number.POSITIVE_INFINITY;
+    const zr = this._toRad(z);
+    return 1.0 / (Math.cos(zr) + 0.50572 * Math.pow(96.07995 - z, -1.6364));
+  }
+
+  extinctionTransmission(altDeg) {
+    const x = this.airmassFromAltDeg(altDeg);
+    if (!Number.isFinite(x)) return 0;
+    const k = Number.isFinite(this.atmosphere?.extinctionK) ? Number(this.atmosphere.extinctionK) : 0.24;
+    const exponent = -0.4 * k * Math.max(0, x - 1);
+    return Math.max(0, Math.min(1, Math.pow(10, exponent)));
+  }
+
+  _refractionDeg(altDeg) {
+    if (!this.atmosphere?.enableRefraction) return 0;
+    if (!Number.isFinite(altDeg) || altDeg < -1 || altDeg > 89.9) return 0;
+    const pressure = Number.isFinite(this.atmosphere.pressureHpa) ? Number(this.atmosphere.pressureHpa) : 1013.25;
+    const temp = Number.isFinite(this.atmosphere.temperatureC) ? Number(this.atmosphere.temperatureC) : 10;
+    const tanArg = this._toRad(altDeg + 10.3 / (altDeg + 5.11));
+    const rArcMin = (1.02 / Math.tan(Math.max(this.eps, tanArg))) * (pressure / 1010) * (283 / (273 + temp));
+    return rArcMin / 60.0;
   }
 
   _radecToAltAz(raHours, decDeg) {
@@ -442,6 +476,12 @@ export class Projection {
     this.setViewCenter(h.azDeg, h.altDeg);
   }
 
+  horizontalFromScreenPoint(screenX, screenY) {
+    const cam = this.screenToCameraVector(screenX, screenY);
+    const world = this._cameraToWorld(cam);
+    return this._worldToHorizontal(world);
+  }
+
   getViewState() {
     const blend = this._projectionBlend();
     const resolvedMode = this._resolvedProjectionMode(blend);
@@ -460,7 +500,8 @@ export class Projection {
 
   project(ra_hours, dec_deg) {
     const h = this._radecToAltAz(ra_hours, dec_deg);
-    const world = this._horizontalVector(h.azDeg, h.altDeg);
+    const apparentAlt = h.altDeg + this._refractionDeg(h.altDeg);
+    const world = this._horizontalVector(h.azDeg, apparentAlt);
     const cam = {
       x: this._dot3(world, this.right),
       y: this._dot3(world, this.up),
@@ -468,11 +509,12 @@ export class Projection {
     };
 
     const p = this.projectCameraVector(cam);
-    if (!p) return { x: 0, y: 0, alt: h.altDeg, az: h.azDeg, visible: false };
+    if (!p) return { x: 0, y: 0, alt: apparentAlt, altTrue: h.altDeg, az: h.azDeg, visible: false };
     return {
       x: p.x,
       y: p.y,
-      alt: h.altDeg,
+      alt: apparentAlt,
+      altTrue: h.altDeg,
       az: h.azDeg,
       visible: p.visible,
     };

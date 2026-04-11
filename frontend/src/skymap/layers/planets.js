@@ -2,6 +2,8 @@
  * SkyCMD - Planeten Layer
  * Zeichnet geozentrische Planetenpositionen aus dem Backend (VSOP87).
  */
+const OBJECT_LABEL_FONT_STACK = '"Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif';
+
 export class PlanetsLayer {
   constructor(ctx, projection) {
     this.ctx = ctx;
@@ -40,7 +42,7 @@ export class PlanetsLayer {
 
       if (showLabels) {
         this.ctx.fillStyle = 'rgba(190, 255, 172, 0.95)';
-        this.ctx.font = '10px sans-serif';
+        this.ctx.font = `600 10px ${OBJECT_LABEL_FONT_STACK}`;
         this.ctx.fillText(planet.name, p.x + 8, p.y - 7);
       }
     }
@@ -68,7 +70,7 @@ export class PlanetsLayer {
     ctx.stroke();
 
     ctx.fillStyle = 'rgba(225, 255, 210, 0.95)';
-    ctx.font = '12px "Segoe UI Symbol", "Segoe UI", sans-serif';
+    ctx.font = `12px "Segoe UI Symbol", ${OBJECT_LABEL_FONT_STACK}`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(symbol, x, y + 0.5);

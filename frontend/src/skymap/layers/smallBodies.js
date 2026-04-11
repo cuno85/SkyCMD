@@ -2,6 +2,8 @@
  * SkyCMD - Small Bodies Layer
  * Zeichnet Kometen und Asteroiden mit eigenen Symbolen.
  */
+const OBJECT_LABEL_FONT_STACK = '"Trebuchet MS", "Avenir Next", "Segoe UI", sans-serif';
+
 export class SmallBodiesLayer {
   constructor(ctx, projection) {
     this.ctx = ctx;
@@ -54,7 +56,7 @@ export class SmallBodiesLayer {
 
       if (showLabels) {
         this.ctx.fillStyle = kind === 'comet' ? 'rgba(170, 230, 255, 0.95)' : 'rgba(225, 215, 195, 0.95)';
-        this.ctx.font = '10px sans-serif';
+        this.ctx.font = `600 10px ${OBJECT_LABEL_FONT_STACK}`;
         this.ctx.fillText(label, p.x + 8, p.y - 7);
       }
     }

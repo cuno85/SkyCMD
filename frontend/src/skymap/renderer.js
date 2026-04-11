@@ -10,6 +10,7 @@ import { ConstellationsLayer } from './layers/constellations.js';
 import { PlanetsLayer } from './layers/planets.js';
 import { ReferenceLinesLayer } from './layers/referenceLines.js';
 import { SmallBodiesLayer } from './layers/smallBodies.js';
+import { ConstellationResolver } from './constellationResolver.js';
 
 export class SkyMapRenderer {
   constructor(canvas) {
@@ -46,7 +47,14 @@ export class SkyMapRenderer {
       showStarNames: true,
       showDSOLabels: true,
       showPlanetLabels: true,
+      showMilkyWay: true,
       magLimit: 6.5,
+      starNameMagLimit: 6.5,
+      milkyWayMode: 'nasa-texture',
+      milkyWayIsoSmoothness: 1.5,
+      milkyWayIsoBrightness: 1.0,
+      milkyWayIsoContrast: 1.0,
+      starVisualProfile: 'planetarium',
     };
     this.stats = {
       totalStars: 0,
@@ -66,9 +74,7 @@ export class SkyMapRenderer {
     this.dataSourceOptions = {
       useBackendSmallBodies: true,
     };
-    this._constellationNameById = new Map();
-    this._constellationCenters = [];
-    this._constellationIndexReady = false;
+    this.constellationResolver = new ConstellationResolver();
     this.ready = false;
     this._renderErrorLogged = false;
   }
@@ -76,122 +82,26 @@ export class SkyMapRenderer {
   async reconfigureCatalogSources(sources = {}) {
     this.catalog.setSources(sources);
     await this.catalog.loadAll();
-    this._constellationIndexReady = false;
+    this._rebuildConstellationResolver();
     this.stats.totalStars = this.catalog.getStars().length;
     this.stats.totalDSO = this.catalog.getDSO().length;
     this.render();
   }
 
-  _toSkyVector(raHours, decDeg) {
-    const raRad = ((Number(raHours) % 24) + 24) % 24 * 15 * Math.PI / 180;
-    const decRad = Number(decDeg) * Math.PI / 180;
-    const cosDec = Math.cos(decRad);
-    return {
-      x: cosDec * Math.cos(raRad),
-      y: cosDec * Math.sin(raRad),
-      z: Math.sin(decRad),
-    };
-  }
-
-  _angularSeparationDeg(ra1Hours, dec1Deg, ra2Hours, dec2Deg) {
-    const a = this._toSkyVector(ra1Hours, dec1Deg);
-    const b = this._toSkyVector(ra2Hours, dec2Deg);
-    const dot = Math.max(-1, Math.min(1, a.x * b.x + a.y * b.y + a.z * b.z));
-    return Math.acos(dot) * 180 / Math.PI;
-  }
-
-  _ensureConstellationIndex() {
-    if (this._constellationIndexReady) return;
-    this._constellationNameById = new Map();
-    this._constellationCenters = [];
-
-    const constellations = this.catalog.getConstellations() || [];
-    for (const c of constellations) {
-      const id = String(c?.id || '').trim();
-      const name = String(c?.name || '').trim();
-      if (!id) continue;
-      this._constellationNameById.set(id, name || id);
-
-      let sumX = 0;
-      let sumY = 0;
-      let sumZ = 0;
-      let count = 0;
-      const lines = Array.isArray(c?.lines) ? c.lines : [];
-      for (const line of lines) {
-        const points = Array.isArray(line) ? line : [];
-        for (const p of points) {
-          if (!Number.isFinite(p?.ra) || !Number.isFinite(p?.dec)) continue;
-          const v = this._toSkyVector(p.ra, p.dec);
-          sumX += v.x;
-          sumY += v.y;
-          sumZ += v.z;
-          count += 1;
-        }
-      }
-      if (count <= 0) continue;
-      const len = Math.hypot(sumX, sumY, sumZ) || 1;
-      const x = sumX / len;
-      const y = sumY / len;
-      const z = sumZ / len;
-      let raRad = Math.atan2(y, x);
-      if (raRad < 0) raRad += 2 * Math.PI;
-      const decRad = Math.asin(Math.max(-1, Math.min(1, z)));
-      this._constellationCenters.push({
-        id,
-        name: name || id,
-        ra: (raRad * 180 / Math.PI) / 15,
-        dec: decRad * 180 / Math.PI,
-      });
-    }
-
-    this._constellationIndexReady = true;
+  _rebuildConstellationResolver() {
+    this.constellationResolver.rebuild(
+      this.catalog.getConstellations(),
+      this.catalog.getConstellationBoundaries(),
+      this.catalog.starNames,
+    );
   }
 
   getConstellationInfo(target, decDegOverride = null) {
-    let ra = null;
-    let dec = null;
-    let starId = '';
-    if (typeof target === 'object' && target !== null) {
-      ra = target.ra;
-      dec = target.dec;
-      starId = String(target.id || '').trim();
-    } else {
-      ra = target;
-      dec = decDegOverride;
-    }
-
-    if (!Number.isFinite(ra) || !Number.isFinite(dec)) return null;
-    this._ensureConstellationIndex();
-
-    const byStarName = this.catalog.starNames?.[starId]?.constellation;
-    if (byStarName && this._constellationNameById.has(byStarName)) {
-      return {
-        abbr: byStarName,
-        name: this._constellationNameById.get(byStarName),
-      };
-    }
-
-    let best = null;
-    let bestSep = Infinity;
-    for (const c of this._constellationCenters) {
-      const sep = this._angularSeparationDeg(ra, dec, c.ra, c.dec);
-      if (sep < bestSep) {
-        bestSep = sep;
-        best = c;
-      }
-    }
-    if (!best) return null;
-    return {
-      abbr: best.id,
-      name: best.name,
-    };
+    return this.constellationResolver.getInfo(target, decDegOverride);
   }
 
   getConstellationNameById(abbr) {
-    const key = String(abbr || '').trim();
-    if (!key) return '';
-    this._ensureConstellationIndex();
-    return this._constellationNameById.get(key) || '';
+    return this.constellationResolver.getNameById(abbr);
   }
 
   setDataSourceOptions(options = {}) {
@@ -221,6 +131,7 @@ export class SkyMapRenderer {
 
     this.stats.totalStars = this.catalog.getStars().length;
     this.stats.totalDSO = this.catalog.getDSO().length;
+    this._rebuildConstellationResolver();
 
     try {
       await this._refreshPlanets(new Date());
@@ -325,30 +236,13 @@ export class SkyMapRenderer {
     const ctx = this.ctx;
 
     try {
-      const view = this.projection.getViewState();
-      const circleAlpha = Math.max(0, 1 - view.blendToPlanar * 1.35);
-      const useCircularClip = view.blendToPlanar < 0.65;
       this.pickables = [];
 
       // Hintergrund
       ctx.fillStyle = '#050a14';
       ctx.fillRect(0, 0, width, height);
 
-      // Horizontkreis
-      if (circleAlpha > 0.001) {
-        ctx.beginPath();
-        ctx.arc(this.projection.cx, this.projection.cy, this.projection.radius, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(80,120,160,${0.5 * circleAlpha})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-
       ctx.save();
-      if (useCircularClip) {
-        ctx.beginPath();
-        ctx.arc(this.projection.cx, this.projection.cy, this.projection.radius, 0, Math.PI * 2);
-        ctx.clip();
-      }
 
       // Layer zeichnen
       if (this.options.showConstellationBoundaries) {
@@ -421,7 +315,11 @@ export class SkyMapRenderer {
           this.catalog.starNames,
           {
             showNames: this.options.showStarNames,
+            resolveStarName: (star) => this.catalog.getStarNameForStar(star) || this.catalog.starNames?.[star?.id] || {},
             hideBelowHorizon: this.options.showHorizonFill,
+            magLimit: Number.isFinite(this.options?.magLimit) ? Number(this.options.magLimit) : 6.5,
+            starNameMagLimit: Number.isFinite(this.options?.starNameMagLimit) ? Number(this.options.starNameMagLimit) : 6.5,
+            starVisualProfile: String(this.options?.starVisualProfile || 'planetarium'),
           }
         );
         this.stats.visibleStars = starsResult.drawn;
