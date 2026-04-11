@@ -1,9 +1,9 @@
 /**
- * SkyCMD v0.1.0 - Main Entry Point
+ * SkyCMD v0.1.1 - Main Entry Point
  */
 import { WebGLRenderer } from './skymap/webgl-renderer.js';
 
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '0.1.1';
 
 let renderer;
 let animFrame;

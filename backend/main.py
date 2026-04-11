@@ -33,7 +33,9 @@ from pymeeus.Sun import Sun
 from pymeeus.Moon import Moon
 from skyfield.api import load_constellation_map, position_from_radec
 
-app = FastAPI(title="SkyCMD API", version="0.1.0")
+APP_VERSION = "0.1.1"
+
+app = FastAPI(title="SkyCMD API", version=APP_VERSION)
 
 small_body_repo = SmallBodyRepository()
 catalog_repo = CatalogRepository()
@@ -115,7 +117,7 @@ async def get_status():
     })
     
     return {
-        "version": "0.1.0",
+        "version": APP_VERSION,
         "feeds": feeds,
     }
 
@@ -329,7 +331,7 @@ def _to_cartesian(lon_deg: float, lat_deg: float, radius: float) -> tuple[float,
 
 def _http_get_json(url: str, timeout: float = 8.0) -> dict[str, Any] | list[Any] | None:
     try:
-        req = urllib.request.Request(url, headers={"User-Agent": "SkyCMD/0.1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": f"SkyCMD/{APP_VERSION}"})
         with urllib.request.urlopen(req, timeout=timeout) as res:
             data = res.read().decode("utf-8", errors="replace")
         return json.loads(data)

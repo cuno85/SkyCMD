@@ -591,7 +591,7 @@ async def _sleep_no_throw(seconds: int) -> None:
 
 
 def _fetch_json_payload(url: str) -> Any:
-    req = Request(url, headers={"User-Agent": "SkyCMD/0.1.0 (+https://localhost)"})
+    req = Request(url, headers={"User-Agent": "SkyCMD/0.1.1 (+https://localhost)"})
     with urlopen(req, timeout=120) as res:
         raw = res.read()
 
@@ -603,7 +603,7 @@ def _fetch_json_payload(url: str) -> Any:
 
 
 def _fetch_tle_payload(url: str) -> list[dict[str, Any]]:
-    req = Request(url, headers={"User-Agent": "SkyCMD/0.1.0 (+https://localhost)"})
+    req = Request(url, headers={"User-Agent": "SkyCMD/0.1.1 (+https://localhost)"})
     with urlopen(req, timeout=120) as res:
         text = res.read().decode("utf-8", "ignore")
 
